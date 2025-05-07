@@ -396,3 +396,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+Chapeau/Chapeau/appsettings.json
+Chapeau/Chapeau/appsettings.Development.json
