@@ -1,3 +1,6 @@
+using Chapeau.Repositories;
+using Chapeau.Services;
+
 namespace Chapeau
 {
     public class Program
@@ -7,7 +10,20 @@ namespace Chapeau
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddSingleton<IMenuItemsRepository, DbMenuItemsRepository>();
+
+
             builder.Services.AddControllersWithViews();
+
+
+            //enable session
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(300);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
 
             var app = builder.Build();
 
@@ -23,6 +39,9 @@ namespace Chapeau
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            //enable sessions
+            app.UseSession();
 
             app.UseAuthorization();
 

@@ -1,0 +1,26 @@
+﻿@model List<Chapeau.Models.MenuItem>;
+
+@{
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (MenuItem menuItem in Model)
+            {
+                <tr>
+                    <td>@menuItem.Name</td>
+                    <td>@menuItem.Price</td>
+                </tr>
+            }
+
+        }
+    </tbody>
+</table>
+</div>
