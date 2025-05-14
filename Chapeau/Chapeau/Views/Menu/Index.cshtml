@@ -1,0 +1,22 @@
+﻿@model List<Chapeau.Models.MenuItem>;
+
+@{
+}
+
+<div>
+    <div>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Lunch">Lunch</a>
+    </div>
+    <div>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Dinner">Dinner</a>
+    </div>
+    @{
+        foreach (MenuItem menuItem in Model)
+        {
+            <div>
+                <p>@menuItem.CourseCategory </p>
+            </div>
+        }
+    }
+
+</div>

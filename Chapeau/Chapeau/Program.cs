@@ -10,8 +10,8 @@ namespace Chapeau
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddSingleton<IMenuItemsRepository, DbMenuItemsRepository>();
-
+            builder.Services.AddSingleton<IMenuRepository, DbMenuRepository>();
+            builder.Services.AddSingleton<IMenuService, MenuService>();
 
             builder.Services.AddControllersWithViews();
 

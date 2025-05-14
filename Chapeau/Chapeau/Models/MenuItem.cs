@@ -1,4 +1,6 @@
-﻿namespace Chapeau.Models
+﻿using Chapeau.Models;
+
+namespace Chapeau.Models
 {
     public class MenuItem
     {
@@ -6,8 +8,8 @@
         public int ItemId { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public string MenuCard { get; set; }
-        public string CourseCategory { get; set; }
+        public MenuCard MenuCard { get; set; }
+        public CourseCategory CourseCategory { get; set; }
         public int Stock { get; set; }
         public int Vat {get; set; }
 
@@ -19,7 +21,13 @@
 
         }
 
-        public MenuItem(int itemId, string name, decimal price, string menuCard, string courseCategory, int stock, int vat)
+        public MenuItem(CourseCategory courseCategory)
+        {
+            CourseCategory = courseCategory;
+        }
+
+        //constructor with all properties filled
+        public MenuItem(int itemId, string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, int vat)
         {
             this.ItemId = itemId;
             this.Name = name;
