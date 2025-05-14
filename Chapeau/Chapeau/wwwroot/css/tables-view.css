@@ -1,0 +1,331 @@
+/* tables-view.css - Mobile First */
+
+/* Global Variables */
+:root {
+    --color-available: #2ecc71;
+    --color-occupied: #e74c3c;
+    --color-border: #bdc3c7;
+    --color-heading: #2c3e50;
+    --color-background: #f8f9fa;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --border-radius: 6px;
+}
+
+/* Main Container */
+.table-management-container {
+    width: 100%;
+    padding: var(--spacing-md);
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Header Section */
+.header-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+    .header-section h1 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--color-heading);
+    }
+
+.refresh-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .refresh-button:hover,
+    .refresh-button:active {
+        background-color: #2980b9;
+    }
+
+    .refresh-button i {
+        font-size: 1rem;
+    }
+
+/* Legend Section */
+.legend-section {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    background-color: var(--color-background);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Status Indicators */
+.status-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+    .status-indicator.available,
+    .table-item.available .table-surface,
+    input[type="radio"]:checked + .toggle-option.available {
+        background-color: var(--color-available);
+        color: white;
+    }
+
+    .status-indicator.occupied,
+    .table-item.occupied .table-surface,
+    input[type="radio"]:checked + .toggle-option.occupied {
+        background-color: var(--color-occupied);
+        color: white;
+    }
+
+/* Tables Grid */
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Table Items */
+.table-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    touch-action: manipulation;
+}
+
+    .table-item:active {
+        transform: scale(0.95);
+    }
+
+.table-preview .table-item {
+    width: 80px;
+    height: 80px;
+    cursor: default;
+}
+
+    .table-preview .table-item:active {
+        transform: none;
+    }
+
+.table-surface {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--color-heading);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-number {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Chairs */
+.chair {
+    position: absolute;
+    background-color: #ecf0f1;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+}
+
+    .chair.top, .chair.bottom {
+        width: 30%;
+        height: 10%;
+        left: 35%;
+    }
+
+    .chair.left, .chair.right {
+        width: 10%;
+        height: 30%;
+        top: 35%;
+    }
+
+    .chair.top {
+        top: 8%;
+    }
+
+    .chair.bottom {
+        bottom: 8%;
+    }
+
+    .chair.left {
+        left: 8%;
+    }
+
+    .chair.right {
+        right: 8%;
+    }
+
+/* Modal Styling */
+.table-status-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.table-preview {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+}
+
+.table-status {
+    width: 100%;
+}
+
+.status-badge {
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    color: white;
+    display: inline-block;
+}
+
+    .status-badge.available {
+        background-color: var(--color-available);
+    }
+
+    .status-badge.occupied {
+        background-color: var(--color-occupied);
+    }
+
+.status-options {
+    margin-top: var(--spacing-md);
+    width: 100%;
+}
+
+    .status-options label {
+        display: block;
+        margin-bottom: var(--spacing-sm);
+        font-weight: 500;
+    }
+
+.status-toggle {
+    display: flex;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+    width: 100%;
+}
+
+    .status-toggle input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+.toggle-option {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+    .toggle-option.available {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: var(--color-available);
+    }
+
+    .toggle-option.occupied {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: var(--color-occupied);
+    }
+
+/* Desktop adjustments */
+@media (min-width: 481px) {
+    .header-section {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .header-section h1 {
+            font-size: 1.6rem;
+        }
+
+    .refresh-button {
+        width: auto;
+    }
+
+    .table-number {
+        font-size: 1.4rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .table-management-container {
+        max-width: 1200px;
+        padding: var(--spacing-lg);
+    }
+
+    .tables-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: var(--spacing-lg);
+        max-width: 900px;
+    }
+
+    .table-item:hover {
+        transform: scale(1.05);
+    }
+
+    .table-item:active {
+        transform: scale(1);
+    }
+
+    .table-status-display {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .table-preview {
+        width: 100px;
+        height: 100px;
+    }
+
+        .table-preview .table-item {
+            width: 100px;
+            height: 100px;
+        }
+
+    .table-number {
+        font-size: 1.5rem;
+    }
+}

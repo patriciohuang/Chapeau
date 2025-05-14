@@ -14,11 +14,34 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Chapeau.styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/tables-view.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
+                @if (loggedInEmployee != null)
+                {
+                    @if (loggedInEmployee.Role.Equals("Manager", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a class="navbar-brand" asp-controller="Manager" asp-action="Index">Chapeau</a>
+                    }
+                    else if (loggedInEmployee.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a class="navbar-brand" asp-controller="Waiter" asp-action="Index">Chapeau</a>
+                    }
+                    else if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase) ||
+                    loggedInEmployee.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a class="navbar-brand" asp-controller="KitchenAndBar" asp-action="Index">Chapeau</a>
+                    }
+                }
+                else
+                {
+                    <a class="navbar-brand" asp-controller="Account" asp-action="Login">Chapeau</a>
+                }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -30,43 +53,59 @@
                             <!-- Show role-specific navigation options based on the user's role -->
                             @if (loggedInEmployee.Role.Equals("Manager", StringComparison.OrdinalIgnoreCase))
                             {
-                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Manager" asp-action="Index">Manager Dashboard</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Manager" asp-action="EmployeeManagement">Employees</a>
+                                    <a class="nav-link text-dark" asp-controller="Manager" asp-action="Index">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
                                 </li>
                             }
                             else if (loggedInEmployee.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
                             {
-                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Index">Waiter Dashboard</a>
+                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Index">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Tables">Tables</a>
-                                </li>
-                            }
-                            else if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase))
-                            {
-                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Kitchen" asp-action="Index">Kitchen Dashboard</a>
+                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Tables">
+                                        <i class="bi bi-grid-3x3"></i> Tables
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Kitchen" asp-action="Orders">Orders</a>
+                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Orders">
+                                        <i class="bi bi-card-checklist"></i> Orders
+                                    </a>
                                 </li>
                             }
-                            else if (loggedInEmployee.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
+                            else if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase) ||
+                            loggedInEmployee.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
                             {
-                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Bar" asp-action="Index">Bar Dashboard</a>
+                                    <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Index">
+                                        <i class="bi bi-speedometer2"></i> Dashboard
+                                    </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Bar" asp-action="Drinks">Drinks</a>
+                                    <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Orders">
+                                        <i class="bi bi-card-checklist"></i> Orders
+                                    </a>
                                 </li>
+                                @if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Inventory">
+                                            <i class="bi bi-box-seam"></i> Food Inventory
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Inventory">
+                                            <i class="bi bi-cup-straw"></i> Drinks Inventory
+                                        </a>
+                                    </li>
+                                }
                             }
                         }
                     </ul>
@@ -77,19 +116,25 @@
                         {
                             <li class="nav-item">
                                 <span class="nav-link text-dark">
-                                    <strong>@loggedInEmployee.FirstName @loggedInEmployee.LastName</strong> (@loggedInEmployee.Role)
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <strong>@loggedInEmployee.FirstName @loggedInEmployee.LastName</strong>
+                                    <span class="badge bg-secondary ms-1">@loggedInEmployee.Role</span>
                                 </span>
                             </li>
                             <li class="nav-item">
                                 <form asp-controller="Account" asp-action="Logout" method="post">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right"></i> Login
+                                </a>
                             </li>
                         }
                     </ul>
@@ -98,13 +143,29 @@
         </nav>
     </header>
     <div class="container">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - Chapeau - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - Chapeau Restaurant Management System
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -1,5 +1,32 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = ViewBag.Role + " Dashboard";
 }
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>@ViewBag.Role Dashboard</h1>
+            <p class="lead">Welcome, @ViewBag.FullName</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Active Orders</h3>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Role.ToLower() == "kitchen")
+                    {
+                        <p>Food orders waiting to be prepared:</p>
+                    }
+                    else if (ViewBag.Role.ToLower() == "bar")
+                    {
+                        <p>Drink orders waiting to be prepared:</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
