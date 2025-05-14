@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Chapeau.Models;
+@using Chapeau.Services;
+
+@{
+    var loggedInEmployee = Context.Session.GetObject<Employee>("LoggedInEmployee");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,19 +19,79 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (loggedInEmployee != null)
+                        {
+                            <!-- Show role-specific navigation options based on the user's role -->
+                            @if (loggedInEmployee.Role.Equals("Manager", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Manager" asp-action="Index">Manager Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Manager" asp-action="EmployeeManagement">Employees</a>
+                                </li>
+                            }
+                            else if (loggedInEmployee.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Index">Waiter Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Tables">Tables</a>
+                                </li>
+                            }
+                            else if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Kitchen" asp-action="Index">Kitchen Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Kitchen" asp-action="Orders">Orders</a>
+                                </li>
+                            }
+                            else if (loggedInEmployee.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Bar" asp-action="Index">Bar Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Bar" asp-action="Drinks">Drinks</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <!-- Login/Logout section on the right side -->
+                    <ul class="navbar-nav">
+                        @if (loggedInEmployee != null)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">
+                                    <strong>@loggedInEmployee.FirstName @loggedInEmployee.LastName</strong> (@loggedInEmployee.Role)
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -35,7 +102,6 @@
             @RenderBody()
         </main>
     </div>
-
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2025 - Chapeau - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>

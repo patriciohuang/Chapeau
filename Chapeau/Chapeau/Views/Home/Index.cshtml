@@ -1,8 +1,49 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model Chapeau.Models.Employee
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h2>Add Manager</h2>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-success">@ViewBag.Message</div>
+    }
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    }
+
+    <form asp-action="Add" method="post">
+        <div class="form-group mb-3">
+            <label asp-for="FirstName">First Name</label>
+            <input asp-for="FirstName" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="LastName">Last Name</label>
+            <input asp-for="LastName" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="EmpNr">Employee Number</label>
+            <input asp-for="EmpNr" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Role">Role</label>
+            <select asp-for="Role" class="form-control" required>
+                <option value="Manager">Manager</option>
+                <option value="Waiter">Waiter</option>
+                <option value="Kitchen">Kitchen Staff</option>
+                <option value="Bar">Bar Staff</option>
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Employee</button>
+    </form>
 </div>

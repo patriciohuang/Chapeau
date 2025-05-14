@@ -1,0 +1,42 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Chapeau.Models;
+using Chapeau.Services;
+
+namespace Chapeau.Controllers
+{
+    public abstract class BaseController : Controller
+    {
+        protected Employee CurrentEmployee => HttpContext.Session.GetObject<Employee>("LoggedInEmployee");
+
+        // This runs automatically for every action in controllers that inherit from BaseController
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            base.OnActionExecuting(context);
+
+            // Check if user is authenticated
+            if (CurrentEmployee == null)
+            {
+                // Not logged in, redirect to login page
+                context.Result = RedirectToAction("Login", "Account");
+                return;
+            }
+        }
+
+        // For explicit role checks in specific actions
+        protected IActionResult CheckAccess(string requiredRole)
+        {
+            if (CurrentEmployee == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (requiredRole != null && !CurrentEmployee.Role.Equals(requiredRole, StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectToAction("Unauthorized", "Account");
+            }
+
+            return null;
+        }
+    }
+}

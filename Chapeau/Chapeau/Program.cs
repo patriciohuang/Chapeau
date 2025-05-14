@@ -12,6 +12,12 @@ namespace Chapeau
             // Add services to the container.
             builder.Services.AddSingleton<IMenuItemsRepository, DbMenuItemsRepository>();
 
+            // Register employees repository
+            builder.Services.AddSingleton<IEmployeesRepository, EmployeesRepository>();
+
+            // Register password hashing service
+            builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
+
 
             builder.Services.AddControllersWithViews();
 
@@ -47,7 +53,7 @@ namespace Chapeau
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}"); // Default route to the login page
 
             app.Run();
         }
