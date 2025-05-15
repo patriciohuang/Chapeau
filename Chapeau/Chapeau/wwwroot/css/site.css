@@ -20,3 +20,48 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* kitchen.css */
+
+.custom-tabs .nav-link {
+    border-radius: 0;
+    position: relative;
+    background: #f8f9fa;
+    margin-right: 5px;
+    font-weight: 500;
+}
+
+    .custom-tabs .nav-link.active {
+        background: white;
+        border-bottom: 2px solid #000;
+    }
+
+/* Card style */
+.order-card {
+    border: 1px solid #ccc;
+    background: #fff;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 0.95rem;
+}
+
+/* Check icon */
+.check-icon {
+    font-weight: bold;
+    color: green;
+}
+
+/* Status Button */
+.status-btn {
+    background-color: #ccc;
+    border: none;
+    color: #000;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 0;
+}
+
+/* Hide default card shadows */
+.card {
+    box-shadow: none !important;
+}

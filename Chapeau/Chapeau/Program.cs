@@ -11,10 +11,11 @@ namespace Chapeau
 
             // Add services to the container.
             builder.Services.AddSingleton<IMenuItemsRepository, DbMenuItemsRepository>();
+            builder.Services.AddSingleton<IKitchenBarDisplayRepository, DbKitchenBarDisplayRepository>();
+            builder.Services.AddSingleton<IKitchenBarDisplayService, KitchenBarDisplayService>();
 
 
             builder.Services.AddControllersWithViews();
-
 
             //enable session
             builder.Services.AddSession(options =>
