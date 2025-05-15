@@ -7,7 +7,7 @@ namespace Chapeau.Repositories
 {
     public class EmployeesRepository : IEmployeesRepository
     {
-        private readonly string? _connectionString;
+        private readonly string _connectionString;
         private readonly IPasswordHashingService _passwordHasher;
         
         public EmployeesRepository(IConfiguration configuration, IPasswordHashingService passwordHasher) // Dependency Injection
