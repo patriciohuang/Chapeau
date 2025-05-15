@@ -52,7 +52,7 @@ namespace Chapeau.Controllers
                 return accessResult;
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) // Check if the model is valid
             {
                 try
                 {
