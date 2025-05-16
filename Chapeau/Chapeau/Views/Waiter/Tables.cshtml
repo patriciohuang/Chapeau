@@ -1,17 +1,8 @@
 ﻿@model IEnumerable<Chapeau.Models.Table>
-
 @{
     ViewData["Title"] = "Table Overview";
 }
-
 <div class="table-management-container">
-    <div class="header-section">
-        <h1>Table Management</h1>
-        <button id="refreshButton" class="refresh-button">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-        </button>
-    </div>
-
     <div class="legend-section">
         <div class="legend-item">
             <div class="status-indicator available"></div>
@@ -21,75 +12,25 @@
             <div class="status-indicator occupied"></div>
             <span>Occupied</span>
         </div>
+        <a href="@Url.Action("Tables", "Waiter")" class="refresh-button">
+            <i class="bi bi-arrow-clockwise"></i>
+        </a>
     </div>
-
     <div class="tables-grid">
         @foreach (var table in Model)
         {
             string statusClass = table.Available ? "available" : "occupied";
-
-            <div class="table-item @statusClass"
-                 data-bs-toggle="modal"
-                 data-bs-target="#tableModal"
-                 data-table-number="@table.TableNr"
-                 data-available="@table.Available.ToString().ToLower()">
-                <div class="chair top"></div>
-                <div class="chair left"></div>
-                <div class="table-surface">
-                    <span class="table-number">@table.TableNr</span>
+            <a href="@Url.Action("Index", "Order", new { tableNumber = table.TableNr })" class="table-link">
+                <div class="table-item @statusClass" data-available="@table.Available.ToString().ToLower()">
+                    <div class="chair top"></div>
+                    <div class="chair left"></div>
+                    <div class="table-surface">
+                        <span class="table-number">@table.TableNr</span>
+                    </div>
+                    <div class="chair right"></div>
+                    <div class="chair bottom"></div>
                 </div>
-                <div class="chair right"></div>
-                <div class="chair bottom"></div>
-            </div>
+            </a>
         }
-    </div>
-</div>
-
-<!-- Table Status Modal -->
-<div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tableModalLabel">Update Table Status</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-action="UpdateTableAvailability" method="post">
-                <div class="modal-body">
-                    <input type="hidden" id="tableNr" name="tableNr" />
-
-                    <div class="table-status-display">
-                        <div class="table-preview">
-                            <div id="modalTablePreview" class="table-item available">
-                                <div class="table-surface">
-                                    <span class="table-number" id="modalTableNumber"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="table-status">
-                            <p>
-                                Current Status:
-                                <span id="modalCurrentStatus" class="status-badge">Available</span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="status-options">
-                        <label for="available">Change status to:</label>
-                        <div class="status-toggle">
-                            <input type="radio" id="status-available" name="available" value="true">
-                            <label for="status-available" class="toggle-option available">Available</label>
-
-                            <input type="radio" id="status-occupied" name="available" value="false">
-                            <label for="status-occupied" class="toggle-option occupied">Occupied</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Status</button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>

@@ -73,7 +73,7 @@ namespace Chapeau.Controllers
                 case "manager":
                     return RedirectToAction("Index", "Manager");
                 case "waiter":
-                    return RedirectToAction("Index", "Waiter");
+                    return RedirectToAction("Tables", "Waiter");
                 case "kitchen":
                 case "bar":
                     return RedirectToAction("Index", "KitchenAndBar");

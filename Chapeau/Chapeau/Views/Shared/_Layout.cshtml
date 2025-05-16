@@ -30,7 +30,7 @@
                     }
                     else if (loggedInEmployee.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
                     {
-                        <a class="navbar-brand" asp-controller="Waiter" asp-action="Index">Chapeau</a>
+                        <a class="navbar-brand" asp-controller="Waiter" asp-action="Tables">Chapeau</a>
                     }
                     else if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase) ||
                     loggedInEmployee.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
@@ -61,11 +61,6 @@
                             }
                             else if (loggedInEmployee.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Index">
-                                        <i class="bi bi-speedometer2"></i> Dashboard
-                                    </a>
-                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Tables">
                                         <i class="bi bi-grid-3x3"></i> Tables
@@ -163,11 +158,14 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Chapeau Restaurant Management System
-        </div>
-    </footer>
+    @if (loggedInEmployee == null || !loggedInEmployee.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
+    {
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2025 - Chapeau Restaurant Management System
+            </div>
+        </footer>
+    }
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -1,299 +1,249 @@
-/* login-styles.css */
-
-/* Base Styles & Variables */
+/* Global Variables - Consistent design system shared with table view */
 :root {
-    --primary-color: #2c3e50;
-    --accent-color: #e67e22;
-    --text-color: #333;
-    --light-gray: #f5f5f5;
-    --input-border: #ddd;
-    --input-focus: #3498db;
-    --error-color: #e74c3c;
-    --success-color: #2ecc71;
-    --font-main: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    --transition: all 0.3s ease;
+    --color-available: #2ecc71; /* Green for success states */
+    --color-occupied: #e74c3c; /* Red for errors */
+    --color-border: #bdc3c7; /* Standard border color throughout the app */
+    --color-heading: #2c3e50; /* Dark blue for headings and important text */
+    --color-background: #f8f9fa; /* Light gray for section backgrounds */
+    --spacing-sm: 0.4rem; /* Consistent spacing scale for compact UI */
+    --spacing-md: 0.8rem; /* Medium spacing for comfortable elements */
+    --spacing-lg: 1.2rem; /* Larger spacing for section separation */
+    --border-radius: 4px; /* Subtle rounded corners for all elements */
+    --box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Light shadow for subtle depth */
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* System fonts priority */
 }
 
+/* Login page container - Full-height centered layout */
 body.login-page {
     font-family: var(--font-main);
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: var(--text-color);
-    min-height: 100vh;
+    background-color: white; /* Clean background matching main app */
+    color: #333;
+    min-height: 100vh; /* Full viewport height */
     margin: 0;
     padding: 0;
-    display: flex;
+    display: flex; /* Flexbox for vertical centering */
     justify-content: center;
-    align-items: center;
+    align-items: center; /* Centers login form in the page */
 }
 
-/* Login Container */
+/* Login container - Controls maximum width and spacing */
 .login-container {
     width: 100%;
-    max-width: 420px;
-    padding: 20px;
+    max-width: 360px; /* Constrained width for better readability */
+    padding: var(--spacing-md);
     margin: 0 auto;
 }
 
-/* Login Card */
+/* Login card - Main container with border and shadow */
 .login-card {
     background-color: white;
-    border-radius: 12px;
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    transition: var(--transition);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--box-shadow); /* Subtle shadow for depth */
     width: 100%;
 }
 
-/* Header */
+/* Header section - Branding area at the top */
 .login-header {
-    padding: 30px 20px;
+    padding: var(--spacing-md);
     text-align: center;
-    background: linear-gradient(to right, var(--primary-color), #34495e);
-    color: white;
+    background-color: var(--color-background); /* Light gray background */
+    border-bottom: 1px solid var(--color-border); /* Separator line */
 }
 
+    /* Main title in header */
     .login-header h1 {
         margin: 0;
-        font-size: 28px;
-        font-weight: 600;
-        letter-spacing: 1px;
+        font-size: 1.2rem; /* Compact, matches table view sizing */
+        font-weight: 600; /* Semi-bold for emphasis */
+        color: var(--color-heading);
     }
 
+    /* Subtitle/description in header */
     .login-header p {
-        margin: 8px 0 0;
-        opacity: 0.9;
-        font-size: 14px;
+        margin: var(--spacing-sm) 0 0;
+        font-size: 0.8rem; /* Smaller text for hierarchy */
+        color: #666; /* Lighter text for secondary info */
     }
 
-/* Alert */
+/* Alert message - Error notification styling */
 .login-alert {
-    margin: 20px 20px 0;
-    padding: 12px 15px;
-    background-color: rgba(231, 76, 60, 0.1);
-    border-left: 3px solid var(--error-color);
-    color: var(--error-color);
-    border-radius: 4px;
-    display: flex;
+    margin: var(--spacing-md) var(--spacing-md) 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: rgba(231, 76, 60, 0.15); /* Light red background */
+    border: 1px solid var(--color-occupied); /* Red border */
+    color: #333; /* Dark text for readability */
+    border-radius: var(--border-radius);
+    display: flex; /* For icon alignment */
     align-items: center;
+    font-size: 0.8rem; /* Smaller text size */
 }
 
+    /* Alert icon styling */
     .login-alert i {
-        margin-right: 10px;
-        font-size: 16px;
-        flex-shrink: 0;
+        margin-right: var(--spacing-sm);
+        font-size: 0.9rem;
+        flex-shrink: 0; /* Prevents icon from shrinking */
+        color: var(--color-occupied); /* Red icon color */
     }
 
-/* Form */
+/* Form container - Holds all input fields */
 .login-form {
-    padding: 30px 20px;
+    padding: var(--spacing-md);
 }
 
+/* Form group - Container for each input field and label */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-md);
 }
 
+    /* Input field labels */
     .form-group label {
         display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #5a6268;
+        margin-bottom: var(--spacing-sm);
+        font-size: 0.8rem;
+        font-weight: 500; /* Medium weight for readability */
+        color: var(--color-heading);
     }
 
+/* Input group - Styled container for input + icons */
 .input-group {
     position: relative;
-    display: flex;
+    display: flex; /* For horizontal layout of elements */
     align-items: center;
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    overflow: hidden;
-    transition: var(--transition);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease; /* Smooth transition for hover/focus */
 }
 
+    /* Focus state for input container */
     .input-group:focus-within {
-        border-color: var(--input-focus);
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        border-color: #3498db; /* Blue border when focused */
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); /* Subtle glow effect */
     }
 
+/* Input icon - Left side icon in fields */
 .input-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    color: #95a5a6;
-    background-color: rgba(0, 0, 0, 0.02);
-    flex-shrink: 0;
+    width: 40px; /* Fixed width for consistency */
+    height: 40px;
+    color: #95a5a6; /* Muted gray for icons */
+    background-color: var(--color-background);
+    border-right: 1px solid var(--color-border); /* Visual separator */
 }
 
+/* Input field - Text entry element */
 .input-group input {
-    flex: 1;
-    height: 50px;
-    padding: 0 15px;
-    border: none;
+    flex: 1; /* Takes remaining width */
+    height: 40px; /* Fixed height for consistency */
+    padding: 0 var(--spacing-md);
+    border: none; /* Border handled by parent container */
     outline: none;
-    font-size: 16px;
+    font-size: 0.9rem;
     background: transparent;
     width: 100%;
 }
 
+/* Password toggle button - Show/hide password control */
 .toggle-password {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    cursor: pointer; /* Hand cursor for interactive element */
     color: #95a5a6;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevents shrinking */
 }
 
+    /* Hover effect for password toggle */
     .toggle-password:hover {
-        color: var(--primary-color);
+        color: var(--color-heading); /* Darker color on hover */
     }
 
-/* Login Button */
+/* Login button - Primary action button */
 .login-button {
     display: block;
     width: 100%;
-    padding: 14px;
-    margin-top: 30px;
-    background-color: var(--accent-color);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    background-color: #3498db; /* Blue matching table view buttons */
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.2s ease; /* Smooth hover/active effects */
+    height: 40px; /* Consistent height with inputs */
 }
 
+    /* Button hover state */
     .login-button:hover {
-        background-color: #d35400;
+        background-color: #2980b9; /* Darker blue on hover */
     }
 
+    /* Button active/click state */
     .login-button:active {
-        transform: translateY(1px);
+        transform: scale(0.98); /* Subtle shrink effect when clicked */
     }
 
-/* Footer */
+/* Footer - Bottom info section */
 .login-footer {
-    padding: 15px 20px;
+    padding: var(--spacing-sm) var(--spacing-md);
     text-align: center;
-    font-size: 13px;
-    color: #7f8c8d;
-    border-top: 1px solid var(--light-gray);
+    font-size: 0.7rem; /* Very small text for footer info */
+    color: #7f8c8d; /* Muted text color */
+    border-top: 1px solid var(--color-border); /* Top separator line */
+    background-color: var(--color-background); /* Light background */
 }
 
-/* Responsive Adjustments */
+/* Mobile responsiveness - Adjustments for small screens */
 @media (max-width: 480px) {
     .login-container {
-        padding: 15px;
-        max-width: 100%;
-    }
-
-    .login-header {
-        padding: 20px 15px;
-    }
-
-        .login-header h1 {
-            font-size: 24px;
-        }
-
-    .login-form {
-        padding: 20px 15px;
-    }
-
-    .input-group input,
-    .input-icon,
-    .toggle-password {
-        height: 45px;
-    }
-
-    .input-icon,
-    .toggle-password {
-        width: 45px;
-    }
-
-    .login-button {
-        padding: 12px;
-        font-size: 15px;
-    }
-}
-
-/* Extra Small Devices (small phones) */
-@media (max-width: 359px) {
-    .login-container {
-        padding: 10px;
+        padding: var(--spacing-sm); /* Smaller padding on mobile */
     }
 
     .login-header h1 {
-        font-size: 22px;
+        font-size: 1.1rem; /* Slightly smaller header */
     }
 
     .login-header p {
-        font-size: 12px;
+        font-size: 0.7rem; /* Smaller subheader */
     }
 
     .form-group label {
-        font-size: 13px;
-    }
-
-    .input-group input {
-        font-size: 14px;
-        padding: 0 10px;
-    }
-
-    .input-icon,
-    .toggle-password {
-        width: 40px;
-    }
-
-    .input-group input,
-    .input-icon,
-    .toggle-password {
-        height: 40px;
+        font-size: 0.75rem; /* Smaller labels */
     }
 }
 
-/* Show/Hide Password JavaScript Support */
+/* Password visibility toggle functionality */
 .bi-eye-slash {
-    display: none;
+    display: none; /* Hidden by default */
 }
 
 .show-password .bi-eye {
-    display: none;
+    display: none; /* Hide closed eye icon when password visible */
 }
 
 .show-password .bi-eye-slash {
-    display: inline;
+    display: inline; /* Show open eye icon when password visible */
 }
 
-/* Enhanced Touch Target Sizes for Mobile */
-@media (max-width: 767px) {
-    .login-button {
-        min-height: 48px; /* Larger touch target */
-    }
-
-    .toggle-password {
-        min-width: 44px;
-        min-height: 44px;
-    }
-}
-
-/* Prevent Zoom on Focus (iOS) */
+/* iOS zoom prevention - Fixes automatic zoom on form focus */
 @media screen and (max-width: 767px) {
     input[type="text"],
     input[type="password"] {
-        font-size: 16px; /* Prevents iOS zoom */
+        font-size: 16px; /* Minimum size to prevent iOS zoom */
     }
 }
 
-/* Fix for Input Field Display on Various Browsers */
+/* Browser autofill styling fix - Prevents yellow background in Chrome */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0px 1000px white inset;
-    transition: background-color 5000s ease-in-out 0s;
+    -webkit-box-shadow: 0 0 0px 1000px white inset; /* Forces white background */
+    transition: background-color 5000s ease-in-out 0s; /* Long transition prevents flash */
 }
