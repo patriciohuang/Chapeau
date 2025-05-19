@@ -2,22 +2,43 @@
 
 namespace Chapeau.Services
 {
+    // Static class containing extension methods for ASP.NET Core Session
+    // These methods allow storing and retrieving complex objects (not just strings) in session
+    // Uses JSON serialization to convert objects to/from strings for session storage
     public static class SessionExtensions
     {
+        // Extension method: Stores any object in session by serializing it to JSON
+        // Generic method - works with any type T (Employee, List<>, etc.)
+        // Example usage: HttpContext.Session.SetObject("LoggedInEmployee", employee);
         public static void SetObject<T>(this ISession session, string key, T value)
         {
-            string jsonString = JsonSerializer.Serialize(value); // Serialize the object to a JSON string
-            session.SetString(key, jsonString); // Store the JSON string in the session
+            // Convert the object to a JSON string using System.Text.Json
+            // This allows us to store complex objects in session (which only supports strings)
+            string jsonString = JsonSerializer.Serialize(value);
+
+            // Store the JSON string in session using the provided key
+            session.SetString(key, jsonString);
         }
 
+        // Extension method: Retrieves an object from session by deserializing it from JSON
+        // Generic method - returns the object as the specified type T
+        // Returns null if the key doesn't exist or the value is empty
+        // Example usage: var employee = HttpContext.Session.GetObject<Employee>("LoggedInEmployee");
         public static T? GetObject<T>(this ISession session, string key) where T : class
         {
-            string? jsonString = session.GetString(key); // Retrieve the JSON string from the session
-            if (string.IsNullOrEmpty(jsonString)) // Check if the string is null or empty
+            // Try to get the JSON string from session using the provided key
+            string? jsonString = session.GetString(key);
+
+            // Check if the retrieved string is null or empty
+            if (string.IsNullOrEmpty(jsonString))
             {
-                return null; // Return null if the string is empty
+                // No data found - return null
+                return null;
             }
-            return JsonSerializer.Deserialize<T>(jsonString); // Deserialize the JSON string back to an object of type T
+
+            // Deserialize the JSON string back to an object of type T
+            // Return the deserialized object
+            return JsonSerializer.Deserialize<T>(jsonString);
         }
     }
 }
