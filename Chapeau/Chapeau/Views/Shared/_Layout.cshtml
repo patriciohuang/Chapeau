@@ -40,7 +40,7 @@
                 }
                 else
                 {
-                    <a class="navbar-brand" asp-controller="Account" asp-action="Login">Chapeau</a>
+                    <a class="navbar-brand" asp-controller="Auth" asp-action="Login">Chapeau</a>
                 }
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -117,7 +117,7 @@
                                 </span>
                             </li>
                             <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                <form asp-controller="Auth" asp-action="Logout" method="post">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">
                                         <i class="bi bi-box-arrow-right"></i> Logout
                                     </button>
@@ -127,7 +127,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">
                                     <i class="bi bi-box-arrow-in-right"></i> Login
                                 </a>
                             </li>

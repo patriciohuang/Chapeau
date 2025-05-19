@@ -1,95 +1,117 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Chapeau.Models;
-using Chapeau.Repositories;
-using System.Collections.Generic;
+using Chapeau.Services;
 
 namespace Chapeau.Controllers
 {
+    // Controller for Manager-specific operations
+    // Inherits from BaseController to get automatic authentication checking
+    // Only users with "Manager" role can access these actions
     public class ManagerController : BaseController
     {
-        private readonly IEmployeesRepository _employeesRepository;
+        // Service that handles employee management business logic
+        private readonly IEmployeeManagementService _employeeService;
 
-        public ManagerController(IEmployeesRepository employeesRepository)
+        // Constructor: Receives employee service through dependency injection
+        public ManagerController(IEmployeeManagementService employeeService)
         {
-            _employeesRepository = employeesRepository;
+            _employeeService = employeeService;
         }
 
+        // GET: /Manager/Index
+        // Shows list of all employees in the system (Manager dashboard)
         public IActionResult Index()
         {
-            // Check if user has access to this controller
-            var accessResult = CheckAccess("Manager");
-            if (accessResult != null)
+            // Check if current user has Manager role - only Managers can view employee list
+            var accessResult = CheckAccess(UserRole.Manager);
+            if (accessResult != null) return accessResult; // Redirect if not authorized
+
+            try
             {
-                return accessResult;
+                // Get all employees from the service layer
+                var employees = _employeeService.GetAllEmployees();
+
+                // Pass the employee list to the view for display
+                return View(employees);
             }
-
-            // Get all employees from repository
-            IEnumerable<Employee> employees = _employeesRepository.GetAll();
-
-            return View(employees);
+            catch (Exception ex)
+            {
+                // If error loading employees, show error message and empty list
+                TempData["ErrorMessage"] = ex.Message;
+                return View(new List<Employee>());
+            }
         }
 
+        // GET: /Manager/Create
+        // Shows the form for creating a new employee
         [HttpGet]
         public IActionResult Create()
         {
-            // Check if user has access to this controller
-            var accessResult = CheckAccess("Manager");
-            if (accessResult != null)
-            {
-                return accessResult;
-            }
+            // Check if current user has Manager role - only Managers can create employees
+            var accessResult = CheckAccess(UserRole.Manager);
+            if (accessResult != null) return accessResult; // Redirect if not authorized
 
+            // Show empty form for creating new employee
             return View();
         }
 
+        // POST: /Manager/Create
+        // Processes the submitted form to create a new employee
         [HttpPost]
         public IActionResult Create(Employee employee)
         {
-            // Check if user has access to this controller
-            var accessResult = CheckAccess("Manager");
-            if (accessResult != null)
-            {
-                return accessResult;
-            }
+            // Check if current user has Manager role - only Managers can create employees
+            var accessResult = CheckAccess(UserRole.Manager);
+            if (accessResult != null) return accessResult; // Redirect if not authorized
 
-            if (ModelState.IsValid) // Check if the model is valid
+            // Check if the submitted form data is valid (required fields, etc.)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _employeesRepository.Add(employee);
-                    TempData["SuccessMessage"] = "Employee added successfully.";
-                    return RedirectToAction("Index");
-                }
-                catch (System.Exception ex)
-                {
-                    ModelState.AddModelError("", "Error adding employee: " + ex.Message);
-                }
-            }
-
-            return View(employee);
-        }
-
-        [HttpPost]
-        public IActionResult Delete(int employeeNr)
-        {
-            // Check if user has access to this controller
-            var accessResult = CheckAccess("Manager");
-            if (accessResult != null)
-            {
-                return accessResult;
+                // If validation failed, show the form again with error messages
+                return View(employee);
             }
 
             try
             {
-                // We need to add this method to the repository
-                _employeesRepository.Delete(employeeNr);
+                // Use service to create the employee (includes validation and database save)
+                _employeeService.CreateEmployee(employee);
+
+                // Success - set success message and redirect to employee list
+                TempData["SuccessMessage"] = "Employee added successfully.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                // If error creating employee, show error message and return to form
+                ModelState.AddModelError("", ex.Message);
+                return View(employee);
+            }
+        }
+
+        // POST: /Manager/Delete
+        // Deletes an employee from the system
+        [HttpPost]
+        public IActionResult Delete(int employeeNr)
+        {
+            // Check if current user has Manager role - only Managers can delete employees
+            var accessResult = CheckAccess(UserRole.Manager);
+            if (accessResult != null) return accessResult; // Redirect if not authorized
+
+            try
+            {
+                // Use service to delete the employee from database
+                _employeeService.DeleteEmployee(employeeNr);
+
+                // Success - set success message
                 TempData["SuccessMessage"] = "Employee deleted successfully.";
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Error deleting employee: " + ex.Message;
+                // If error deleting employee, set error message
+                TempData["ErrorMessage"] = ex.Message;
             }
 
+            // Always redirect back to employee list (whether success or error)
             return RedirectToAction("Index");
         }
     }

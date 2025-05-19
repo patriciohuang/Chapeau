@@ -17,8 +17,7 @@ namespace Chapeau.Controllers
             // Check if user is authenticated
             if (CurrentEmployee == null)
             {
-                // Not logged in, redirect to login page
-                context.Result = RedirectToAction("Login", "Account");
+                context.Result = RedirectToAction("Login", "Auth");
                 return;
             }
         }
@@ -28,15 +27,21 @@ namespace Chapeau.Controllers
         {
             if (CurrentEmployee == null)
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Auth");
             }
 
             if (requiredRole != null && !CurrentEmployee.Role.Equals(requiredRole, StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToAction("Unauthorized", "Account");
+                return RedirectToAction("Unauthorized", "Auth");
             }
 
             return null;
+        }
+
+        // Overloaded method using enum for type safety
+        protected IActionResult CheckAccess(UserRole requiredRole)
+        {
+            return CheckAccess(RoleNames.GetRoleName(requiredRole));
         }
     }
 }
