@@ -1,249 +1,286 @@
-/* Global Variables - Consistent design system shared with table view */
 :root {
-    --color-available: #2ecc71; /* Green for success states */
-    --color-occupied: #e74c3c; /* Red for errors */
-    --color-border: #bdc3c7; /* Standard border color throughout the app */
-    --color-heading: #2c3e50; /* Dark blue for headings and important text */
-    --color-background: #f8f9fa; /* Light gray for section backgrounds */
-    --spacing-sm: 0.4rem; /* Consistent spacing scale for compact UI */
-    --spacing-md: 0.8rem; /* Medium spacing for comfortable elements */
-    --spacing-lg: 1.2rem; /* Larger spacing for section separation */
-    --border-radius: 4px; /* Subtle rounded corners for all elements */
-    --box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Light shadow for subtle depth */
-    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; /* System fonts priority */
+    --primary-color: #2563eb; /* Modern blue */
+    --primary-hover: #1d4ed8; /* Darker blue for hover */
+    --secondary-color: #64748b; /* Neutral gray */
+    --success-color: #059669; /* Green for success */
+    --error-color: #dc2626; /* Red for errors */
+    --background-color: #f8fafc; /* Very light gray background */
+    --card-background: #ffffff; /* Pure white for cards */
+    --text-primary: #1e293b; /* Dark gray for text */
+    --text-secondary: #64748b; /* Lighter gray for secondary text */
+    --border-color: #e2e8f0; /* Light border */
+    --input-focus: #3b82f6; /* Focus state color */
+    /* Consistent spacing scale */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
 }
 
-/* Login page container - Full-height centered layout */
-body.login-page {
-    font-family: var(--font-main);
-    background-color: white; /* Clean background matching main app */
-    color: #333;
-    min-height: 100vh; /* Full viewport height */
+/* Full viewport layout */
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, var(--background-color) 0%, #e2e8f0 100%);
+    color: var(--text-primary);
+    min-height: 100vh;
     margin: 0;
     padding: 0;
-    display: flex; /* Flexbox for vertical centering */
+    display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center; /* Centers login form in the page */
+    line-height: 1.6;
 }
 
-/* Login container - Controls maximum width and spacing */
+/* Main container */
 .login-container {
     width: 100%;
-    max-width: 360px; /* Constrained width for better readability */
+    max-width: 420px;
     padding: var(--spacing-md);
-    margin: 0 auto;
 }
 
-/* Login card - Main container with border and shadow */
+/* Login card with modern shadow */
 .login-card {
-    background-color: white;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--color-border);
-    box-shadow: var(--box-shadow); /* Subtle shadow for depth */
-    width: 100%;
+    background: var(--card-background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Header section - Branding area at the top */
+    .login-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+/* Header section */
 .login-header {
-    padding: var(--spacing-md);
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
     text-align: center;
-    background-color: var(--color-background); /* Light gray background */
-    border-bottom: 1px solid var(--color-border); /* Separator line */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    color: white;
+    position: relative;
 }
 
-    /* Main title in header */
+    .login-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    }
+
     .login-header h1 {
-        margin: 0;
-        font-size: 1.2rem; /* Compact, matches table view sizing */
-        font-weight: 600; /* Semi-bold for emphasis */
-        color: var(--color-heading);
+        margin: 0 0 var(--spacing-xs) 0;
+        font-size: var(--font-size-2xl);
+        font-weight: 700;
+        letter-spacing: -0.025em;
     }
 
-    /* Subtitle/description in header */
     .login-header p {
-        margin: var(--spacing-sm) 0 0;
-        font-size: 0.8rem; /* Smaller text for hierarchy */
-        color: #666; /* Lighter text for secondary info */
+        margin: 0;
+        font-size: var(--font-size-sm);
+        opacity: 0.9;
+        font-weight: 500;
     }
 
-/* Alert message - Error notification styling */
+/* Error alert */
 .login-alert {
-    margin: var(--spacing-md) var(--spacing-md) 0;
+    margin: var(--spacing-lg) var(--spacing-lg) 0;
     padding: var(--spacing-sm) var(--spacing-md);
-    background-color: rgba(231, 76, 60, 0.15); /* Light red background */
-    border: 1px solid var(--color-occupied); /* Red border */
-    color: #333; /* Dark text for readability */
-    border-radius: var(--border-radius);
-    display: flex; /* For icon alignment */
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-md);
+    color: var(--error-color);
+    display: flex;
     align-items: center;
-    font-size: 0.8rem; /* Smaller text size */
+    font-size: var(--font-size-sm);
+    font-weight: 500;
 }
 
-    /* Alert icon styling */
     .login-alert i {
         margin-right: var(--spacing-sm);
-        font-size: 0.9rem;
-        flex-shrink: 0; /* Prevents icon from shrinking */
-        color: var(--color-occupied); /* Red icon color */
+        font-size: var(--font-size-base);
+        flex-shrink: 0;
     }
 
-/* Form container - Holds all input fields */
+/* Form styling */
 .login-form {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
 }
 
-/* Form group - Container for each input field and label */
 .form-group {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
 }
 
-    /* Input field labels */
     .form-group label {
         display: block;
-        margin-bottom: var(--spacing-sm);
-        font-size: 0.8rem;
-        font-weight: 500; /* Medium weight for readability */
-        color: var(--color-heading);
+        margin-bottom: var(--spacing-xs);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: 0.025em;
     }
 
-/* Input group - Styled container for input + icons */
+/* Input group with modern styling */
 .input-group {
     position: relative;
-    display: flex; /* For horizontal layout of elements */
+    display: flex;
     align-items: center;
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius);
-    transition: all 0.2s ease; /* Smooth transition for hover/focus */
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    background: white;
 }
 
-    /* Focus state for input container */
     .input-group:focus-within {
-        border-color: #3498db; /* Blue border when focused */
-        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2); /* Subtle glow effect */
+        border-color: var(--input-focus);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 
-/* Input icon - Left side icon in fields */
 .input-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px; /* Fixed width for consistency */
-    height: 40px;
-    color: #95a5a6; /* Muted gray for icons */
-    background-color: var(--color-background);
-    border-right: 1px solid var(--color-border); /* Visual separator */
+    width: 48px;
+    height: 48px;
+    color: var(--text-secondary);
+    background: var(--background-color);
+    border-right: 2px solid var(--border-color);
+    transition: all 0.2s ease;
 }
 
-/* Input field - Text entry element */
+.input-group:focus-within .input-icon {
+    color: var(--input-focus);
+    background: rgba(59, 130, 246, 0.05);
+    border-color: var(--input-focus);
+}
+
 .input-group input {
-    flex: 1; /* Takes remaining width */
-    height: 40px; /* Fixed height for consistency */
+    flex: 1;
+    height: 48px;
     padding: 0 var(--spacing-md);
-    border: none; /* Border handled by parent container */
+    border: none;
     outline: none;
-    font-size: 0.9rem;
+    font-size: var(--font-size-base);
     background: transparent;
-    width: 100%;
+    color: var(--text-primary);
 }
 
-/* Password toggle button - Show/hide password control */
-.toggle-password {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    cursor: pointer; /* Hand cursor for interactive element */
-    color: #95a5a6;
-    flex-shrink: 0; /* Prevents shrinking */
-}
-
-    /* Hover effect for password toggle */
-    .toggle-password:hover {
-        color: var(--color-heading); /* Darker color on hover */
+    .input-group input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.6;
     }
 
-/* Login button - Primary action button */
+/* Modern button styling */
 .login-button {
     display: block;
     width: 100%;
     padding: var(--spacing-sm) var(--spacing-md);
-    margin-top: var(--spacing-lg);
-    background-color: #3498db; /* Blue matching table view buttons */
+    margin-top: var(--spacing-xl);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
     color: white;
     border: none;
-    border-radius: var(--border-radius);
-    font-size: 0.9rem;
-    font-weight: 500;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease; /* Smooth hover/active effects */
-    height: 40px; /* Consistent height with inputs */
+    height: 48px;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
 }
 
-    /* Button hover state */
     .login-button:hover {
-        background-color: #2980b9; /* Darker blue on hover */
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+        background: linear-gradient(135deg, var(--primary-hover) 0%, #1e40af 100%);
     }
 
-    /* Button active/click state */
     .login-button:active {
-        transform: scale(0.98); /* Subtle shrink effect when clicked */
+        transform: translateY(0);
+        box-shadow: var(--shadow-sm);
     }
 
-/* Footer - Bottom info section */
+    /* Loading state for button */
+    .login-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+/* Footer */
 .login-footer {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
     text-align: center;
-    font-size: 0.7rem; /* Very small text for footer info */
-    color: #7f8c8d; /* Muted text color */
-    border-top: 1px solid var(--color-border); /* Top separator line */
-    background-color: var(--color-background); /* Light background */
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    background: var(--background-color);
+    border-top: 1px solid var(--border-color);
 }
 
-/* Mobile responsiveness - Adjustments for small screens */
+/* Responsive design */
 @media (max-width: 480px) {
     .login-container {
-        padding: var(--spacing-sm); /* Smaller padding on mobile */
+        padding: var(--spacing-sm);
+        max-width: 100%;
+    }
+
+    .login-card {
+        margin: var(--spacing-sm);
     }
 
     .login-header h1 {
-        font-size: 1.1rem; /* Slightly smaller header */
+        font-size: var(--font-size-xl);
     }
 
-    .login-header p {
-        font-size: 0.7rem; /* Smaller subheader */
-    }
-
-    .form-group label {
-        font-size: 0.75rem; /* Smaller labels */
+    .login-form {
+        padding: var(--spacing-md);
     }
 }
 
-/* Password visibility toggle functionality */
-.bi-eye-slash {
-    display: none; /* Hidden by default */
+/* Focus and accessibility improvements */
+.login-button:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
-.show-password .bi-eye {
-    display: none; /* Hide closed eye icon when password visible */
+.input-group input:focus {
+    outline: none;
 }
 
-.show-password .bi-eye-slash {
-    display: inline; /* Show open eye icon when password visible */
-}
+/* Subtle animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 
-/* iOS zoom prevention - Fixes automatic zoom on form focus */
-@media screen and (max-width: 767px) {
-    input[type="text"],
-    input[type="password"] {
-        font-size: 16px; /* Minimum size to prevent iOS zoom */
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-/* Browser autofill styling fix - Prevents yellow background in Chrome */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0px 1000px white inset; /* Forces white background */
-    transition: background-color 5000s ease-in-out 0s; /* Long transition prevents flash */
+.login-card {
+    animation: fadeIn 0.3s ease-out;
 }
