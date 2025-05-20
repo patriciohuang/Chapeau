@@ -121,5 +121,10 @@ namespace Chapeau.Controllers
             // Always redirect back to tables view (whether success or error)
             return RedirectToAction("Tables");
         }
+
+        public IActionResult Orders()
+        {
+            return View();
+        }
     }
 }
