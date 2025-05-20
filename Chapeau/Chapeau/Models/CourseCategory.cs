@@ -1,4 +1,7 @@
-﻿namespace Chapeau.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+
+namespace Chapeau.Models
 {
     public enum CourseCategory
     {
@@ -6,6 +9,12 @@
         Entrements,
         Mains,
         Desserts,
-        Drinks
+        [Description("Soft Drinks")]
+        Soft_Drinks,
+        Beers,
+        Wines,
+        Spirits,
+        [Description("Coffee/Tea")]
+        Coffee_Tea
     }
 }

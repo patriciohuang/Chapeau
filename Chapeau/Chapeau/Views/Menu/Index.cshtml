@@ -3,18 +3,21 @@
 @{
 }
 
-<div>
-    <div>
+<div class="Menu">
+    <div class="menuCard">
         <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Lunch">Lunch</a>
     </div>
-    <div>
+    <div class="menuCard">
         <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Dinner">Dinner</a>
+    </div>
+    <div class="menuCard">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Drinks">Drinks</a>
     </div>
     @{
         foreach (MenuItem menuItem in Model)
         {
-            <div>
-                <p>@menuItem.CourseCategory </p>
+            <div class="MenuCourseCategory">
+                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="@menuItem.CourseCategory" asp-route-card="@menuItem.MenuCard"> @menuItem.CourseCategory </a>
             </div>
         }
     }

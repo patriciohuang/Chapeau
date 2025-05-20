@@ -9,9 +9,11 @@ namespace Chapeau.Services
         //constructors
 
         //methods
-        List<MenuItem> GetAllCourses(MenuCard? menuCard);
+        List<MenuItem> GetAllCourses(MenuCard menuCard);
 
-        List<MenuItem> GetMenuItemsByCourse(string course);
+        MenuCard GetMenuCardByTime();
+
+        List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem);
 
     }
 }

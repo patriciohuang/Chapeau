@@ -11,7 +11,7 @@ namespace Chapeau.Models
         public MenuCard MenuCard { get; set; }
         public CourseCategory CourseCategory { get; set; }
         public int Stock { get; set; }
-        public int Vat {get; set; }
+        public bool IsAlcoholic {get; set; }
 
         //constructors
         
@@ -21,13 +21,14 @@ namespace Chapeau.Models
 
         }
 
-        public MenuItem(CourseCategory courseCategory)
+        public MenuItem(CourseCategory courseCategory, MenuCard menuCard)
         {
             CourseCategory = courseCategory;
+            MenuCard = menuCard;
         }
 
         //constructor with all properties filled
-        public MenuItem(int itemId, string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, int vat)
+        public MenuItem(int itemId, string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, bool isAlcoholic)
         {
             this.ItemId = itemId;
             this.Name = name;
@@ -35,7 +36,7 @@ namespace Chapeau.Models
             this.MenuCard = menuCard;
             this.CourseCategory = courseCategory;
             this.Stock = stock;
-            this.Vat = vat;
+            this.IsAlcoholic = isAlcoholic;
         }
 
         //methods

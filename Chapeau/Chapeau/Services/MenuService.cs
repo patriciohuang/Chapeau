@@ -15,27 +15,31 @@ namespace Chapeau.Services
         }
 
         //methods
-        public List<MenuItem> GetAllCourses(MenuCard? menuCard)
+        public List<MenuItem> GetAllCourses(MenuCard menuCard)
         {
-            if (menuCard == null)
-            {
-                TimeOnly currentTime = TimeOnly.FromDateTime(DateTime.Now);
-                if (currentTime.Hour < 16)
-                {
-                    menuCard = MenuCard.Lunch;
-                }
-                else
-                {
-                    menuCard = MenuCard.Dinner;
-                }   
-            }
-
             return _menuRepository.GetAllCourses((MenuCard)menuCard);
         }
 
-        public List<MenuItem> GetMenuItemsByCourse(string course)
+        public MenuCard GetMenuCardByTime()
         {
-            return _menuRepository.GetMenuItemsByCourse(course);
+            MenuCard menuCard = new MenuCard();
+
+            TimeOnly currentTime = TimeOnly.FromDateTime(DateTime.Now);
+            if (currentTime.Hour < 16)
+            {
+                menuCard = MenuCard.Lunch;
+            }
+            else
+            {
+                menuCard = MenuCard.Dinner;
+            }
+
+            return menuCard;
+        }
+
+        public List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem)
+        {
+            return _menuRepository.GetMenuItemsByCourse(menuItem);
         }
     }
 }
