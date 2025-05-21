@@ -14,6 +14,8 @@ namespace Chapeau
             builder.Services.AddSingleton<IKitchenBarDisplayRepository, DbKitchenBarDisplayRepository>();
             builder.Services.AddSingleton<IKitchenBarDisplayService, KitchenBarDisplayService>();
 
+            //signalR
+            builder.Services.AddSignalR();
 
             builder.Services.AddControllersWithViews();
 
@@ -45,7 +47,7 @@ namespace Chapeau
             app.UseSession();
 
             app.UseAuthorization();
-
+            app.MapHub<Hubs.OrderHub>("/orderHub");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

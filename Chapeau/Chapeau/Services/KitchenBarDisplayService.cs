@@ -1,6 +1,7 @@
 ﻿using Chapeau.Enums;
 using Chapeau.Models;
 using Chapeau.Repositories;
+
 namespace Chapeau.Services
 {
     //pato
@@ -13,7 +14,8 @@ namespace Chapeau.Services
         }
         public List<DisplayOrder> GetOrders(Status? status = null)
         {
-            return _kitchenBarDisplayRepository.GetOrders(status);
+            List<DisplayOrder> incommingorders = _kitchenBarDisplayRepository.GetOrders(status);
+            return incommingorders;
         }
 /*        public void UpdateOrderStatus(int orderId, Status status)
         {

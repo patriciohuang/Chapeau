@@ -14,6 +14,7 @@ namespace Chapeau.Controllers
         {
             _kitchenBarDisplaySevice = kitchenBarDisplayServices;
         }
+
         public IActionResult Index(Status? status)
         {
             // Get the orders from the service

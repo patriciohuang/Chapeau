@@ -31,10 +31,10 @@ body {
     font-weight: 500;
 }
 
-    .custom-tabs .nav-link.active {
-        background: white;
-        border-bottom: 2px solid #000;
-    }
+.custom-tabs .nav-link.active {
+    background: white;
+    border-bottom: 2px solid #000;
+}
 
 /* Card style */
 .order-card {
@@ -59,7 +59,7 @@ body {
 .status-btn {
     background-color: #ccc;
     border: none;
-    color: #000;
+    color: #fff;
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 0;
