@@ -20,7 +20,7 @@
         @foreach (var table in Model)
         {
             string statusClass = table.Available ? "available" : "occupied";
-            <a href="@Url.Action("Index", "Menu", new { tableNumber = table.TableNr })" class="table-link">
+            <a href="@Url.Action("Index", "Menu")" class="table-link">
                 <div class="table-item @statusClass" data-available="@table.Available.ToString().ToLower()">
                     <div class="chair top"></div>
                     <div class="chair left"></div>
