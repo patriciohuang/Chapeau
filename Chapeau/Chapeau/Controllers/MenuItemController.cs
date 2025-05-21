@@ -15,8 +15,16 @@ namespace Chapeau.Controllers
 
         public IActionResult Index()
         {
-            List<MenuItem> menuItems = _menuItemsRepository.GetAllMenuItems();
-            return View(menuItems);
+            try
+            {
+                List<MenuItem> menuItems = _menuItemsRepository.GetAllMenuItems();
+                return View(menuItems);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to load menu items: " + ex.Message;
+                return View(new List<MenuItem>());
+            }
         }
     }
 }

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Chapeau.Models.Table>
+@{
+    ViewData["Title"] = "Table Overview";
+}
+<div class="table-management-container">
+    <div class="legend-section">
+        <div class="legend-item">
+            <div class="status-indicator available"></div>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <div class="status-indicator occupied"></div>
+            <span>Occupied</span>
+        </div>
+        <a href="@Url.Action("Tables", "Waiter")" class="refresh-button">
+            <i class="bi bi-arrow-clockwise"></i>
+        </a>
+    </div>
+    <div class="tables-grid">
+        @foreach (var table in Model)
+        {
+            string statusClass = table.Available ? "available" : "occupied";
+            <a href="@Url.Action("Orders", "Waiter", new { tableNumber = table.TableNr })" class="table-link">
+                <div class="table-item @statusClass" data-available="@table.Available.ToString().ToLower()">
+                    <div class="chair top"></div>
+                    <div class="chair left"></div>
+                    <div class="table-surface">
+                        <span class="table-number">@table.TableNr</span>
+                    </div>
+                    <div class="chair right"></div>
+                    <div class="chair bottom"></div>
+                </div>
+            </a>
+        }
+    </div>
+</div>

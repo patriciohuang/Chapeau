@@ -1,0 +1,263 @@
+/* Global CSS Variables - Define colors and common values for consistency */
+:root {
+    --color-available: #2ecc71; /* Green for available tables */
+    --color-occupied: #e74c3c; /* Red for occupied tables */
+    --color-border: #bdc3c7; /* Light gray for borders */
+    --color-heading: #2c3e50; /* Dark blue for text */
+    --color-background: #f8f9fa; /* Light background color */
+}
+
+/* Table Grid Layout - Creates a 2-column layout for tables on mobile */
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+    grid-auto-rows: 95px; /* Fixed row height */
+    gap: 5px; /* Minimal spacing between tables */
+    width: 100%;
+    padding: 5px;
+}
+
+/* Table Item Container - Holds table surface and chairs */
+.table-item {
+    position: relative; /* Needed for absolute positioning of elements inside */
+    height: 95px; /* Matches grid row height */
+    cursor: pointer; /* Shows hand cursor on hover */
+}
+
+/* Table Surface - The actual table visual element */
+.table-surface {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* Centers the table perfectly */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centers the table number */
+    background-color: rgba(46, 204, 113, 0.15); /* Light green background */
+    border: 2px solid var(--color-available); /* Green border for available tables */
+}
+
+/* Occupied table styling - Changes colors for occupied tables */
+.table-item.occupied .table-surface {
+    background-color: rgba(231, 76, 60, 0.15); /* Light red background */
+    border-color: var(--color-occupied); /* Red border */
+}
+
+/* Table Number - The number displayed inside each table */
+.table-number {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--color-heading);
+}
+
+/* Chair Base Styling - Common styles for all chairs */
+.chair {
+    position: absolute;
+    background-color: #f1f1f1; /* Light gray chair color */
+    border: 1px solid var(--color-border);
+}
+
+    /* Horizontal Chairs (top/bottom) - Styling for chairs above and below tables */
+    .chair.top, .chair.bottom {
+        width: 24px;
+        height: 7px;
+        left: 50%;
+        transform: translateX(-50%); /* Centers horizontally */
+    }
+
+    /* Vertical Chairs (left/right) - Styling for chairs on left and right of tables */
+    .chair.left, .chair.right {
+        width: 7px;
+        height: 24px;
+        top: 50%;
+        transform: translateY(-50%); /* Centers vertically */
+    }
+
+    /* Individual Chair Positioning - Places each chair at correct distance from table */
+    .chair.top {
+        top: calc(50% - 39px); /* Places chair above table with gap */
+    }
+
+    .chair.bottom {
+        bottom: calc(50% - 39px); /* Places chair below table with gap */
+    }
+
+    .chair.left {
+        left: calc(50% - 39px); /* Places chair to left of table with gap */
+    }
+
+    .chair.right {
+        right: calc(50% - 39px); /* Places chair to right of table with gap */
+    }
+
+/* Legend Section - Container for status indicators and refresh button */
+.legend-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    background-color: #f8f9fa; /* Light background */
+    border-radius: 4px; /* Rounded corners */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Subtle shadow */
+}
+
+    /* Legend Items - Status indicator labels (Available/Occupied) */
+    .legend-section .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 4px; /* Space between indicator and text */
+        font-size: 12px;
+        font-weight: 500;
+        color: #2c3e50;
+        padding: 3px 6px;
+        border-radius: 3px;
+        transition: background-color 0.2s;
+    }
+
+        /* Hover effect for legend items */
+        .legend-section .legend-item:hover {
+            background-color: rgba(0,0,0,0.03); /* Subtle highlight on hover */
+        }
+
+/* Status Indicators - Colored squares showing table status options */
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+/* Hover animation for status indicators */
+.legend-item:hover .status-indicator {
+    transform: scale(1.1); /* Slightly grow on hover */
+}
+
+/* Available status color */
+.status-indicator.available {
+    background-color: var(--color-available); /* Green */
+}
+
+/* Occupied status color */
+.status-indicator.occupied {
+    background-color: var(--color-occupied); /* Red */
+}
+
+/* Refresh Button - Circular button to reload table status */
+.refresh-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background-color: #3498db; /* Blue background */
+    color: white;
+    border: none;
+    border-radius: 50%; /* Perfect circle */
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(52, 152, 219, 0.2);
+}
+
+    /* Click animation for refresh button */
+    .refresh-button:active {
+        transform: rotate(30deg) scale(0.95); /* Rotate and shrink when clicked */
+    }
+
+/* Tablet Breakpoint - Adjustments for medium screens */
+@media (min-width: 768px) {
+    /* Legend styling for tablets */
+    .legend-section {
+        padding: 8px 12px;
+    }
+
+        .legend-section .legend-item {
+            font-size: 13px;
+        }
+
+    .status-indicator {
+        width: 12px;
+        height: 12px;
+    }
+
+    .refresh-button {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Desktop Breakpoint - Adjustments for larger screens */
+@media (min-width: 768px) {
+    /* Legend styling for desktop */
+    .legend-section {
+        padding: 15px 20px;
+    }
+
+        .legend-section .legend-item {
+            font-size: 15px;
+        }
+
+    .status-indicator {
+        width: 16px;
+        height: 16px;
+    }
+
+    .refresh-button {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Main Responsive Layout - Changes table grid for larger screens */
+@media (min-width: 768px) {
+    /* Switch to 5-column layout on desktop */
+    .tables-grid {
+        grid-template-columns: repeat(5, 1fr); /* 5 columns instead of 2 */
+        grid-template-rows: repeat(2, 1fr); /* Only 2 rows needed */
+        grid-auto-rows: 110px; /* Taller rows */
+        gap: 10px; /* More spacing */
+    }
+
+    /* Larger table items */
+    .table-item {
+        height: 110px;
+    }
+
+    /* Larger table surface */
+    .table-surface {
+        width: 65px;
+        height: 65px;
+    }
+
+    /* Larger chairs */
+    .chair.top, .chair.bottom {
+        width: 28px;
+        height: 8px;
+    }
+
+    .chair.left, .chair.right {
+        width: 8px;
+        height: 28px;
+    }
+
+    /* Adjusted chair positioning for larger tables */
+    .chair.top {
+        top: calc(50% - 42px);
+    }
+
+    .chair.bottom {
+        bottom: calc(50% - 42px);
+    }
+
+    .chair.left {
+        left: calc(50% - 42px);
+    }
+
+    .chair.right {
+        right: calc(50% - 42px);
+    }
+}

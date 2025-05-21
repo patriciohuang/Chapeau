@@ -1,0 +1,69 @@
+﻿@model Chapeau.Models.Employee
+
+@{
+    ViewData["Title"] = "Add New Employee";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Add New Employee</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Manager" asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="EmpNr" class="form-label">Employee Number</label>
+                            <input asp-for="EmpNr" type="text" pattern="[0-9]*" inputmode="numeric" class="form-control" />
+                            <span asp-validation-for="EmpNr" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FirstName" class="form-label">First Name</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LastName" class="form-label">Last Name</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Role" class="form-label">Role</label>
+                            <select asp-for="Role" class="form-select">
+                                <option value="">-- Select Role --</option>
+                                <option value="Manager">Manager</option>
+                                <option value="Waiter">Waiter</option>
+                                <option value="Kitchen">Kitchen</option>
+                                <option value="Bar">Bar</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Password</label>
+                            <input asp-for="Password" type="password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Manager" asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-primary">Create Employee</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

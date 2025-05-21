@@ -15,6 +15,21 @@ namespace Chapeau
             builder.Services.AddSingleton<IKitchenBarDisplayService, KitchenBarDisplayService>();
             builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
 
+            // Register employees repository
+            builder.Services.AddSingleton<IEmployeesRepository, EmployeesRepository>();
+
+            // Register tables repository
+            builder.Services.AddSingleton<ITablesRepository, TablesRepository>();
+
+            // Register password hashing service
+            builder.Services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
+
+            // Register authentication service
+            builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+
+            // Register employee management service
+            builder.Services.AddSingleton<IEmployeeManagementService, EmployeeManagementService>();
+
 
             builder.Services.AddControllersWithViews();
 
@@ -49,7 +64,7 @@ namespace Chapeau
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Auth}/{action=Login}/{id?}"); // Default route to the login page
 
             app.Run();
         }
