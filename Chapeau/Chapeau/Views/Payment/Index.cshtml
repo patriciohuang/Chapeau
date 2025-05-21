@@ -1,0 +1,38 @@
+﻿@model Chapeau.ViewModels.PaymentViewModel;
+
+@{
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Amount</th>
+            <th>VAT</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (PaymentItemModel paymentItemModel in Model.PaymentItems)
+            {
+                <tr>
+                    <td>@paymentItemModel.Name</td>
+                    <td>@paymentItemModel.Price</td>
+                    <td>@paymentItemModel.Count</td>
+                    <td>@paymentItemModel.Amount</td>
+                    <td>@paymentItemModel.VATPercent%</td>
+                </tr>
+            }
+
+        }
+    </tbody>
+</table>
+<hr />
+<div class="d-flex flex-row justify-content-between m-4">
+    <h2>Total:</h2>
+    <h2>@Model.TotalAmount</h2>
+</div>
+<hr />
+</div>
