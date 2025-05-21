@@ -21,6 +21,7 @@ namespace Chapeau.Services
             return _menuRepository.GetAllCourses((MenuCard)menuCard);
         }
 
+        //This method returns a MenuCard enum based on the current time
         public MenuCard GetMenuCardByTime()
         {
             MenuCard menuCard = new MenuCard();
@@ -37,6 +38,7 @@ namespace Chapeau.Services
 
             return menuCard;
         }
+
 
         public List<MenuItem> GetMenuItems(MenuItem menuItem)
         {

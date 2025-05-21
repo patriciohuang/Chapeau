@@ -15,8 +15,7 @@ namespace Chapeau.Controllers
             _menuService = menuService;
         }
 
-        // This method runs before every action in this controller
-        // It adds an additional role check specifically for Waiters
+        // This method runs before every action in this controller. It adds an additional role check specifically for Waiters
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             // First run the base authentication check (from BaseController)
@@ -25,22 +24,20 @@ namespace Chapeau.Controllers
             // If already redirecting due to no authentication, don't continue
             if (context.Result != null) return;
 
-            // Check if user has Waiter role
+            // Check if user has the Waiter role, if they don't: redirect them to unauthorized page
             if (CurrentEmployee == null || !CurrentEmployee.Role.Equals(RoleNames.Waiter, StringComparison.OrdinalIgnoreCase))
             {
-                // User doesn't have Waiter role - redirect to unauthorized page
                 context.Result = RedirectToAction("Unauthorized", "Auth");
             }
         }
 
-        // 
+        //This displays a list of all courses/types of drinks in a specific menu card
         [HttpGet]
         public IActionResult Index(string? id)
         {
-            // Fill the menu card enum (this is used to filter by card) and get a list of all course categories in the current menu card, then send that to the view
             try
             {
-                // Double-check the user has Waiter role access
+                // Double-check if the user has Waiter role access
                 var authResult = CheckAccess(UserRole.Waiter);
                 if (authResult != null) return authResult;
 
@@ -60,13 +57,13 @@ namespace Chapeau.Controllers
             }
         }
 
-        //change name to something referring the fact that you display things
+        //This displays a list of items belonging to a specific course/type of drink in a specific menu card
         [HttpGet]
         public IActionResult Course(string course, string card)
         {
             try
             {
-                // Double-check the user has Waiter role access
+                // Double-check if the user has Waiter role access
                 var authResult = CheckAccess(UserRole.Waiter);
                 if (authResult != null) return authResult;
 

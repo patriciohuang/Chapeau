@@ -18,7 +18,7 @@ namespace Chapeau.Repositories
         }
 
         //methods
-        //This method returns a list of all courses in the menu, depending on the card selected
+        //This method returns a list of all courses in a specific menu, depending on the card selected
         public List<MenuItem> GetAllCourses(MenuCard menuCard)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
@@ -44,6 +44,8 @@ namespace Chapeau.Repositories
             }
             return menuItems;
         }
+
+        //This method returns a list of ALL MenuItems belonging to a specific menu card
         public List<MenuItem> GetAllMenuItems(MenuItem menuItem)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
@@ -70,6 +72,7 @@ namespace Chapeau.Repositories
             return menuItems;
         }
 
+        //This method returns a list of MenuItems belonging to a specific course/type of drink belonging to a specific menu card
         public List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
@@ -100,6 +103,8 @@ namespace Chapeau.Repositories
 
 
         //Here are reusable private methods
+
+        //This method reads the data received by the reader and parses it into a MenuItem object
         private MenuItem ReadMenuItem(SqlDataReader reader)
         {
             int itemId = (int)reader["menu_item_id"];
