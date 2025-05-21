@@ -13,14 +13,30 @@
     @await Html.PartialAsync("_OrderTabs")
 
     <!-- Orders -->
-    <div class="row g-4">
-        @foreach (var order in Model)
-        {
-            <div class="col-md-4">
-                <div class="card-body d-flex flex-column order-card">
-                    @await Html.PartialAsync("_OrderCard", order)
-                </div>
-            </div>
-        }
+    <div class="row g-4" id="orders-container">
+		@await Html.PartialAsync("_OrdersPartial", Model)
     </div>
 </div>
+
+@section Scripts {
+    <!--SignalR script reference.-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+    <!--SignalR connection setup.-->
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/orderHub")
+            .build();
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        connection.on("ReceiveOrders", function () {
+            // Fetch updated partial via AJAX
+            fetch("/KitchenBarDisplay/OrdersPartial")
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById("orders-container").innerHTML = html;
+                });
+        });
+    </script>
+}

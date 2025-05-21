@@ -17,13 +17,13 @@ namespace Chapeau.Repositories
         private DisplayOrder ReadOrder(SqlDataReader reader)
         {
             int orderId = (int)reader["order_id"];
-            int tableId = (int)reader["table_id"];
+            int tableNr = (int)reader["table_nr"];
             string employee_name = (string)reader["first_name"];
             Status status = Enum.Parse<Status>((string)reader["status"], true);
             DateOnly dateOrdered = DateOnly.FromDateTime((DateTime)reader["date_ordered"]);
             TimeOnly timeOrdered = TimeOnly.FromTimeSpan((TimeSpan)reader["time_ordered"]);
 
-            return new DisplayOrder(orderId, tableId, employee_name, status, dateOrdered, timeOrdered);
+            return new DisplayOrder(orderId, tableNr, employee_name, status, dateOrdered, timeOrdered);
         }
         /// Read order item from the database
         private DisplayOrderItem ReadOrderItem(SqlDataReader reader)
@@ -45,16 +45,19 @@ namespace Chapeau.Repositories
             {
                 // SQL query to get all orders with status 'Preparing'
                 string sql = @"
-                    SELECT o.order_id, o.table_id, e.first_name, o.status, o.date_ordered, o.time_ordered,
+                    SELECT o.order_id, t.table_nr, e.first_name, o.status, o.date_ordered, o.time_ordered,
                            i.count, m.menu_card, m.name AS item_name, m.course_category
                     FROM [order] o
                     JOIN order_item i ON o.order_id = i.order_id
                     JOIN menu_item m ON i.menu_item_id = m.menu_item_id
-                    JOIN employee e ON o.employee_id = e.employee_id";
+                    JOIN employee e ON o.employee_id = e.employee_id
+                    JOIN [table] t ON t.table_id = o.table_id
+                    WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE)";
+
                 // Add a WHERE clause if status is provided
                 if (status != null)
                 {
-                    sql += " WHERE o.status = @status";
+                    sql += " AND o.status = @status";
                 }
 
                 SqlCommand command = new SqlCommand(sql, connection);

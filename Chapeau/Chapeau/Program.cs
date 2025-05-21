@@ -30,6 +30,8 @@ namespace Chapeau
             // Register employee management service
             builder.Services.AddSingleton<IEmployeeManagementService, EmployeeManagementService>();
 
+            //signalR
+            builder.Services.AddSignalR();
 
             builder.Services.AddControllersWithViews();
 
@@ -61,7 +63,7 @@ namespace Chapeau
             app.UseSession();
 
             app.UseAuthorization();
-
+            app.MapHub<Hubs.OrderHub>("/orderHub");
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Auth}/{action=Login}/{id?}"); // Default route to the login page
