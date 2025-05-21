@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
-using Chapeau.Enums;
 using Chapeau.Models;
+using Chapeau.Models.Enums;
 
 namespace Chapeau.Repositories
 {

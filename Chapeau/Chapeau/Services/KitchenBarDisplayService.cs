@@ -1,5 +1,5 @@
-﻿using Chapeau.Enums;
-using Chapeau.Models;
+﻿using Chapeau.Models;
+using Chapeau.Models.Enums;
 using Chapeau.Repositories;
 
 namespace Chapeau.Services

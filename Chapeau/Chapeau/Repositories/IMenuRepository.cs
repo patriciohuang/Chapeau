@@ -1,4 +1,5 @@
 ﻿using Chapeau.Models;
+using Chapeau.Models.Enums;
 
 namespace Chapeau.Repositories
 {

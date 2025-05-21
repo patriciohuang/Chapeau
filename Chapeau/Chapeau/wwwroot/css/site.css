@@ -69,3 +69,48 @@ body {
 .card {
     box-shadow: none !important;
 }
+
+
+
+/* from here on is the Waiter's css */
+.Menu {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .Menu {
+        width: 100%;
+    }
+}
+
+.MenuCardFilters {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.menuCard {
+    width: 32%;
+    height: 3rem;
+    text-align: center;
+}
+
+.MenuCourseCategory {
+    display: flex;
+    justify-content: center;
+    min-width: 80%;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+}

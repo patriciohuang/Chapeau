@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Chapeau.Services;
 using Chapeau.Models;
+using Chapeau.Models.Enums;
 
 namespace Chapeau.Controllers
 {

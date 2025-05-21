@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Chapeau.Models;
 using Chapeau.Services;
+using Chapeau.Models.Enums;
 
 namespace Chapeau.Controllers
 {

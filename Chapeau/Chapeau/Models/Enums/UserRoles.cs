@@ -1,4 +1,4 @@
-﻿namespace Chapeau.Models
+﻿namespace Chapeau.Models.Enums
 {
     // Enum for type-safe role handling throughout the application
     // This prevents typos and provides IntelliSense support when working with roles

@@ -1,5 +1,5 @@
-﻿using Chapeau.Enums;
-using Chapeau.Models;
+﻿using Chapeau.Models;
+using Chapeau.Models.Enums;
 namespace Chapeau.Services
 {
     //pato

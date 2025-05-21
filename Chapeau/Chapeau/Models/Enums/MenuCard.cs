@@ -1,4 +1,4 @@
-﻿namespace Chapeau.Models
+﻿namespace Chapeau.Models.Enums
 {
     public enum MenuCard
     {

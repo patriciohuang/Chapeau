@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Chapeau.Models;
 using Chapeau.Services;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Chapeau.Models.Enums;
 
 namespace Chapeau.Controllers
 {

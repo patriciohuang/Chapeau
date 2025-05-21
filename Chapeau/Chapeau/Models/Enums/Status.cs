@@ -1,6 +1,6 @@
-﻿namespace Chapeau.Enums
+﻿namespace Chapeau.Models.Enums
 {
-  //Pato
+    //Pato
     public enum Status
     {
         Ordered,

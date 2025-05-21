@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Chapeau.Models;
 using Chapeau.Repositories;
 using System.Collections.Generic;
+using Chapeau.Models.Enums;
 
 namespace Chapeau.Controllers
 {
