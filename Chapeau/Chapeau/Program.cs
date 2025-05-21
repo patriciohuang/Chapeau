@@ -13,6 +13,7 @@ namespace Chapeau
             builder.Services.AddSingleton<IMenuItemsRepository, DbMenuItemsRepository>();
             builder.Services.AddSingleton<IKitchenBarDisplayRepository, DbKitchenBarDisplayRepository>();
             builder.Services.AddSingleton<IKitchenBarDisplayService, KitchenBarDisplayService>();
+            builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
 
 
             builder.Services.AddControllersWithViews();
