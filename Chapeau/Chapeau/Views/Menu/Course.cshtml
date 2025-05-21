@@ -1,0 +1,40 @@
+﻿@model List<Chapeau.Models.MenuItem>;
+
+@{
+    ViewData["Title"] = "Menu";
+}
+
+<div class="Menu">
+
+    <div>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index">Back</a>
+    </div>
+
+    <partial name="_ErrorMessage" />
+    <partial name="_ConfirmMessage" />
+
+    <div>
+        @{
+            foreach (MenuItem menuItem in Model)
+            {
+                string stockStyling = "";
+
+                if (menuItem.Stock == 0)
+                {
+                    stockStyling = "bg-secondary";
+                }
+                else if (menuItem.Stock > 0 && menuItem.Stock <= 10)
+                {
+                    stockStyling = "bg-warning";
+                }
+
+                <div class="MenuCourseCategory @stockStyling">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index"> @menuItem.Name </a>
+                    <p> &euro; @menuItem.Price </p>
+                </div>
+            }
+        }
+
+    </div>
+
+</div>
