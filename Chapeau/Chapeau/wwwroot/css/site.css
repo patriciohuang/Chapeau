@@ -38,11 +38,15 @@ body {
 
 /* Card style */
 .order-card {
-    border: 1px solid #ccc;
     background: #fff;
-    border-radius: 0;
-    box-shadow: none;
-    font-size: 0.95rem;
+    border: 2px solid #333;
+    padding: 1rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    position: relative;
 }
 
 /* Check icon */

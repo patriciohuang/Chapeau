@@ -1,0 +1,14 @@
+﻿@{
+    var status = Context.Request.Query["status"];
+}
+<ul class="nav nav-tabs custom-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(status.Count == 0 ? "active" : "")" asp-action="Index">All orders</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(status == "Preparing" ? "active" : "")" asp-action="Index" asp-route-status="Preparing">Active</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(status == "Served" ? "active" : "")" asp-action="Index" asp-route-status="Served">Completed</a>
+    </li>
+</ul>

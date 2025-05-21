@@ -1,0 +1,55 @@
+﻿@model Chapeau.Models.DisplayOrder
+@using Chapeau.Enums
+
+
+<div class="d-flex justify-content-between mb-2">
+    <div>
+        <p class="h2">Table @Model.Table_id</p>
+    </div>
+    <div class="text-end">
+        <p>@Model.Time_ordered.ToString("HH:mm")</p>
+        <p>Waiter: @Model.Employee_name</p>
+    </div>
+</div>
+
+@foreach (var group in Model.OrderItems.GroupBy(i => i.CourseCategory))
+{
+    <div class="mb-2">
+        <div class="d-flex justify-content-between border-bottom">
+            <strong>@group.Key</strong>
+            <span class="check-icon">✔</span>
+        </div>
+        <ul class="list-unstyled ms-2 mt-1">
+            @foreach (var item in group)
+            {
+                <li>@item.Count @item.Name</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
+    <div class="text-muted small">
+        <p>#@Model.Order_id •</p>
+    </div>
+    <div class="text-end">
+        <p>@Model.MinutesSinceOrdered min</p>
+    </div>
+</div>
+
+<button class="btn btn-sm bg-@GetStatusColor(Model.Status) status-btn">
+    @Model.Status.ToString().ToUpper()
+</button>
+
+@functions {
+    string GetStatusColor(Status status)
+    {
+        return status switch
+        {
+            Status.Served => "success",
+            Status.Preparing => "warning",
+            Status.Ready => "secondary",
+            _ => "dark"
+        };
+    }
+}

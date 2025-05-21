@@ -29,10 +29,11 @@ namespace Chapeau.Repositories
         private DisplayOrderItem ReadOrderItem(SqlDataReader reader)
         {
             string itemName = (string)reader["item_name"];
+            MenuCard menuCard= Enum.Parse<MenuCard>((string)reader["menu_card"], true);
             int count = (int)reader["count"];
             CourseCategory courseCategory = Enum.Parse<CourseCategory>((string)reader["course_category"], true);
 
-            return new DisplayOrderItem(itemName, count, courseCategory);
+            return new DisplayOrderItem(itemName, menuCard, count, courseCategory);
         }
 
         public List<DisplayOrder> GetOrders(Status? status)
@@ -45,7 +46,7 @@ namespace Chapeau.Repositories
                 // SQL query to get all orders with status 'Preparing'
                 string sql = @"
                     SELECT o.order_id, o.table_id, e.first_name, o.status, o.date_ordered, o.time_ordered,
-                           i.count, m.name AS item_name, m.course_category
+                           i.count, m.menu_card, m.name AS item_name, m.course_category
                     FROM [order] o
                     JOIN order_item i ON o.order_id = i.order_id
                     JOIN menu_item m ON i.menu_item_id = m.menu_item_id
