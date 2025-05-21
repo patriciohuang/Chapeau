@@ -11,6 +11,8 @@ namespace Chapeau
 
             // Add services to the container.
             builder.Services.AddSingleton<IMenuItemsRepository, DbMenuItemsRepository>();
+            builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
+            
 
 
             builder.Services.AddControllersWithViews();
