@@ -82,7 +82,7 @@ namespace Chapeau.Services
 
                 // Both Kitchen and Bar staff go to the same controller
                 // The controller will differentiate between them internally
-                RoleNames.Kitchen or RoleNames.Bar => ("KitchenAndBar", "Index"),
+                RoleNames.Kitchen or RoleNames.Bar => ("KitchenBarDisplay", "Index"),
 
                 // Default case: if role doesn't match any known role, go to home page
                 // This should rarely happen due to validation elsewhere

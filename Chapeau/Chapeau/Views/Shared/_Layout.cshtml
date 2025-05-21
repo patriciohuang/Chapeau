@@ -35,7 +35,7 @@
                     else if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase) ||
                     loggedInEmployee.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
                     {
-                        <a class="navbar-brand" asp-controller="KitchenAndBar" asp-action="Index">Chapeau</a>
+                        <a class="navbar-brand" asp-controller="KitchenBarDisplay" asp-action="Index">Chapeau</a>
                     }
                 }
                 else
@@ -76,31 +76,10 @@
                             loggedInEmployee.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Index">
-                                        <i class="bi bi-speedometer2"></i> Dashboard
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Orders">
+                                    <a class="nav-link text-dark" asp-controller="KitchenBarDisplay" asp-action="Index">
                                         <i class="bi bi-card-checklist"></i> Orders
                                     </a>
                                 </li>
-                                @if (loggedInEmployee.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Inventory">
-                                            <i class="bi bi-box-seam"></i> Food Inventory
-                                        </a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-controller="KitchenAndBar" asp-action="Inventory">
-                                            <i class="bi bi-cup-straw"></i> Drinks Inventory
-                                        </a>
-                                    </li>
-                                }
                             }
                         }
                     </ul>
