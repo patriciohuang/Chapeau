@@ -2,7 +2,10 @@
 @{
     ViewData["Title"] = "Table Overview";
 }
-<div class="table-management-container">
+
+
+
+<div>
     <div class="legend-section">
         <div class="legend-item">
             <div class="status-indicator available"></div>
@@ -20,7 +23,7 @@
         @foreach (var table in Model)
         {
             string statusClass = table.Available ? "available" : "occupied";
-            <a href="@Url.Action("Index", "Menu", new { tableNumber = table.TableNr })" class="table-link">
+            <a href="@Url.Action("Index", "Menu")" class="table-link">
                 <div class="table-item @statusClass" data-available="@table.Available.ToString().ToLower()">
                     <div class="chair top"></div>
                     <div class="chair left"></div>

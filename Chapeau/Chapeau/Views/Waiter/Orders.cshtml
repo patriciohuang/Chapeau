@@ -1,5 +1,43 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Orders";
 }
+
+
+<h1 class="display-4"> THIS IS VERY TEMPORARY</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order Id </th>
+            <th>Table number</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+                <tr>
+                    <td>4</td>
+                    <td>10</td>
+                    <td>
+                <a href="/Payment/Index?orderId=4">Payment</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>5</td>
+                    <td>9</td>
+                    <td>
+                <a href="/Payment/Index?orderId=5">Payment</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>6</td>
+                    <td>8</td>
+                    <td>
+                <a href="/Payment/Index?orderId=6">Payment</a>
+                    </td>
+                </tr>
+
+            
+    </tbody>
+</table>

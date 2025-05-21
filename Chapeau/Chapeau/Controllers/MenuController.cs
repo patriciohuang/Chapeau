@@ -23,7 +23,7 @@ namespace Chapeau.Controllers
             {
                 // Writing an if else statement as a ternary operator saves A LOT of space, but this is basically just an if else statement
                 // If id is not null, parse it to a MenuCard enum, otherwise get the menu card by time through the service
-                MenuCard menuCard = (id != null) ? (MenuCard)Enum.Parse(typeof(MenuCard), id) : _menuService.GetMenuCardByTime(); ;
+                MenuCard menuCard = (id != null) ? (MenuCard)Enum.Parse(typeof(MenuCard), id) : _menuService.GetMenuCardByTime();
 
                 List<MenuItem> menuCourses = _menuService.GetAllCourses(menuCard);
 
@@ -33,7 +33,7 @@ namespace Chapeau.Controllers
             {
                 TempData["Error"] = $"Error: {ex.Message}";
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Tables", "Waiter");
             }
         }
 

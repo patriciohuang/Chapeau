@@ -4,7 +4,6 @@
     ViewData["Title"] = "Menu";
 }
 
-
 <partial name="_ErrorMessage" />
 <partial name="_ConfirmMessage" />
 
@@ -21,15 +20,18 @@
         </div>
     </div>
 
+    
     <div class="MenuCourseCategory">
         <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="All" asp-route-card="@Model[0].MenuCard"> All </a>
     </div>
+    
+
     @{
         foreach (MenuItem menuItem in Model)
-        {
+        {            
             <div class="MenuCourseCategory">
                 <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="@menuItem.CourseCategory" asp-route-card="@menuItem.MenuCard"> @menuItem.CourseCategory </a>
-            </div>
+            </div>    
         }
     }
 

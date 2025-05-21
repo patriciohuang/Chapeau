@@ -1,21 +1,96 @@
-﻿<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+﻿@model Chapeau.Models.Employee;
+
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
     <div class="container-fluid">
-        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chapeau</a>
+        @if (Model != null)
+        {
+            @if (Model.Role.Equals("Manager", StringComparison.OrdinalIgnoreCase))
+            {
+                <a class="navbar-brand" asp-controller="Manager" asp-action="Index">Chapeau</a>
+            }
+            else if (Model.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
+            {
+                <a class="navbar-brand" asp-controller="Waiter" asp-action="Tables">Chapeau</a>
+            }
+            else if (Model.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase) ||
+            Model.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
+            {
+                <a class="navbar-brand" asp-controller="KitchenBarDisplay" asp-action="Index">Chapeau</a>
+            }
+        }
+        else
+        {
+            <a class="navbar-brand" asp-controller="Auth" asp-action="Login">Chapeau</a>
+        }
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
             <ul class="navbar-nav flex-grow-1">
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index">Menu</a>
-                </li>
+                @if (Model != null)
+                {
+                    <!-- Show role-specific navigation options based on the user's role -->
+                    @if (Model.Role.Equals("Manager", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Manager" asp-action="Index">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                    }
+                    else if (Model.Role.Equals("Waiter", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Tables">
+                                <i class="bi bi-grid-3x3"></i> Tables
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Waiter" asp-action="Orders">
+                                <i class="bi bi-card-checklist"></i> Orders
+                            </a>
+                        </li>
+                    }
+                    else if (Model.Role.Equals("Kitchen", StringComparison.OrdinalIgnoreCase) ||
+                    Model.Role.Equals("Bar", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="KitchenBarDisplay" asp-action="Index">
+                                <i class="bi bi-card-checklist"></i> Orders
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+
+            <!-- Login/Logout section on the right side -->
+            <ul class="navbar-nav">
+                @if (Model != null)
+                {
+                    <li class="nav-item">
+                        <span class="nav-link text-dark">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <strong>@Model.FirstName @Model.LastName</strong>
+                            <span class="badge bg-secondary ms-1">@Model.Role</span>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="Auth" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    </li>
+                }
             </ul>
         </div>
     </div>

@@ -1,4 +1,11 @@
 ﻿@{
+    if (ViewBag.SuccessMessage != null)
+    {
+        <div class="login-alert">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>@ViewBag.SuccessMessage</span>
+        </div>
+    }
     if (TempData["Success"] != null)
     {
         <div class="alert alert-success" role="alert">@TempData["Success"]</div>
