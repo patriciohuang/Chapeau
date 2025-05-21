@@ -24,7 +24,7 @@ namespace Chapeau.Repositories
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT DISTINCT course_category, menu_card FROM menu_item where [menu_card] LIKE @menuCard;";
+                string query = "SELECT DISTINCT course_category, menu_card FROM menu_item where [menu_card] LIKE @menuCard ORDER BY course_category DESC;";
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@menuCard", menuCard.ToString());
@@ -43,6 +43,31 @@ namespace Chapeau.Repositories
             }
             return menuItems;
         }
+        public List<MenuItem> GetAllMenuItems(MenuItem menuItem)
+        {
+            List<MenuItem> menuItems = new List<MenuItem>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT * FROM menu_item WHERE menu_card LIKE @menuCard ORDER BY course_category DESC;";
+                SqlCommand command = new SqlCommand(query, connection);
+
+                //The parameter is like this (having two %'s) because of the database column being poorly normalized, 
+                //HOWEVER, I ASKED DAN AND HE SAID IT WOULD NOT COST ME ANY POINTS. SO LIKE THIS IT STAYS, TOO BAD!
+                command.Parameters.AddWithValue("@menuCard", $"%{menuItem.MenuCard.ToString()}%");
+
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    MenuItem newMenuItem = ReadMenuItem(reader);
+                    menuItems.Add(newMenuItem);
+                }
+                reader.Close();
+            }
+            return menuItems;
+        }
 
         public List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem)
         {
@@ -50,7 +75,7 @@ namespace Chapeau.Repositories
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT * FROM menu_item WHERE course_category LIKE @course AND menu_card LIKE @menuCard;";
+                string query = "SELECT * FROM menu_item WHERE course_category LIKE @course AND menu_card LIKE @menuCard ORDER BY name ASC;";
                 SqlCommand command = new SqlCommand(query, connection);
 
                 //The parameter is like this (having two %'s) because of the database column being poorly normalized, 
@@ -72,7 +97,8 @@ namespace Chapeau.Repositories
         }
 
 
-        //
+
+        //Here are reusable private methods
         private MenuItem ReadMenuItem(SqlDataReader reader)
         {
             int itemId = (int)reader["menu_item_id"];
@@ -85,5 +111,6 @@ namespace Chapeau.Repositories
 
             return new MenuItem(itemId, name, price, menuCard, courseCategory, stock, isAlcoholic);
         }
+
     }
 }

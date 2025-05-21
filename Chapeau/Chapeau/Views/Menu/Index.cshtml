@@ -1,17 +1,28 @@
 ﻿@model List<Chapeau.Models.MenuItem>;
 
 @{
+    ViewData["Title"] = "Menu";
 }
 
+
+<partial name="_ErrorMessage" />
+<partial name="_ConfirmMessage" />
+
 <div class="Menu">
-    <div class="menuCard">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Lunch">Lunch</a>
+    <div class="MenuCardFilters">
+        <div class="menuCard">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Lunch">Lunch</a>
+        </div>
+        <div class="menuCard">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Dinner">Dinner</a>
+        </div>
+        <div class="menuCard">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Drinks">Drinks</a>
+        </div>
     </div>
-    <div class="menuCard">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Dinner">Dinner</a>
-    </div>
-    <div class="menuCard">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Drinks">Drinks</a>
+
+    <div class="MenuCourseCategory">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="All" asp-route-card="@Model[0].MenuCard"> All </a>
     </div>
     @{
         foreach (MenuItem menuItem in Model)

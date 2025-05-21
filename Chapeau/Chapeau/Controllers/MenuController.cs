@@ -30,7 +30,7 @@ namespace Chapeau.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                TempData["Error"] = $"Error: {ex.Message}";
 
                 return RedirectToAction("Index", "Home");
             }
@@ -40,14 +40,23 @@ namespace Chapeau.Controllers
         [HttpGet]
         public IActionResult Course(string course, string card)
         {
-            CourseCategory courseCategory = (CourseCategory)Enum.Parse(typeof(CourseCategory), course.ToString());
-            MenuCard menuCard = (MenuCard)Enum.Parse(typeof(MenuCard), card.ToString());
+            try
+            {
+                CourseCategory courseCategory = (CourseCategory)Enum.Parse(typeof(CourseCategory), course.ToString());
+                MenuCard menuCard = (MenuCard)Enum.Parse(typeof(MenuCard), card.ToString());
 
-            MenuItem menuCourse = new MenuItem(courseCategory, menuCard);
+                MenuItem menuCourse = new MenuItem(courseCategory, menuCard);
 
-            List<MenuItem> menuItems = _menuService.GetMenuItemsByCourse(menuCourse);
+                List<MenuItem> menuItems = _menuService.GetMenuItems(menuCourse);
 
-            return View(menuItems);
+                return View(menuItems);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Index", "Menu");
+            }
         }
 
 

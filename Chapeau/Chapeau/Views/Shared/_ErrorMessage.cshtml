@@ -1,0 +1,16 @@
+﻿@{
+    if (ViewBag.ErrorMessage != null)
+    {
+        <div class="login-alert">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>@ViewBag.ErrorMessage</span>
+        </div>
+    }
+    else if (TempData["Error"] != null)
+    {
+        <div class="login-alert">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>@TempData["Error"]</span>
+        </div>
+    }
+}

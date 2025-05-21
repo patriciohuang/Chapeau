@@ -37,9 +37,12 @@ namespace Chapeau.Services
             return menuCard;
         }
 
-        public List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem)
+        public List<MenuItem> GetMenuItems(MenuItem menuItem)
         {
-            return _menuRepository.GetMenuItemsByCourse(menuItem);
+            //A ternary that checks if CourseCategory equals All, if it is, it gets all menu items, if it isn't, it gets the menu items of the selected course
+            return (menuItem.CourseCategory == CourseCategory.All) 
+                ? _menuRepository.GetAllMenuItems(menuItem) 
+                : _menuRepository.GetMenuItemsByCourse(menuItem);
         }
     }
 }

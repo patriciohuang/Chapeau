@@ -13,7 +13,7 @@ namespace Chapeau.Services
 
         MenuCard GetMenuCardByTime();
 
-        List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem);
+        List<MenuItem> GetMenuItems(MenuItem menuItem);
 
     }
 }

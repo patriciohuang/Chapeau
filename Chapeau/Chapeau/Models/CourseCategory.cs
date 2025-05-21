@@ -5,6 +5,7 @@ namespace Chapeau.Models
 {
     public enum CourseCategory
     {
+        All,
         Starters,
         Entrements,
         Mains,
