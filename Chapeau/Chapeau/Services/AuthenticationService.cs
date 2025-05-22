@@ -49,7 +49,6 @@ namespace Chapeau.Services
             catch (Exception)
             {
                 // If any error occurs during authentication (database error, etc.)
-                // Log the exception if needed (not implemented here)
                 // Return null to indicate authentication failure
                 return null;
             }
@@ -85,9 +84,9 @@ namespace Chapeau.Services
                 // The controller will differentiate between them internally
                 RoleNames.Kitchen or RoleNames.Bar => ("KitchenBarDisplay", "Index"),
 
-                // Default case: if role doesn't match any known role, go to home page
+                // Default case: if role doesn't match any known role, go to login page
                 // This should rarely happen due to validation elsewhere
-                _ => ("Home", "Index")
+                _ => ("Auth", "Login")
             };
         }
     }
