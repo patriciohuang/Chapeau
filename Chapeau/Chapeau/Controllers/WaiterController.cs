@@ -47,9 +47,6 @@ namespace Chapeau.Controllers
         // Lol
         public IActionResult Index()
         {
-            // Double-check the user has Waiter role access
-            var authResult = CheckAccess(UserRole.Waiter);
-            if (authResult != null) return authResult;
 
             try
             {

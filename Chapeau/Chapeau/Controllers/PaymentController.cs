@@ -35,10 +35,6 @@ namespace Chapeau.Controllers
         //payment information for a specific order
         public IActionResult Index(int orderId)
         {
-            // Double-check the user has Waiter role access
-            var accessResult = CheckAccess(UserRole.Waiter);
-            if (accessResult != null) return accessResult;
-
             // Get payment items for the specified order
             List<PaymentItemModel> paymentItems = _paymentRepository.GetPaymentSummaryForTable(orderId);
 

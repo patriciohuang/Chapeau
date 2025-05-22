@@ -2,6 +2,7 @@
 using Chapeau.Models;
 using Chapeau.Services;
 using Chapeau.Models.Enums;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Chapeau.Controllers
 {
@@ -19,14 +20,25 @@ namespace Chapeau.Controllers
             _employeeService = employeeService;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            // First run the base authentication check
+            base.OnActionExecuting(context);
+
+            // If already redirecting due to no authentication, don't continue
+            if (context.Result != null) return;
+
+            // Check if user has Manager role
+            if (CurrentEmployee == null || !CurrentEmployee.Role.Equals(RoleNames.Manager, StringComparison.OrdinalIgnoreCase))
+            {
+                context.Result = RedirectToAction("Unauthorized", "Auth");
+            }
+        }
+
         // GET: /Manager/Index
         // Shows list of all employees in the system (Manager dashboard)
         public IActionResult Index()
         {
-            // Check if current user has Manager role - only Managers can view employee list
-            var accessResult = CheckAccess(UserRole.Manager);
-            if (accessResult != null) return accessResult; // Redirect if not authorized
-
             try
             {
                 // Get all employees from the service layer
@@ -48,10 +60,6 @@ namespace Chapeau.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            // Check if current user has Manager role - only Managers can create employees
-            var accessResult = CheckAccess(UserRole.Manager);
-            if (accessResult != null) return accessResult; // Redirect if not authorized
-
             // Show empty form for creating new employee
             return View();
         }
@@ -61,9 +69,6 @@ namespace Chapeau.Controllers
         [HttpPost]
         public IActionResult Create(Employee employee)
         {
-            // Check if current user has Manager role - only Managers can create employees
-            var accessResult = CheckAccess(UserRole.Manager);
-            if (accessResult != null) return accessResult; // Redirect if not authorized
 
             // Check if the submitted form data is valid (required fields, etc.)
             if (!ModelState.IsValid)
@@ -94,10 +99,6 @@ namespace Chapeau.Controllers
         [HttpPost]
         public IActionResult Delete(int employeeNr)
         {
-            // Check if current user has Manager role - only Managers can delete employees
-            var accessResult = CheckAccess(UserRole.Manager);
-            if (accessResult != null) return accessResult; // Redirect if not authorized
-
             try
             {
                 // Use service to delete the employee from database

@@ -54,18 +54,6 @@ namespace Chapeau.Services
             }
         }
 
-        // Checks if an employee has access to a specific role
-        // Used for authorization - determining if someone can access certain features
-        public bool HasAccess(Employee employee, string requiredRole)
-        {
-            // If no employee provided, access is denied
-            if (employee == null) return false;
-
-            // Compare the employee's role with the required role
-            // Case-insensitive comparison for flexibility
-            return employee.Role.Equals(requiredRole, StringComparison.OrdinalIgnoreCase);
-        }
-
         // Determines where to redirect a user based on their role
         // Each role has a specific landing page after login
         // Returns a tuple containing controller name and action name

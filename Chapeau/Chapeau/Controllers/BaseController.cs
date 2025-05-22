@@ -22,27 +22,5 @@ namespace Chapeau.Controllers
                 return;
             }
         }
-
-        // For explicit role checks in specific actions
-        protected IActionResult CheckAccess(string requiredRole)
-        {
-            if (CurrentEmployee == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
-            if (requiredRole != null && !CurrentEmployee.Role.Equals(requiredRole, StringComparison.OrdinalIgnoreCase))
-            {
-                return RedirectToAction("Unauthorized", "Auth");
-            }
-
-            return null;
-        }
-
-        // Overloaded method using enum for type safety
-        protected IActionResult CheckAccess(UserRole requiredRole)
-        {
-            return CheckAccess(RoleNames.GetRoleName(requiredRole));
-        }
     }
 }
