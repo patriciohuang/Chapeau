@@ -199,14 +199,18 @@ body {
 @media (min-width: 768px) {
     body {
         background: var(--background-desktop); /* Light gray background */
-        align-items: center; /* Center content */
-        justify-content: center; /* Center content */
+        display: flex; /* Ensure flex is enabled */
+        align-items: center; /* Center content vertically */
+        justify-content: center; /* Center content horizontally */
+        min-height: 100vh; /* Full viewport height */
     }
 
     .login-container {
         max-width: 440px; /* Limit width on desktop */
+        width: 100%; /* Take full width up to max-width - FIXES CENTERING */
         min-height: auto; /* Reset height on desktop */
         padding: 0; /* Remove padding on desktop */
+        margin: 0 auto; /* Center horizontally as backup - FIXES CENTERING */
     }
 }
 
