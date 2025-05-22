@@ -17,6 +17,13 @@
     padding: 5px;
 }
 
+/* Table Container - Centers the table grid on the page */
+.tables-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
 /* Table Item Container - Holds table surface and chairs */
 .table-item {
     position: relative; /* Needed for absolute positioning of elements inside */
