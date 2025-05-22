@@ -25,7 +25,7 @@ namespace Chapeau.Repositories
         // Used by waiters to see the restaurant layout and table statuses
         public IEnumerable<Table> GetAllTables()
         {
-            List<Table> tables = new List<Table>();
+            List<Table> tables = new List<Table>(); // Initialize empty list to hold table objects
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {

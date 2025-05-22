@@ -42,6 +42,9 @@ namespace Chapeau.Controllers
 
         // GET: /Waiter/Index
         // Shows the waiter dashboard with table statistics and navigation options
+        // -- This is completely irrelevant now
+        // Since we literally got rid of Waiter/Index and replaced it with Waiter/Tables -- I wanna take it out just was too lazy
+        // Lol
         public IActionResult Index()
         {
             // Double-check the user has Waiter role access
@@ -82,6 +85,7 @@ namespace Chapeau.Controllers
 
         // GET: /Waiter/Tables
         // Shows visual layout of all restaurant tables with their current status
+        // The main page for waiters rn, and it will stay like that
         public IActionResult Tables()
         {
             try
@@ -102,6 +106,7 @@ namespace Chapeau.Controllers
 
         // POST: /Waiter/UpdateTableAvailability
         // Updates the availability status of a specific table
+        // This doesn't work yet, since the update table availability method in the repository is not implemented :3
         [HttpPost]
         public IActionResult UpdateTableAvailability(int tableNr, bool available)
         {
@@ -123,6 +128,7 @@ namespace Chapeau.Controllers
             return RedirectToAction("Tables");
         }
 
+        // I believe this is also irrelevant now, ever since the merge sooooo gotta get rid of it :P
         public IActionResult Orders()
         {
             return View();
