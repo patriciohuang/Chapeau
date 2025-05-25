@@ -5,16 +5,16 @@ namespace Chapeau.Models
     public class MenuItem
     {
         //fields and properties
-        public int ItemId { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public MenuCard MenuCard { get; set; }
-        public CourseCategory CourseCategory { get; set; }
-        public int Stock { get; set; }
-        public bool IsAlcoholic {get; set; }
+        public int MenuItemId { get; set; } // Unique identifier for the menu item
+        public string Name { get; set; } // Name of the menu item
+        public decimal Price { get; set; } // Price of the menu item
+        public MenuCard MenuCard { get; set; } // Menu card to which the item belongs (e.g., Food, Drinks)
+        public CourseCategory CourseCategory { get; set; } // Category of the course (e.g., Appetizer, Main Course, Dessert, Drink)
+        public int Stock { get; set; } // Stock quantity of the menu item, used to track availability
+        public bool IsAlcoholic { get; set; } // Indicates if the menu item is alcoholic (true) or non-alcoholic (false)
 
         //constructors
-        
+
         //empty constructor
         public MenuItem()
         {
@@ -28,15 +28,15 @@ namespace Chapeau.Models
         }
 
         //constructor with all properties filled
-        public MenuItem(int itemId, string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, bool isAlcoholic)
+        public MenuItem(int menuItemId, string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, bool isAlcoholic)
         {
-            this.ItemId = itemId;
-            this.Name = name;
-            this.Price = price;
-            this.MenuCard = menuCard;
-            this.CourseCategory = courseCategory;
-            this.Stock = stock;
-            this.IsAlcoholic = isAlcoholic;
+            MenuItemId = menuItemId;
+            Name = name;
+            Price = price;
+            MenuCard = menuCard;
+            CourseCategory = courseCategory;
+            Stock = stock;
+            IsAlcoholic = isAlcoholic;
         }
 
         //methods

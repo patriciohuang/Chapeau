@@ -40,7 +40,7 @@ namespace Chapeau.Controllers
             if (accessResult != null) return accessResult;
 
             // Get payment items for the specified order
-            List<PaymentItemModel> paymentItems = _paymentRepository.GetPaymentSummaryForTable(orderId);
+            List<Payment> paymentItems = _paymentRepository.GetPaymentSummaryForTable(orderId);
 
             // Create view model with payment items
             PaymentViewModel paymentViewModel = new PaymentViewModel(paymentItems);

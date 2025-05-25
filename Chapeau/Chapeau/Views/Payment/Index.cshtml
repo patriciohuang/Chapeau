@@ -14,8 +14,9 @@
         </tr>
     </thead>
     <tbody>
-        @{
-            foreach (PaymentItemModel paymentItemModel in Model.PaymentItems)
+        @* please check this after
+            @{
+            foreach (Payment paymentItemModel in Model.PaymentItems)
             {
                 <tr>
                     <td>@paymentItemModel.Name</td>
@@ -26,7 +27,7 @@
                 </tr>
             }
 
-        }
+        } *@
     </tbody>
 </table>
 <hr />

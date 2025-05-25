@@ -20,10 +20,10 @@ namespace Chapeau.Repositories
 
 
         // method to retrieve a summary of the ordered items for a specific table, based on a given orderId
-        public List<PaymentItemModel> GetPaymentSummaryForTable(int orderId)
+        public List<Payment> GetPaymentSummaryForTable(int orderId)
         {
             // creates the list of the ordered items that need to be paid
-            List<PaymentItemModel> paymentItemModels = new List<PaymentItemModel>();
+            List<Payment> paymentItemModels = new List<Payment>();
             //connecting to the database
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -45,7 +45,8 @@ namespace Chapeau.Repositories
                 //Loops through each row in the result set.
                 while (reader.Read())
                 {
-                    paymentItemModels.Add(ReadPaymentItemModel(reader));
+                    //please check this after
+                    /*paymentItemModels.Add(ReadPaymentItemModel(reader));*/
                 }
                 //the list of PaymentItemModel objects is returned.
                 return paymentItemModels;
@@ -53,7 +54,8 @@ namespace Chapeau.Repositories
 
         }
         // takes the current row from a SQL result and turns it into a usable object
-        private PaymentItemModel ReadPaymentItemModel(SqlDataReader reader)
+        //please check this after
+        /*private Payment ReadPaymentItemModel(SqlDataReader reader)
         {
             string name = (string)reader["name"];
             decimal price = (decimal)reader["price"];
@@ -61,13 +63,13 @@ namespace Chapeau.Repositories
             bool isAlcoholic = (bool)reader["isAlcoholic"];
             int tableNr = (int)reader["table_nr"];
 
-            return new PaymentItemModel(name, price, count, isAlcoholic, tableNr);
-        }
+            return new Payment(name, price, count, isAlcoholic, tableNr);
+        }*/
 
 
 
     }
-    
+
 }
 
 

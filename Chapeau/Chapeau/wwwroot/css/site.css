@@ -21,57 +21,6 @@ body {
   margin-bottom: 60px;
 }
 
-/* kitchen.css */
-
-.custom-tabs .nav-link {
-    border-radius: 0;
-    position: relative;
-    background: #f8f9fa;
-    margin-right: 5px;
-    font-weight: 500;
-}
-
-.custom-tabs .nav-link.active {
-    background: white;
-    border-bottom: 2px solid #000;
-}
-
-/* Card style */
-.order-card {
-    background: #fff;
-    border: 2px solid #333;
-    padding: 1rem;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 1rem;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
-    border-radius: 4px;
-    position: relative;
-}
-
-/* Check icon */
-.check-icon {
-    font-weight: bold;
-    color: green;
-}
-
-/* Status Button */
-.status-btn {
-    background-color: #ccc;
-    border: none;
-    color: #fff;
-    font-weight: bold;
-    padding: 5px 10px;
-    border-radius: 0;
-}
-
-/* Hide default card shadows */
-.card {
-    box-shadow: none !important;
-}
-
-
-
 /* from here on is the Waiter's css */
 .Menu {
     width: 60%;

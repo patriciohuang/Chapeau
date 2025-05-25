@@ -5,7 +5,7 @@ namespace Chapeau.Repositories
 {
     public interface IPaymentRepository
     {
-        List<PaymentItemModel> GetPaymentSummaryForTable(int orderId);
+        List<Payment> GetPaymentSummaryForTable(int orderId);
     }
 }
 

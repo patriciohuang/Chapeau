@@ -12,9 +12,9 @@ namespace Chapeau.Services
         {
             _kitchenBarDisplayRepository = kitchenBarDisplayRepository;
         }
-        public List<DisplayOrder> GetOrders(Status? status = null)
+        public List<Order> GetOrders(Status? status = null)
         {
-            List<DisplayOrder> incommingorders = _kitchenBarDisplayRepository.GetOrders(status);
+            List<Order> incommingorders = _kitchenBarDisplayRepository.GetOrders(status);
             return incommingorders;
         }
 /*        public void UpdateOrderStatus(int orderId, Status status)

@@ -116,7 +116,7 @@ namespace Chapeau.Services
                 throw new ArgumentException("Password is required");
 
             // Validate employee number is positive (business rule)
-            if (employee.EmpNr <= 0)
+            if (employee.EmployeeNr <= 0)
                 throw new ArgumentException("Employee number must be positive");
         }
     }

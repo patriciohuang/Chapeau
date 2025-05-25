@@ -1,5 +1,4 @@
-﻿@model Chapeau.Models.DisplayOrder
-
+﻿@model Chapeau.Models.Order
 @using Chapeau.Models.Enums;
 
 
@@ -9,11 +8,11 @@
     </div>
     <div class="text-end">
         <p>@Model.Time_ordered.ToString("HH:mm")</p>
-        <p>Waiter: @Model.Employee_name</p>
+        <p>Waiter: @Model.Employee.FirstName</p>
     </div>
 </div>
 
-@foreach (var group in Model.OrderItems.GroupBy(i => i.CourseCategory))
+@foreach (var group in Model.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
 {
     <div class="mb-2">
         <div class="d-flex justify-content-between border-bottom">
@@ -23,7 +22,7 @@
         <ul class="list-unstyled ms-2 mt-1">
             @foreach (var item in group)
             {
-                <li>@item.Count @item.Name</li>
+                <li>@item.Count @item.MenuItem.Name</li>
             }
         </ul>
     </div>

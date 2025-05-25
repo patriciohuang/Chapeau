@@ -50,7 +50,7 @@ namespace Chapeau.Repositories
                 cmd.Parameters.AddWithValue("@FirstName", employee.FirstName);
                 cmd.Parameters.AddWithValue("@LastName", employee.LastName);
                 cmd.Parameters.AddWithValue("@Role", employee.Role);
-                cmd.Parameters.AddWithValue("@EmployeeNumber", employee.EmpNr);
+                cmd.Parameters.AddWithValue("@EmployeeNumber", employee.EmployeeNr);
                 cmd.Parameters.AddWithValue("@Password", hashedPassword); // Store hashed password
 
                 // Open connection and execute the query
@@ -117,7 +117,7 @@ namespace Chapeau.Repositories
                     // Create Employee object from database record
                     employee = new Employee
                     {
-                        EmpNr = reader.GetInt32(reader.GetOrdinal("employee_nr")),
+                        EmployeeNr = reader.GetInt32(reader.GetOrdinal("employee_nr")),
                         FirstName = reader.GetString(reader.GetOrdinal("first_name")),
                         LastName = reader.GetString(reader.GetOrdinal("last_name")),
                         Role = reader.GetString(reader.GetOrdinal("role")),
@@ -173,7 +173,7 @@ namespace Chapeau.Repositories
                 {
                     Employee employee = new Employee
                     {
-                        EmpNr = reader.GetInt32(reader.GetOrdinal("employee_nr")),
+                        EmployeeNr = reader.GetInt32(reader.GetOrdinal("employee_nr")),
                         FirstName = reader.GetString(reader.GetOrdinal("first_name")),
                         LastName = reader.GetString(reader.GetOrdinal("last_name")),
                         Role = reader.GetString(reader.GetOrdinal("role")),

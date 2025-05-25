@@ -2,6 +2,7 @@
 {
     public class Table
     {
+        public int TableId { get; set; } // Unique identifier for the table
         public int TableNr { get; set; }
         public bool Available { get; set; } // Boolean field for availability
 
@@ -12,6 +13,11 @@
         public Table()
         {
             Available = true; // Default to available
+        }
+        public Table(int tableId, int tableNr)
+        {
+            TableId = tableId;
+            TableNr = tableNr;
         }
     }
 }
