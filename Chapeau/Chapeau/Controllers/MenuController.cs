@@ -45,7 +45,7 @@ namespace Chapeau.Controllers
                 // If id is not null, parse it to a MenuCard enum, otherwise get the menu card by time through the service
                 MenuCard menuCard = (id != null) ? (MenuCard)Enum.Parse(typeof(MenuCard), id) : _menuService.GetMenuCardByTime();
 
-                List<MenuItem> menuCourses = _menuService.GetAllCourses(menuCard);
+                MenuCardCategory menuCourses = _menuService.GetAllCourses(menuCard);
 
                 return View(menuCourses);
             }
@@ -70,9 +70,7 @@ namespace Chapeau.Controllers
                 CourseCategory courseCategory = (CourseCategory)Enum.Parse(typeof(CourseCategory), course.ToString());
                 MenuCard menuCard = (MenuCard)Enum.Parse(typeof(MenuCard), card.ToString());
 
-                MenuItem menuCourse = new MenuItem(courseCategory, menuCard);
-
-                List<MenuItem> menuItems = _menuService.GetMenuItems(menuCourse);
+                List<MenuItem> menuItems = _menuService.GetMenuItems(courseCategory, menuCard);
 
                 return View(menuItems);
             }

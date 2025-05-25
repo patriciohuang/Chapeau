@@ -18,10 +18,10 @@ namespace Chapeau.Repositories
         }
 
         //methods
-        //This method returns a list of all courses in a specific menu, depending on the card selected
-        public List<MenuItem> GetAllCourses(MenuCard menuCard)
+        //This method returns a list of all courses in the menu, depending on the card selected
+        public MenuCardCategory GetAllCourses(MenuCard menuCard)
         {
-            List<MenuItem> menuItems = new List<MenuItem>();
+            MenuCardCategory menuCardCategory = new MenuCardCategory(new List<CourseCategory>(), menuCard);
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -37,16 +37,13 @@ namespace Chapeau.Repositories
                 while (reader.Read())
                 {
                     //This monstrosity is needed to parse from the database into two enums (course_category and menu_card), then makes a menuItem object out of it
-                    MenuItem menuItem = new MenuItem( (CourseCategory)Enum.Parse(typeof(CourseCategory), (string)reader["course_category"]), (MenuCard)Enum.Parse(typeof(MenuCard), (string)reader["menu_card"]) );
-                    menuItems.Add(menuItem);
+                    menuCardCategory.CourseCategory.Add((CourseCategory)Enum.Parse(typeof(CourseCategory), (string)reader["course_category"]));
                 }
                 reader.Close();
             }
-            return menuItems;
+            return menuCardCategory;
         }
-
-        //This method returns a list of ALL MenuItems belonging to a specific menu card
-        public List<MenuItem> GetAllMenuItems(MenuItem menuItem)
+        public List<MenuItem> GetAllMenuItems(MenuCard menuCard)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
@@ -57,7 +54,7 @@ namespace Chapeau.Repositories
 
                 //The parameter is like this (having two %'s) because of the database column being poorly normalized, 
                 //HOWEVER, I ASKED DAN AND HE SAID IT WOULD NOT COST ME ANY POINTS. SO LIKE THIS IT STAYS, TOO BAD!
-                command.Parameters.AddWithValue("@menuCard", $"%{menuItem.MenuCard.ToString()}%");
+                command.Parameters.AddWithValue("@menuCard", $"%{menuCard.ToString()}%");
 
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -72,8 +69,7 @@ namespace Chapeau.Repositories
             return menuItems;
         }
 
-        //This method returns a list of MenuItems belonging to a specific course/type of drink belonging to a specific menu card
-        public List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem)
+        public List<MenuItem> GetMenuItemsByCourse(CourseCategory courseCategory, MenuCard menuCard)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
@@ -84,8 +80,8 @@ namespace Chapeau.Repositories
 
                 //The parameter is like this (having two %'s) because of the database column being poorly normalized, 
                 //HOWEVER, I ASKED DAN AND HE SAID IT WOULD NOT COST ME ANY POINTS. SO LIKE THIS IT STAYS, TOO BAD!
-                command.Parameters.AddWithValue("@course", menuItem.CourseCategory.ToString());
-                command.Parameters.AddWithValue("@menuCard", $"%{menuItem.MenuCard.ToString()}%");
+                command.Parameters.AddWithValue("@course", courseCategory.ToString());
+                command.Parameters.AddWithValue("@menuCard", $"%{menuCard.ToString()}%");
 
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -103,8 +99,6 @@ namespace Chapeau.Repositories
 
 
         //Here are reusable private methods
-
-        //This method reads the data received by the reader and parses it into a MenuItem object
         private MenuItem ReadMenuItem(SqlDataReader reader)
         {
             int itemId = (int)reader["menu_item_id"];
