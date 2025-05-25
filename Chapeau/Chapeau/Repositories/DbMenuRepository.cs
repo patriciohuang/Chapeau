@@ -19,9 +19,9 @@ namespace Chapeau.Repositories
 
         //methods
         //This method returns a list of all courses in the menu, depending on the card selected
-        public List<MenuItem> GetAllCourses(MenuCard menuCard)
+        public MenuCardCategory GetAllCourses(MenuCard menuCard)
         {
-            List<MenuItem> menuItems = new List<MenuItem>();
+            MenuCardCategory menuCardCategory = new MenuCardCategory(new List<CourseCategory>(), menuCard);
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -37,14 +37,13 @@ namespace Chapeau.Repositories
                 while (reader.Read())
                 {
                     //This monstrosity is needed to parse from the database into two enums (course_category and menu_card), then makes a menuItem object out of it
-                    MenuItem menuItem = new MenuItem( (CourseCategory)Enum.Parse(typeof(CourseCategory), (string)reader["course_category"]), (MenuCard)Enum.Parse(typeof(MenuCard), (string)reader["menu_card"]) );
-                    menuItems.Add(menuItem);
+                    menuCardCategory.CourseCategory.Add((CourseCategory)Enum.Parse(typeof(CourseCategory), (string)reader["course_category"]));
                 }
                 reader.Close();
             }
-            return menuItems;
+            return menuCardCategory;
         }
-        public List<MenuItem> GetAllMenuItems(MenuItem menuItem)
+        public List<MenuItem> GetAllMenuItems(MenuCard menuCard)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
@@ -55,7 +54,7 @@ namespace Chapeau.Repositories
 
                 //The parameter is like this (having two %'s) because of the database column being poorly normalized, 
                 //HOWEVER, I ASKED DAN AND HE SAID IT WOULD NOT COST ME ANY POINTS. SO LIKE THIS IT STAYS, TOO BAD!
-                command.Parameters.AddWithValue("@menuCard", $"%{menuItem.MenuCard.ToString()}%");
+                command.Parameters.AddWithValue("@menuCard", $"%{menuCard.ToString()}%");
 
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -70,7 +69,7 @@ namespace Chapeau.Repositories
             return menuItems;
         }
 
-        public List<MenuItem> GetMenuItemsByCourse(MenuItem menuItem)
+        public List<MenuItem> GetMenuItemsByCourse(CourseCategory courseCategory, MenuCard menuCard)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
@@ -81,8 +80,8 @@ namespace Chapeau.Repositories
 
                 //The parameter is like this (having two %'s) because of the database column being poorly normalized, 
                 //HOWEVER, I ASKED DAN AND HE SAID IT WOULD NOT COST ME ANY POINTS. SO LIKE THIS IT STAYS, TOO BAD!
-                command.Parameters.AddWithValue("@course", menuItem.CourseCategory.ToString());
-                command.Parameters.AddWithValue("@menuCard", $"%{menuItem.MenuCard.ToString()}%");
+                command.Parameters.AddWithValue("@course", courseCategory.ToString());
+                command.Parameters.AddWithValue("@menuCard", $"%{menuCard.ToString()}%");
 
                 command.Connection.Open();
                 SqlDataReader reader = command.ExecuteReader();

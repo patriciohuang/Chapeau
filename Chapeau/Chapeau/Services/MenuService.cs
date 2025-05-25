@@ -16,7 +16,7 @@ namespace Chapeau.Services
         }
 
         //methods
-        public List<MenuItem> GetAllCourses(MenuCard menuCard)
+        public MenuCardCategory GetAllCourses(MenuCard menuCard)
         {
             return _menuRepository.GetAllCourses((MenuCard)menuCard);
         }
@@ -38,12 +38,12 @@ namespace Chapeau.Services
             return menuCard;
         }
 
-        public List<MenuItem> GetMenuItems(MenuItem menuItem)
+        public List<MenuItem> GetMenuItems(CourseCategory courseCategory, MenuCard menuCard)
         {
             //A ternary that checks if CourseCategory equals All, if it is, it gets all menu items, if it isn't, it gets the menu items of the selected course
-            return (menuItem.CourseCategory == CourseCategory.All) 
-                ? _menuRepository.GetAllMenuItems(menuItem) 
-                : _menuRepository.GetMenuItemsByCourse(menuItem);
+            return (courseCategory == CourseCategory.All) 
+                ? _menuRepository.GetAllMenuItems(menuCard) 
+                : _menuRepository.GetMenuItemsByCourse(courseCategory, menuCard);
         }
     }
 }

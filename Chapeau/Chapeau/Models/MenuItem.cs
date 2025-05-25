@@ -21,12 +21,6 @@ namespace Chapeau.Models
 
         }
 
-        public MenuItem(CourseCategory courseCategory, MenuCard menuCard)
-        {
-            CourseCategory = courseCategory;
-            MenuCard = menuCard;
-        }
-
         //constructor with all properties filled
         public MenuItem(int itemId, string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, bool isAlcoholic)
         {

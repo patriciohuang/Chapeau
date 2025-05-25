@@ -1,4 +1,6 @@
-﻿@model List<Chapeau.Models.MenuItem>;
+﻿@model Chapeau.Models.MenuCardCategory;
+
+@using Chapeau.Models.Enums;
 
 @{
     ViewData["Title"] = "Menu";
@@ -20,19 +22,21 @@
         </div>
     </div>
 
-    
+
     <div class="MenuCourseCategory">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="All" asp-route-card="@Model[0].MenuCard"> All </a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="@CourseCategory.All" asp-route-card="@Model.MenuCard"> All </a>
     </div>
     
 
     @{
-        foreach (MenuItem menuItem in Model)
-        {            
+        foreach (CourseCategory menuItem in Model.CourseCategory)
+        {   
+            
             <div class="MenuCourseCategory">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="@menuItem.CourseCategory" asp-route-card="@menuItem.MenuCard"> @menuItem.CourseCategory </a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="@menuItem" asp-route-card="@Model.MenuCard"> @menuItem</a>
             </div>    
         }
     }
+
 
 </div>
