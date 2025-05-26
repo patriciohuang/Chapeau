@@ -5,7 +5,7 @@ using Chapeau.Models.Enums;
 namespace Chapeau.Repositories
 {
     //pato
-    public class OrderRepository : IKitchenBarDisplayRepository
+    public class OrderRepository : IOrderRepository
     {
         private readonly string? _connectionString;
 
@@ -116,5 +116,17 @@ namespace Chapeau.Repositories
             // return the list of orders
             return orders.Values.ToList();
         }
+
+        // TODO, get a method that returns a (filled) order object when an orderId parameter is entered
+        public Order GetOrder(int orderId)
+        {
+            Order order = new Order();
+
+            return order;
+        }
+
+
+
+
     }
 }

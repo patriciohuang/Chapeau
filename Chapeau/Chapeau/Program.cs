@@ -12,7 +12,7 @@ namespace Chapeau
             // Add services to the container.
             builder.Services.AddSingleton<IMenuRepository, DbMenuRepository>();
             builder.Services.AddSingleton<IMenuService, MenuService>();
-            builder.Services.AddSingleton<IKitchenBarDisplayRepository, OrderRepository>();
+            builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
             builder.Services.AddSingleton<IKitchenBarDisplayService, KitchenBarDisplayService>();
             builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
 

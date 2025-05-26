@@ -7,8 +7,8 @@ namespace Chapeau.Services
     //pato
     public class KitchenBarDisplayService : IKitchenBarDisplayService
     {
-        private readonly IKitchenBarDisplayRepository _kitchenBarDisplayRepository;
-        public KitchenBarDisplayService(IKitchenBarDisplayRepository kitchenBarDisplayRepository)
+        private readonly IOrderRepository _kitchenBarDisplayRepository;
+        public KitchenBarDisplayService(IOrderRepository kitchenBarDisplayRepository)
         {
             _kitchenBarDisplayRepository = kitchenBarDisplayRepository;
         }
