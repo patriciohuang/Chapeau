@@ -5,11 +5,11 @@ using Chapeau.Models.Enums;
 namespace Chapeau.Repositories
 {
     //pato
-    public class DbKitchenBarDisplayRepository : IKitchenBarDisplayRepository
+    public class OrderRepository : IKitchenBarDisplayRepository
     {
         private readonly string? _connectionString;
 
-        public DbKitchenBarDisplayRepository(IConfiguration configuration)
+        public OrderRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("chapeaudatabase");
         }
@@ -36,7 +36,7 @@ namespace Chapeau.Repositories
             // Read table
             Table table = new Table(tableId, tableNr);
 
-            return new Order(orderId, tableId, employeeId, status, dateOrdered, timeOrdered, table, employee);
+            return new Order(orderId, status, dateOrdered, timeOrdered, table, employee);
         }
         /// Read order item from the database
         private OrderItem ReadOrderItem(SqlDataReader reader)
