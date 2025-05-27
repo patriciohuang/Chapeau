@@ -1,43 +1,245 @@
-﻿@{
+﻿@model List<Chapeau.Models.DisplayOrder>
+@using Chapeau.Models.Enums
+@{
     ViewData["Title"] = "Orders";
+    var statusFilter = ViewBag.FilteredByStatus as Status?;
+    var tableFilter = ViewBag.FilteredByTable as int?;
 }
 
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fs-4 fs-md-1">Orders</h1>
+        <a asp-controller="Waiter" asp-action="Tables" class="btn btn-primary btn-sm">
+            <i class="bi bi-grid-3x3"></i> <span class="d-none d-sm-inline">Back to</span> Tables
+        </a>
+    </div>
 
-<h1 class="display-4"> THIS IS VERY TEMPORARY</h1>
+    <!-- Filter Tabs - Scrollable on mobile -->
+    <div class="order-tabs-wrapper mb-4">
+        <ul class="nav nav-tabs order-tabs">
+            <li class="nav-item">
+                <a class="nav-link @(statusFilter == null && tableFilter == null ? "active" : "")"
+                   asp-action="Orders">All</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(statusFilter == Status.Ordered ? "active" : "")"
+                   asp-action="Orders" asp-route-status="Ordered">New</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(statusFilter == Status.Preparing ? "active" : "")"
+                   asp-action="Orders" asp-route-status="Preparing">Preparing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(statusFilter == Status.Ready ? "active" : "")"
+                   asp-action="Orders" asp-route-status="Ready">Ready</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(statusFilter == Status.Served ? "active" : "")"
+                   asp-action="Orders" asp-route-status="Served">Served</a>
+            </li>
+        </ul>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Order Id </th>
-            <th>Table number</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-                <tr>
-                    <td>4</td>
-                    <td>10</td>
-                    <td>
-                <a href="/Payment/Index?orderId=4">Payment</a>
-                    </td>
-                </tr>
+    @if (tableFilter.HasValue)
+    {
+        <div class="alert alert-info d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-info-circle"></i> Table @tableFilter only</span>
+            <a asp-action="Orders" class="btn btn-sm btn-outline-primary">Show All</a>
+        </div>
+    }
 
-                <tr>
-                    <td>5</td>
-                    <td>9</td>
-                    <td>
-                <a href="/Payment/Index?orderId=5">Payment</a>
-                    </td>
-                </tr>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">
+            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+            <p class="mt-2">No orders found.</p>
+        </div>
+    }
+    else
+    {
+        <!-- Mobile View - Cards -->
+        <div class="d-block d-lg-none">
+            @foreach (var order in Model)
+            {
+                <div class="order-card mb-3">
+                    <div class="order-card-header">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="mb-1">Order #@order.Order_id</h5>
+                                <span class="badge bg-@GetStatusColor(order.Status)">
+                                    @order.Status.ToString().ToUpper()
+                                </span>
+                            </div>
+                            <div class="text-end">
+                                <a asp-action="Orders" asp-route-tableNr="@order.Table_id"
+                                   class="text-decoration-none fs-5">
+                                    <i class="bi bi-square-fill"></i> @order.Table_id
+                                </a>
+                                <div class="text-muted small">@order.Time_ordered.ToString("HH:mm")</div>
+                                <div class="text-muted small">@order.MinutesSinceOrdered min ago</div>
+                            </div>
+                        </div>
+                    </div>
 
-                <tr>
-                    <td>6</td>
-                    <td>8</td>
-                    <td>
-                <a href="/Payment/Index?orderId=6">Payment</a>
-                    </td>
-                </tr>
+                    <div class="order-card-body">
+                        @foreach (var group in order.OrderItems.GroupBy(i => i.CourseCategory))
+                        {
+                            <div class="mb-2">
+                                <strong>@group.Key:</strong>
+                                <ul class="list-unstyled ms-3 mb-0">
+                                    @foreach (var item in group)
+                                    {
+                                        <li>@item.Count× @item.Name</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        <div class="mt-2 text-muted small">
+                            <i class="bi bi-person"></i> @order.Employee_name
+                        </div>
+                    </div>
 
-            
-    </tbody>
-</table>
+                    <div class="order-card-footer">
+                        <div class="d-grid gap-2">
+                            @if (order.Status == Status.Ready)
+                            {
+                                <button class="btn btn-success btn-sm">
+                                    <i class="bi bi-check-circle"></i> Mark as Served
+                                </button>
+                            }
+                            @if (order.Status == Status.Served)
+                            {
+                                <a class="btn btn-primary btn-sm" asp-controller="Payment"
+                                   asp-action="Index" asp-route-orderId="@order.Order_id">
+                                    <i class="bi bi-credit-card"></i> Process Payment
+                                </a>
+                            }
+                            <button class="btn btn-outline-secondary btn-sm" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#order-actions-@order.Order_id">
+                                More Actions <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <div class="collapse" id="order-actions-@order.Order_id">
+                                <div class="d-grid gap-2 mt-2">
+                                    <button class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> View Details
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-x-circle"></i> Cancel Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Desktop View - Table -->
+        <div class="d-none d-lg-block">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Table</th>
+                            <th>Time</th>
+                            <th>Items</th>
+                            <th>Status</th>
+                            <th>Waiter</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td>#@order.Order_id</td>
+                                <td>
+                                    <a asp-action="Orders" asp-route-tableNr="@order.Table_id"
+                                       class="text-decoration-none">
+                                        <i class="bi bi-square-fill"></i> Table @order.Table_id
+                                    </a>
+                                </td>
+                                <td>
+                                    @order.Time_ordered.ToString("HH:mm")
+                                    <br>
+                                    <small class="text-muted">@order.MinutesSinceOrdered min ago</small>
+                                </td>
+                                <td>
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var group in order.OrderItems.GroupBy(i => i.CourseCategory))
+                                        {
+                                            <li>
+                                                <strong>@group.Key:</strong>
+                                                @string.Join(", ", group.Select(i => $"{i.Count}x {i.Name}"))
+                                            </li>
+                                        }
+                                    </ul>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@GetStatusColor(order.Status)">
+                                        @order.Status.ToString().ToUpper()
+                                    </span>
+                                </td>
+                                <td>@order.Employee_name</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            Actions
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            @if (order.Status == Status.Ready)
+                                            {
+                                                <li>
+                                                    <a class="dropdown-item" href="#">
+                                                        <i class="bi bi-check-circle"></i> Mark as Served
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (order.Status == Status.Served)
+                                            {
+                                                <li>
+                                                    <a class="dropdown-item" asp-controller="Payment"
+                                                       asp-action="Index" asp-route-orderId="@order.Order_id">
+                                                        <i class="bi bi-credit-card"></i> Process Payment
+                                                    </a>
+                                                </li>
+                                            }
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="bi bi-eye"></i> View Details
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#">
+                                                    <i class="bi bi-x-circle"></i> Cancel Order
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    string GetStatusColor(Status status)
+    {
+        return status switch
+        {
+            Status.Ordered => "info",
+            Status.Preparing => "warning",
+            Status.Ready => "success",
+            Status.Served => "secondary",
+            Status.Cancelled => "danger",
+            _ => "dark"
+        };
+    }
+}
