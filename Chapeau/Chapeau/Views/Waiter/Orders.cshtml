@@ -1,10 +1,11 @@
-﻿@model List<Chapeau.Models.DisplayOrder>
+﻿@model List<Chapeau.Models.Order>
 @using Chapeau.Models.Enums
 @{
     ViewData["Title"] = "Orders";
     var statusFilter = ViewBag.FilteredByStatus as Status?;
     var tableFilter = ViewBag.FilteredByTable as int?;
 }
+
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -65,15 +66,15 @@
                     <div class="order-card-header">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
-                                <h5 class="mb-1">Order #@order.Order_id</h5>
+                                <h5 class="mb-1">Order #@order.OrderId</h5>
                                 <span class="badge bg-@GetStatusColor(order.Status)">
                                     @order.Status.ToString().ToUpper()
                                 </span>
                             </div>
                             <div class="text-end">
-                                <a asp-action="Orders" asp-route-tableNr="@order.Table_id"
+                                <a asp-action="Orders" asp-route-tableNr="@order.Table.TableNr"
                                    class="text-decoration-none fs-5">
-                                    <i class="bi bi-square-fill"></i> @order.Table_id
+                                    <i class="bi bi-square-fill"></i> @order.Table.TableNr
                                 </a>
                                 <div class="text-muted small">@order.Time_ordered.ToString("HH:mm")</div>
                                 <div class="text-muted small">@order.MinutesSinceOrdered min ago</div>
@@ -82,20 +83,20 @@
                     </div>
 
                     <div class="order-card-body">
-                        @foreach (var group in order.OrderItems.GroupBy(i => i.CourseCategory))
+                        @foreach (var group in order.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
                         {
                             <div class="mb-2">
                                 <strong>@group.Key:</strong>
                                 <ul class="list-unstyled ms-3 mb-0">
                                     @foreach (var item in group)
                                     {
-                                        <li>@item.Count× @item.Name</li>
+                                        <li>@item.Count× @item.MenuItem.Name</li>
                                     }
                                 </ul>
                             </div>
                         }
                         <div class="mt-2 text-muted small">
-                            <i class="bi bi-person"></i> @order.Employee_name
+                            <i class="bi bi-person"></i> @order.Employee.FirstName
                         </div>
                     </div>
 
@@ -110,15 +111,15 @@
                             @if (order.Status == Status.Served)
                             {
                                 <a class="btn btn-primary btn-sm" asp-controller="Payment"
-                                   asp-action="Index" asp-route-orderId="@order.Order_id">
+                                   asp-action="Index" asp-route-orderId="@order.OrderId">
                                     <i class="bi bi-credit-card"></i> Process Payment
                                 </a>
                             }
                             <button class="btn btn-outline-secondary btn-sm" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#order-actions-@order.Order_id">
+                                    data-bs-toggle="collapse" data-bs-target="#order-actions-@order.OrderId">
                                 More Actions <i class="bi bi-chevron-down"></i>
                             </button>
-                            <div class="collapse" id="order-actions-@order.Order_id">
+                            <div class="collapse" id="order-actions-@order.OrderId">
                                 <div class="d-grid gap-2 mt-2">
                                     <button class="btn btn-outline-primary btn-sm">
                                         <i class="bi bi-eye"></i> View Details
@@ -153,11 +154,11 @@
                         @foreach (var order in Model)
                         {
                             <tr>
-                                <td>#@order.Order_id</td>
+                                <td>#@order.OrderId</td>
                                 <td>
-                                    <a asp-action="Orders" asp-route-tableNr="@order.Table_id"
+                                    <a asp-action="Orders" asp-route-tableNr="@order.Table.TableNr"
                                        class="text-decoration-none">
-                                        <i class="bi bi-square-fill"></i> Table @order.Table_id
+                                        <i class="bi bi-square-fill"></i> Table @order.Table.TableNr
                                     </a>
                                 </td>
                                 <td>
@@ -167,11 +168,11 @@
                                 </td>
                                 <td>
                                     <ul class="list-unstyled mb-0">
-                                        @foreach (var group in order.OrderItems.GroupBy(i => i.CourseCategory))
+                                        @foreach (var group in order.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
                                         {
                                             <li>
                                                 <strong>@group.Key:</strong>
-                                                @string.Join(", ", group.Select(i => $"{i.Count}x {i.Name}"))
+                                                @string.Join(", ", group.Select(i => $"{i.Count}x {i.MenuItem.Name}"))
                                             </li>
                                         }
                                     </ul>
@@ -181,7 +182,7 @@
                                         @order.Status.ToString().ToUpper()
                                     </span>
                                 </td>
-                                <td>@order.Employee_name</td>
+                                <td>@order.Employee.LastName</td>
                                 <td>
                                     <div class="btn-group" role="group">
                                         <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle"
@@ -201,7 +202,7 @@
                                             {
                                                 <li>
                                                     <a class="dropdown-item" asp-controller="Payment"
-                                                       asp-action="Index" asp-route-orderId="@order.Order_id">
+                                                       asp-action="Index" asp-route-orderId="@order.OrderId">
                                                         <i class="bi bi-credit-card"></i> Process Payment
                                                     </a>
                                                 </li>

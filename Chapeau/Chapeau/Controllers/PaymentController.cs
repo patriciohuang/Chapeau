@@ -45,11 +45,6 @@ namespace Chapeau.Controllers
 
             try
             {
-
-
-                // Double-check the user has Waiter role access
-                var accessResult = CheckAccess(UserRole.Waiter);
-                if (accessResult != null) return accessResult;
                 Order order = _orderRepository.GetOrder(orderId);
 
                 decimal totalAmount;

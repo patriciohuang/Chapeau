@@ -17,6 +17,7 @@ namespace Chapeau.Repositories
         private Order ReadOrder(SqlDataReader reader)
         {
             // Read order details
+            int orderId = (int)reader["order_id"];
             Status status = Enum.Parse<Status>((string)reader["order_status"], true);
             DateOnly dateOrdered = DateOnly.FromDateTime((DateTime)reader["date_ordered"]);
             TimeOnly timeOrdered = TimeOnly.FromTimeSpan((TimeSpan)reader["time_ordered"]);
@@ -28,7 +29,7 @@ namespace Chapeau.Repositories
             // Read table
             Table table = ReadTable(reader);
 
-            return new Order(status, dateOrdered, timeOrdered, table, employee);
+            return new Order(orderId, status, dateOrdered, timeOrdered, table, employee);
         }
 
         private Employee ReadEmployee(SqlDataReader reader)
@@ -133,7 +134,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all orders for today (optionally filtered by status)
-                string sql = @"SELECT   o.status AS order_status, o.date_ordered, o.time_ordered,
+                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered,
                                         i.count, i.comment, i.status AS item_status,
                                         e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_nr, t.table_id, t.availability,

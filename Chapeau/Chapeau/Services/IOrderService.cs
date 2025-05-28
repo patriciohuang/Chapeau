@@ -6,15 +6,15 @@ namespace Chapeau.Services
     public interface IOrderService
     {
         // Get all orders for today
-        List<DisplayOrder> GetTodaysOrders();
+        List<Order> GetTodaysOrders();
 
         // Get orders by status
-        List<DisplayOrder> GetOrdersByStatus(Status status);
+        List<Order> GetOrdersByStatus(Status status);
 
         // Get orders for a specific table
-        List<DisplayOrder> GetOrdersByTable(int tableNr);
+        List<Order> GetOrdersByTable(int tableNr);
 
         // Get a specific order with all details
-        DisplayOrder GetOrderById(int orderId);
+        Order GetOrderById(int orderId);
     }
 }

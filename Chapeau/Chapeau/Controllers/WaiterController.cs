@@ -36,7 +36,6 @@ namespace Chapeau.Controllers
             if (context.Result != null) return;
 
             // Check if user has the Waiter role specifically
-            // Note: This is redundant with CheckAccess() calls in actions, but ensures security
             if (CurrentEmployee == null || !CurrentEmployee.Role.Equals(RoleNames.Waiter, StringComparison.OrdinalIgnoreCase))
             {
                 // User doesn't have Waiter role - redirect to unauthorized page
@@ -131,11 +130,12 @@ namespace Chapeau.Controllers
 
         // GET: /Waiter/Orders
         // Shows all orders for the waiter to manage
+        // Jeroen's note: Psycho code, don't use Viewbag
         public IActionResult Orders(Status? status = null, int? tableNr = null)
         {
             try
             {
-                List<DisplayOrder> orders;
+                List<Order> orders;
 
                 // Filter by table if specified
                 if (tableNr.HasValue)
@@ -163,7 +163,7 @@ namespace Chapeau.Controllers
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "Failed to load orders: " + ex.Message;
-                return View(new List<DisplayOrder>());
+                return View(new List<Order>());
             }
         }
     }
