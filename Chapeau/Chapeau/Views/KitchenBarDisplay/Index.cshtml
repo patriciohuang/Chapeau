@@ -19,7 +19,8 @@
     @await Html.PartialAsync("_OrderTabs")
 
     <!-- Orders -->
-    <div class="row g-4" id="orders-container">
+    <div class="row g-4" 
+    ="orders-container">
 		@await Html.PartialAsync("_OrdersPartial", Model)
     </div>
 </div>

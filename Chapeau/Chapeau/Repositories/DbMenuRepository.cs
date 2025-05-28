@@ -101,7 +101,6 @@ namespace Chapeau.Repositories
         //Here are reusable private methods
         private MenuItem ReadMenuItem(SqlDataReader reader)
         {
-            int itemId = (int)reader["menu_item_id"];
             string name = (string)reader["name"];
             decimal price = (decimal)reader["price"];
             MenuCard menuCard = (MenuCard)Enum.Parse(typeof(MenuCard), (string)reader["menu_card"]);
@@ -109,7 +108,7 @@ namespace Chapeau.Repositories
             int stock = (int)reader["stock"];
             bool isAlcoholic = (bool)reader["isAlcoholic"];
 
-            return new MenuItem(itemId, name, price, menuCard, courseCategory, stock, isAlcoholic);
+            return new MenuItem(name, price, menuCard, courseCategory, stock, isAlcoholic);
         }
 
     }

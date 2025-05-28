@@ -4,7 +4,6 @@ namespace Chapeau.Models
 {
     public class Employee
     {
-        public int EmployeeId { get; set; } // Unique identifier for the employee
         public int EmployeeNr { get; set; } // Employee number, can be used for login or identification
         public string FirstName { get; set; } // First name of the employee
         public string LastName { get; set; } // Last name of the employee
