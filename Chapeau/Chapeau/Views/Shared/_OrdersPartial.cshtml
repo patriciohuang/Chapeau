@@ -2,9 +2,13 @@
 
 @foreach (var order in Model)
 {
-    <div class="col-md-4">
-        <div class="card-body d-flex flex-column order-card">
-            @await Html.PartialAsync("_OrderCard", order)
+    @if(order.Status.ToString().ToLower() == "preparing" || order.Status.ToString().ToLower() == "served")
+    {
+        var urgentClass = order.MinutesSinceOrdered > 20 && order.Status.ToString().ToLower() == "preparing" ? "urgent-order" : "";
+        <div class="col-md-4">
+            <div class="card-body d-flex flex-column order-card @urgentClass">
+                @await Html.PartialAsync("_OrderCard", order)
+            </div>
         </div>
-    </div>
+    }
 }

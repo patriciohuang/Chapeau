@@ -12,7 +12,7 @@
     </div>
 </div>
 
-@foreach (var group in Model.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
+@foreach (var group in Model.OrderItems.OrderBy(i => i.MenuItem.CourseCategory).GroupBy(i => i.MenuItem.CourseCategory))
 {
     <div class="mb-2">
         <div class="d-flex justify-content-between border-bottom">
@@ -23,15 +23,16 @@
             @foreach (var item in group)
             {
                 <li>@item.Count @item.MenuItem.Name</li>
+				if (item.Comment != null)
+				{
+					<span class="badge bg-secondary ms-2">@item.Comment</span>
+				}
             }
         </ul>
     </div>
 }
 
-<div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
-    <div class="text-muted small">
-        <p>#@Model.Order_id •</p>
-    </div>
+<div class="mt-auto d-flex justify-content-end pt-2 border-top">
     <div class="text-end">
         <p>@Model.MinutesSinceOrdered min</p>
     </div>
