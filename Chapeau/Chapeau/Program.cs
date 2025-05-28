@@ -32,6 +32,9 @@ namespace Chapeau
             // Register employee management service
             builder.Services.AddSingleton<IEmployeeManagementService, EmployeeManagementService>();
 
+            // Register order service
+            builder.Services.AddSingleton<IOrderService, OrderService>();
+
             //signalR
             builder.Services.AddSignalR();
 

@@ -58,17 +58,6 @@ namespace Chapeau.Controllers
 
         public IActionResult Index(Status? status)
         {
-            // Check access using the CheckAccess method for both roles
-            var kitchenAccess = CheckAccess(UserRole.Kitchen);
-            var barAccess = CheckAccess(UserRole.Bar);
-
-            // If user doesn't have either Kitchen or Bar role, deny access
-            // (User needs at least one of the roles, not both)
-            if (kitchenAccess != null && barAccess != null)
-            {
-                return kitchenAccess; // Return the unauthorized redirect
-            }
-
             // Get the orders from the service with optional status filter
             List<Order> orders = _kitchenBarDisplaySevice.GetOrders(status);
 

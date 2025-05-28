@@ -4,6 +4,7 @@ using Chapeau.Models;
 using Chapeau.Repositories;
 using System.Collections.Generic;
 using Chapeau.Models.Enums;
+using Chapeau.Services;
 
 namespace Chapeau.Controllers
 {
@@ -14,11 +15,14 @@ namespace Chapeau.Controllers
     {
         // Repository that handles table data from the database
         private readonly ITablesRepository _tablesRepository;
+        // Service that handles order operations
+        private readonly IOrderService _orderService;
 
         // Constructor: Receives tables repository through dependency injection
-        public WaiterController(ITablesRepository tablesRepository)
+        public WaiterController(ITablesRepository tablesRepository, IOrderService orderService)
         {
             _tablesRepository = tablesRepository;
+            _orderService = orderService;
         }
 
         // This method runs before every action in this controller
@@ -47,9 +51,6 @@ namespace Chapeau.Controllers
         // Lol
         public IActionResult Index()
         {
-            // Double-check the user has Waiter role access
-            var authResult = CheckAccess(UserRole.Waiter);
-            if (authResult != null) return authResult;
 
             try
             {
@@ -128,10 +129,42 @@ namespace Chapeau.Controllers
             return RedirectToAction("Tables");
         }
 
-        // I believe this is also irrelevant now, ever since the merge sooooo gotta get rid of it :P
-        public IActionResult Orders()
+        // GET: /Waiter/Orders
+        // Shows all orders for the waiter to manage
+        public IActionResult Orders(Status? status = null, int? tableNr = null)
         {
-            return View();
+            try
+            {
+                List<DisplayOrder> orders;
+
+                // Filter by table if specified
+                if (tableNr.HasValue)
+                {
+                    orders = _orderService.GetOrdersByTable(tableNr.Value);
+                    ViewBag.FilteredByTable = tableNr.Value;
+                }
+                // Filter by status if specified
+                else if (status.HasValue)
+                {
+                    orders = _orderService.GetOrdersByStatus(status.Value);
+                    ViewBag.FilteredByStatus = status.Value;
+                }
+                // Otherwise get all today's orders
+                else
+                {
+                    orders = _orderService.GetTodaysOrders();
+                }
+
+                // Sort orders by time (most recent first)
+                orders = orders.OrderByDescending(o => o.Time_ordered).ToList();
+
+                return View(orders);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to load orders: " + ex.Message;
+                return View(new List<DisplayOrder>());
+            }
         }
     }
 }

@@ -1,65 +1,28 @@
+/* General site-wide styles */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
-
-/* from here on is the Waiter's css */
-.Menu {
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-@media (max-width: 768px) {
-    .Menu {
-        width: 100%;
+    html {
+        font-size: 16px;
     }
 }
 
-.MenuCardFilters {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-.menuCard {
-    width: 32%;
-    height: 3rem;
-    text-align: center;
+html {
+    position: relative;
+    min-height: 100%;
 }
 
-.MenuCourseCategory {
-    display: flex;
-    justify-content: center;
-    min-width: 80%;
-    padding: 0.5rem;
-    margin-top: 1rem;
-    border: 1px solid black;
-    border-radius: 0.5rem;
+body {
+    /* Footer has been removed, no bottom margin needed */
+}
+
+/* Hide default card shadows */
+.card {
+    box-shadow: none !important;
 }
