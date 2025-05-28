@@ -13,6 +13,9 @@ namespace Chapeau.Models
         public Table Table { get; set; }
         public Employee Employee { get; set; }
 
+        //Stuff for payment
+        
+
         // List of items in the order
         public List<OrderItem> OrderItems { get; set; }
 

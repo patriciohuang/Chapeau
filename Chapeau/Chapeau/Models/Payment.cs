@@ -21,22 +21,8 @@ namespace Chapeau.Models
             PaymentMethod = paymentMethod;
             FeedBack = feedBack;
         }
-/*        //calculates the amount for a menu item
-        public decimal Amount
-        {
-            get
-            {
-                return Price * Count;
-            }
-        }
-        //VAT percentage based on the bool value
-        public int VATPercent
-        {
-            get
-            {
-                return IsAlcoholic ? 21 : 9;
-            }
-        }*/
+
+        
 
     }
 }

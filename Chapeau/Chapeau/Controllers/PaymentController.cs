@@ -12,7 +12,7 @@ namespace Chapeau.Controllers
         //TODO nest both of these repositories into the payment service
         private readonly IPaymentRepository _paymentRepository;
         private readonly IOrderRepository _orderRepository;
-        
+
         public PaymentController(IPaymentRepository paymentRepository, IOrderRepository orderRepository)
         {
             _paymentRepository = paymentRepository;
@@ -43,35 +43,41 @@ namespace Chapeau.Controllers
 
             //How I (Jeroen) would implement it: After you retrieve the order, you can calculate the total price and VAT using a service method/the controller. Then put those three in a viewModel and return that to the view.
 
-
-            // Double-check the user has Waiter role access
-            var accessResult = CheckAccess(UserRole.Waiter);
-            if (accessResult != null) return accessResult;
+            try
+            {
 
 
-            Order order = _orderRepository.GetOrder(orderId);
+                // Double-check the user has Waiter role access
+                var accessResult = CheckAccess(UserRole.Waiter);
+                if (accessResult != null) return accessResult;
+                Order order = _orderRepository.GetOrder(orderId);
 
+                decimal totalAmount;
+                foreach (OrderItem orderItem in order.OrderItems)
+                {
+                    totalAmount = orderItem.Count * orderItem.MenuItem.Price;
+
+                }
+                return View(order);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
             //TODO add a service that automatically calculates the total price/VAT of the order, you can also do this in the controller to make your life easier
 
-            return View(order);
-
-
-
-
-            //Commented this old code below because I don't want to remove other people's work
-
-            /*
-            // Get payment items for the specified order
-            List<Payment> paymentItems = _paymentRepository.GetPaymentSummaryForTable(orderId);
-
-            // Create view model with payment items
-            PaymentViewModel paymentViewModel = new PaymentViewModel(paymentItems);
-
-            // Show payment summary view
-            return View(paymentViewModel);
-            */
+            
         }
-        
+
+
     }
 
+
+
+
 }
+
+
+
