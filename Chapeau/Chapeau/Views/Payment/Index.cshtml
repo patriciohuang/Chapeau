@@ -1,4 +1,4 @@
-﻿@model Chapeau.ViewModels.PaymentViewModel;
+﻿@model Chapeau.Models.Order;
 
 @{
 }
@@ -10,30 +10,29 @@
             <th>Price</th>
             <th>Quantity</th>
             <th>Amount</th>
-            <th>VAT</th>
+            <th>High VAT?</th>
         </tr>
     </thead>
     <tbody>
-        @* please check this after
             @{
-            foreach (Payment paymentItemModel in Model.PaymentItems)
+            foreach (OrderItem orderItem in Model.OrderItems)
             {
                 <tr>
-                    <td>@paymentItemModel.Name</td>
-                    <td>@paymentItemModel.Price</td>
-                    <td>@paymentItemModel.Count</td>
-                    <td>@paymentItemModel.Amount</td>
-                    <td>@paymentItemModel.VATPercent%</td>
+                    <td>@orderItem.MenuItem.Name</td>
+                    <td>@orderItem.MenuItem.Price</td>
+                    <td>@orderItem.Count</td>
+                    <td>@orderItem.MenuItem.Price</td>
+                    <td>@orderItem.MenuItem.IsAlcoholic</td>
                 </tr>
             }
 
-        } *@
+        }
     </tbody>
 </table>
 <hr />
 <div class="d-flex flex-row justify-content-between m-4">
     <h2>Total:</h2>
-    <h2>@Model.TotalAmount</h2>
+    <h2>€ 69,42</h2>
 </div>
 <hr />
 </div>

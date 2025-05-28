@@ -5,6 +5,8 @@ namespace Chapeau.Models
     //pato
     public class OrderItem
     {
+        //This class contains items that have been ordered from the menu (it contains a menu item class)
+
         public int OrderItemId { get; set; } // Unique identifier for the order item
         public int MenuItemId { get; set; } // Foreign key to the menu item
         public int OrderId { get; set; } // Foreign key to the order this item belongs to
