@@ -85,7 +85,8 @@ namespace Chapeau.Services
                 RoleNames.Kitchen or RoleNames.Bar => ("KitchenBarDisplay", "Index"),
 
                 // Default case: if role doesn't match any known role, go to login page
-                // This should rarely happen due to validation elsewhere
+                // This should rarely happen due to val
+                // ation elsewhere
                 _ => ("Auth", "Login")
             };
         }

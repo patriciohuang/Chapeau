@@ -7,6 +7,7 @@
         Preparing,
         Ready,
         Served,
+        Completed,
         Cancelled
     }
 }

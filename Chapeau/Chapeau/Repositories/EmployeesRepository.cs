@@ -38,10 +38,8 @@ namespace Chapeau.Repositories
 
                 // SQL query to insert new employee record
                 // Uses parameters to prevent SQL injection attacks
-                // SCOPE_IDENTITY() returns the auto-generated employee_id
                 string query = "INSERT INTO employee (first_name, last_name, role, employee_nr, password) " +
-                               "VALUES (@FirstName, @LastName, @Role, @EmployeeNumber, @Password); " +
-                               "SELECT SCOPE_IDENTITY();";
+                               "VALUES (@FirstName, @LastName, @Role, @EmployeeNumber, @Password); ";
 
                 // Create SQL command with parameterized query
                 SqlCommand cmd = new SqlCommand(query, connection);
@@ -56,11 +54,9 @@ namespace Chapeau.Repositories
                 // Open connection and execute the query
                 connection.Open();
 
-                // Execute query and get the generated employee ID
-                int employeeId = Convert.ToInt32(cmd.ExecuteScalar());
+                // Execute query
+                cmd.ExecuteNonQuery();
 
-                // Note: We retrieve the ID but don't use it since the Employee object
-                // already has an EmpNr that serves as the identifier in this application
             }
         }
 
@@ -101,7 +97,7 @@ namespace Chapeau.Repositories
             {
                 // SQL query to find employee by employee number
                 // Selects all necessary fields including the hashed password for authentication
-                string query = "SELECT employee_id, first_name, last_name, role, employee_nr, password " +
+                string query = "SELECT first_name, last_name, role, employee_nr, password " +
                                "FROM employee WHERE employee_nr = @EmployeeNr";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
@@ -161,7 +157,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all employees (excluding passwords for security)
-                string query = "SELECT employee_id, first_name, last_name, role, employee_nr FROM employee";
+                string query = "SELECT first_name, last_name, role, employee_nr FROM employee";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
                 connection.Open();
