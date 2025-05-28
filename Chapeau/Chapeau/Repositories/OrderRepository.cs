@@ -100,20 +100,11 @@ namespace Chapeau.Repositories
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
-                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE)";
-
-                // Add a WHERE clause if status is provided
-                if (status != null)
-                {
-                    sql += " AND o.status = @status";
-                }
+                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status
+                            ORDER BY o.time_ordered";
 
                 SqlCommand command = new SqlCommand(sql, connection);
-                // Add the status parameter if provided
-                if (status != null)
-                {
-                    command.Parameters.AddWithValue("@status", status.ToString());
-                }
+                command.Parameters.AddWithValue("@status", $"%{status.ToString()}%");
 
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -178,9 +169,5 @@ namespace Chapeau.Repositories
             }
             return order;
         }
-
-
-
-
     }
 }
