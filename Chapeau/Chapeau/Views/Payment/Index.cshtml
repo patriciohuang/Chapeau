@@ -1,40 +1,140 @@
-﻿@model Chapeau.Models.Order;
-
+﻿@model Chapeau.ViewModels.PaymentDetailsViewModel
 
 @{
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Amount</th>
-            <th>VAT</th>
-        </tr>
-    </thead>
-    <tbody>
-        @{
-            foreach (OrderItem orderItem in Model.OrderItems)
+<div class="container">
+    <h2 class="mb-4">Order Details</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>VAT Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
             {
                 <tr>
-                    <td>@orderItem.MenuItem.Name</td>
-                    <td>@orderItem.MenuItem.Price</td>
-                    <td>@orderItem.Count</td>
-                    <td>@orderItem.MenuItem.Price</td>
-                    <td>@orderItem.MenuItem.IsAlcoholic</td>
+                    <td>@item.Name</td>
+                    <td>€@item.Price.ToString("F2")</td>
+                    <td>@item.Quantity</td>
+                    <td>€@item.Amount.ToString("F2")</td>
+                    <td>@item.VATRate</td>
                 </tr>
             }
-            
+        </tbody>
+    </table>
+    <hr />
+    <div class="row justify-content-end">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>€@Model.Subtotal.ToString("F2")</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Low VAT (9%):</span>
+                        <span>€@Model.TotalLowVAT.ToString("F2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>High VAT (21%):</span>
+                        <span>€@Model.TotalHighVAT.ToString("F2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total VAT:</span>
+                        <span>€@Model.TotalVAT.ToString("F2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tip:</span>
+                        <span id="tipAmount">€0.00</span>
+                        <button type="button" class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#tipModal">
+                            Add Tip
+                        </button>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                        <h4>Total:</h4>
+                        <h4 id="grandTotal">€@Model.GrandTotal.ToString("F2")</h4>
+                    </div>
+                    <div class="mt-3">
+                        <button class="btn btn-primary w-100">Process Payment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Tip Modal -->
+<div class="modal fade" id="tipModal" tabindex="-1" aria-labelledby="tipModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tipModalLabel">Add Tip</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="tipPercentage" class="form-label">Tip Percentage</label>
+                    <div class="btn-group w-100 mb-3" role="group">
+                        <button type="button" class="btn btn-outline-primary tip-percent" data-percent="5">5%</button>
+                        <button type="button" class="btn btn-outline-primary tip-percent" data-percent="10">10%</button>
+                        <button type="button" class="btn btn-outline-primary tip-percent" data-percent="15">15%</button>
+                        <button type="button" class="btn btn-outline-primary tip-percent" data-percent="20">20%</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="tipAmount" class="form-label">Custom Tip Amount</label>
+                    <div class="input-group">
+                        <span class="input-group-text">€</span>
+                        <input type="number" class="form-control" id="customTipAmount" step="0.01" min="0">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveTip">Add Tip</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Get the initial total without tip
+        const initialTotal = @Model.GrandTotal;
+        let currentTip = 0;
+
+        // Function to update displayed amounts
+        function updateAmounts() {
+            document.getElementById('tipAmount').textContent = `€${currentTip.toFixed(2)}`;
+            const newTotal = initialTotal + currentTip;
+            document.getElementById('grandTotal').textContent = `€${newTotal.toFixed(2)}`;
         }
-    </tbody>
-</table>
-<hr />
-<div class="d-flex flex-row justify-content-between m-4">
-    <h2>Total:</h2>
-    <h2></h2>
-</div>
-<hr />
-</div>
+
+        // Handle percentage tip buttons
+        document.querySelectorAll('.tip-percent').forEach(button => {
+            button.addEventListener('click', () => {
+                const percent = parseFloat(button.dataset.percent);
+                currentTip = (initialTotal * percent / 100);
+                document.getElementById('customTipAmount').value = currentTip.toFixed(2);
+            });
+        });
+
+        // Handle custom tip input
+        document.getElementById('customTipAmount').addEventListener('input', (e) => {
+            currentTip = parseFloat(e.target.value) || 0;
+        });
+
+        // Handle save tip button
+        document.getElementById('saveTip').addEventListener('click', () => {
+            updateAmounts();
+            bootstrap.Modal.getInstance(document.getElementById('tipModal')).hide();
+        });
+    </script>
+}

@@ -1,4 +1,4 @@
-﻿using Chapeau.Repositories;
+﻿using Chapeau.Services;
 using Chapeau.Models;
 using Chapeau.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +9,11 @@ namespace Chapeau.Controllers
 {
     public class PaymentController : BaseController
     {
-        //TODO nest both of these repositories into the payment service
-        private readonly IPaymentRepository _paymentRepository;
-        private readonly IOrderRepository _orderRepository;
+        private readonly IPaymentService _paymentService;
 
-        public PaymentController(IPaymentRepository paymentRepository, IOrderRepository orderRepository)
+        public PaymentController(IPaymentService paymentService)
         {
-            _paymentRepository = paymentRepository;
-            _orderRepository = orderRepository;
+            _paymentService = paymentService;
         }
 
         // This method runs before every action in this controller
@@ -36,42 +33,20 @@ namespace Chapeau.Controllers
                 context.Result = RedirectToAction("Unauthorized", "Auth");
             }
         }
-        //payment information for a specific order
+
         public IActionResult Index(int orderId)
         {
-            //TODO: add a try catch block to handle exceptions and "make the code more robust"
-
-            //How I (Jeroen) would implement it: After you retrieve the order, you can calculate the total price and VAT using a service method/the controller. Then put those three in a viewModel and return that to the view.
-
             try
             {
-                Order order = _orderRepository.GetOrder(orderId);
-
-                decimal totalAmount;
-                foreach (OrderItem orderItem in order.OrderItems)
-                {
-                    totalAmount = orderItem.Count * orderItem.MenuItem.Price;
-
-                }
-                return View(order);
+                PaymentDetailsViewModel paymentDetails = _paymentService.GetOrderForPayment(orderId);
+                return View(paymentDetails);
             }
             catch (Exception)
             {
-
                 throw;
             }
-            
-            //TODO add a service that automatically calculates the total price/VAT of the order, you can also do this in the controller to make your life easier
-
-            
         }
-
-
     }
-
-
-
-
 }
 
 

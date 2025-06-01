@@ -16,6 +16,7 @@ namespace Chapeau
             builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
             builder.Services.AddSingleton<IKitchenBarDisplayService, KitchenBarDisplayService>();
             builder.Services.AddSingleton<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddSingleton<IPaymentService, PaymentService>();
 
             // Register employees repository
             builder.Services.AddSingleton<IEmployeesRepository, EmployeesRepository>();
