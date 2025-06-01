@@ -13,6 +13,7 @@
         {
             Available = true; // Default to available
         }
+
         public Table(int tableNr, bool available)
         {
             TableNr = tableNr;

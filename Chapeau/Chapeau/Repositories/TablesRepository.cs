@@ -101,6 +101,9 @@ namespace Chapeau.Repositories
             return table; // Returns null if table not found
         }
 
+
+
+
         // Updates the availability status of a specific table
         // Called when waiters mark tables as occupied or available
         public void UpdateTableAvailability(int tableNr, bool available)

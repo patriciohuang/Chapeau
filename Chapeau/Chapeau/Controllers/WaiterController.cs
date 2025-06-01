@@ -14,14 +14,14 @@ namespace Chapeau.Controllers
     public class WaiterController : BaseController
     {
         // Repository that handles table data from the database
-        private readonly ITablesRepository _tablesRepository;
+        private readonly ITableService _tableService;
         // Service that handles order operations
         private readonly IOrderService _orderService;
 
         // Constructor: Receives tables repository through dependency injection
-        public WaiterController(ITablesRepository tablesRepository, IOrderService orderService)
+        public WaiterController(ITableService tableService, IOrderService orderService)
         {
-            _tablesRepository = tablesRepository;
+            _tableService = tableService;
             _orderService = orderService;
         }
 
@@ -54,7 +54,7 @@ namespace Chapeau.Controllers
             try
             {
                 // Get all tables to calculate statistics
-                var tables = _tablesRepository.GetAllTables();
+                var tables = _tableService.GetAllTables();
 
                 // Count free tables (available = true)
                 ViewBag.FreeTablesCount = tables.Count(t => t.Available);
@@ -91,7 +91,7 @@ namespace Chapeau.Controllers
             try
             {
                 // Get all tables from the database with their current availability status
-                IEnumerable<Table> tables = _tablesRepository.GetAllTables();
+                IEnumerable<Table> tables = _tableService.GetAllTables();
 
                 // Pass tables to view for visual display
                 return View(tables);
@@ -113,7 +113,7 @@ namespace Chapeau.Controllers
             try
             {
                 // Update the table availability in the database
-                _tablesRepository.UpdateTableAvailability(tableNr, available);
+                _tableService.UpdateTableAvailability(tableNr, available);
 
                 // Success - set success message
                 TempData["SuccessMessage"] = $"Table {tableNr} updated successfully";
@@ -166,5 +166,17 @@ namespace Chapeau.Controllers
                 return View(new List<Order>());
             }
         }
+
+        public IActionResult OrderNavigator (int tableNr)
+        {
+
+
+
+            return null;
+        }
+
+        
+
+
     }
 }

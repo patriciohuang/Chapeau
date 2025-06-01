@@ -95,8 +95,10 @@ namespace Chapeau.Repositories
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
-                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status
+                            WHERE o.status LIKE @status
                             ORDER BY o.time_ordered";
+
+                //CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND            IN THE WHERE
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@status", $"%{status.ToString()}%");
