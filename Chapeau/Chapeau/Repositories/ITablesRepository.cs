@@ -22,5 +22,7 @@ namespace Chapeau.Repositories
         // Used when waiters seat customers or clear tables
         // Parameters: tableNr - which table to update, available - new status
         void UpdateTableAvailability(int tableNr, bool available);
+
+        int GetTableId(int tableNr);
     }
 }

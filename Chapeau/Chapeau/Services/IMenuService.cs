@@ -10,7 +10,7 @@ namespace Chapeau.Services
         //constructors
 
         //methods
-        MenuCardCategory GetAllCourses(MenuCard menuCard);
+        List<CourseCategory> GetAllCourses(MenuCard menuCard);
 
         MenuCard GetMenuCardByTime();
 

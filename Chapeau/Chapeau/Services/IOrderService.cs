@@ -17,7 +17,10 @@ namespace Chapeau.Services
         // Get a specific order with all details
         Order GetOrderById(int orderId);
 
-        //Order GetOrderByTable(int tableNr);
+        int? CheckIfOrderExists(int tableNr);
 
+        int CreateOrder(int tableNr, Employee loggedInEmployee);
+
+        void AddItem(int orderId, MenuItem menuItem);
     }
 }

@@ -2,6 +2,7 @@
 using Chapeau.Services;
 using Chapeau.Models;
 using Chapeau.Models.Enums;
+using Chapeau.ViewModels;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Chapeau.Controllers
@@ -9,10 +10,12 @@ namespace Chapeau.Controllers
     public class MenuController : BaseController
     {
         private readonly IMenuService _menuService;
+        private readonly IOrderService _orderService;
 
-        public MenuController(IMenuService menuService)
+        public MenuController(IMenuService menuService, IOrderService orderService)
         {
             _menuService = menuService;
+            _orderService = orderService;
         }
 
         // This method runs before every action in this controller
@@ -35,18 +38,20 @@ namespace Chapeau.Controllers
 
         // 
         [HttpGet]
-        public IActionResult Index(string? id)
+        public IActionResult Index(string? card, int orderId)
         {
             // Fill the menu card enum (this is used to filter by card) and get a list of all course categories in the current menu card, then send that to the view
             try
             {
                 // Writing an if else statement as a ternary operator saves A LOT of space, but this is basically just an if else statement
                 // If id is not null, parse it to a MenuCard enum, otherwise get the menu card by time through the service
-                MenuCard menuCard = (id != null) ? (MenuCard)Enum.Parse(typeof(MenuCard), id) : _menuService.GetMenuCardByTime();
+                MenuCard menuCard = (card != null) ? (MenuCard)Enum.Parse(typeof(MenuCard), card) : _menuService.GetMenuCardByTime();
 
-                MenuCardCategory menuCourses = _menuService.GetAllCourses(menuCard);
+                List<CourseCategory> menuCourses = _menuService.GetAllCourses(menuCard);
 
-                return View(menuCourses);
+                MenuCardCategory Menu = new MenuCardCategory(orderId, menuCourses, menuCard);
+
+                return View(Menu);
             }
             catch (Exception ex)
             {
@@ -58,7 +63,7 @@ namespace Chapeau.Controllers
 
         //change name to something referring the fact that you display things
         [HttpGet]
-        public IActionResult Course(string course, string card)
+        public IActionResult Course(int orderId, string course, string card)
         {
             try
             {
@@ -67,7 +72,9 @@ namespace Chapeau.Controllers
 
                 List<MenuItem> menuItems = _menuService.GetMenuItems(courseCategory, menuCard);
 
-                return View(menuItems);
+                MenuItemsAndOrder menuItemsAndOrder = new MenuItemsAndOrder(orderId, menuItems);    //TODO give this a better name
+
+                return View(menuItemsAndOrder);
             }
             catch (Exception ex)
             {
@@ -77,6 +84,24 @@ namespace Chapeau.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult Course(int orderId, MenuItem menuItem)
+        {
+            try
+            {
+                _orderService.AddItem(orderId, menuItem);
+
+                TempData["Success"] = $"{menuItem.Name} added to order successfully!";
+
+                return RedirectToAction("Course", new { orderId, course = menuItem.CourseCategory, card = menuItem.MenuCard });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Index", "Menu");
+            }
+        }
 
     }
 }

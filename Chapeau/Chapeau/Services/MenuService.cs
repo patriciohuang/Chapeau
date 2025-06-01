@@ -16,7 +16,7 @@ namespace Chapeau.Services
         }
 
         //methods
-        public MenuCardCategory GetAllCourses(MenuCard menuCard)
+        public List<CourseCategory> GetAllCourses(MenuCard menuCard)
         {
             return _menuRepository.GetAllCourses((MenuCard)menuCard);
         }

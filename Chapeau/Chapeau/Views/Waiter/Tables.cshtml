@@ -25,7 +25,7 @@
         @foreach (var table in Model)
         {
             string statusClass = table.Available ? "available" : "occupied";
-            <a href="@Url.Action("Index", "Menu")" class="table-link">
+            <a class="table-link" asp-controller="Waiter" asp-action="OrderNavigator" asp-route-TableNr="@table.TableNr">
                 <div class="table-item @statusClass" data-available="@table.Available.ToString().ToLower()">
                     <div class="chair top"></div>
                     <div class="chair left"></div>

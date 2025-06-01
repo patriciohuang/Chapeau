@@ -1,4 +1,4 @@
-﻿@model List<Chapeau.Models.MenuItem>;
+﻿@model Chapeau.ViewModels.MenuItemsAndOrder;
 
 @{
     ViewData["Title"] = "Menu";
@@ -7,15 +7,16 @@
 <div class="Menu">
 
     <div>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index">Back</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-orderId="@Model.OrderId">Back</a>
     </div>
 
     <partial name="_ErrorMessage" />
     <partial name="_ConfirmMessage" />
 
     <div>
+
         @{
-            foreach (MenuItem menuItem in Model)
+            foreach (MenuItem menuItem in Model.MenuItems)
             {
                 string stockStyling = "";
 
@@ -27,11 +28,23 @@
                 {
                     stockStyling = "bg-warning";
                 }
+                <form action="/Menu/Course" method="post">
+                    <input type="hidden" name="orderId" value="@Model.OrderId" />
 
-                <div class="MenuCourseCategory @stockStyling">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index"> @menuItem.Name </a>
-                    <p> &euro; @menuItem.Price </p>
-                </div>
+                    <input type="hidden" name="Name" value="@menuItem.Name" />
+                    <input type="hidden" name="Price" value="@menuItem.Price" />
+                    <input type="hidden" name="MenuCard" value="@menuItem.MenuCard" />
+                    <input type="hidden" name="CourseCategory" value="@menuItem.CourseCategory" />
+                    <input type="hidden" name="Stock" value="@menuItem.Stock" />
+                    <input type="hidden" name="IsAlcoholic" value="@menuItem.IsAlcoholic" />
+
+                    <div class="MenuCourseCategory @stockStyling">
+                        <button type="submit" class="btn btn-primary shadow-button">
+                            <i class="fas fa-plus-circle me-2"></i> @menuItem.Name
+                            <p> &euro; @menuItem.Price </p>
+                        </button>
+                    </div>
+                </form>
             }
         }
 

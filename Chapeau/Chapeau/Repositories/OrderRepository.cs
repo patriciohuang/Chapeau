@@ -13,6 +13,7 @@ namespace Chapeau.Repositories
         {
             _connectionString = configuration.GetConnectionString("chapeaudatabase");
         }
+
         /// Read order item from the database
         private Order ReadOrder(SqlDataReader reader)
         {
@@ -95,7 +96,7 @@ namespace Chapeau.Repositories
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
-                            WHERE o.status LIKE @status
+                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status
                             ORDER BY o.time_ordered";
 
                 //CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND            IN THE WHERE
@@ -165,6 +166,74 @@ namespace Chapeau.Repositories
                 reader.Close();
             }
             return order;
+        }
+
+
+        // Checks if an order exists for a given table number
+        public int? CheckIfOrderExists(int tableNr)
+        {
+            int? orderId;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to check if an order exists for the given table number
+                string sql = @"Select MAX([order_id]) AS order_id
+                                FROM [order] AS ord
+                                JOIN [table] AS tab ON ord.table_id = tab.table_id
+                                WHERE table_nr = @tableNr AND [availability] = 0";
+                //TODO Ask Dan if order has to be computed, if so ask him how we're going to figure out that the order is paid for (through a subquery?)
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@tableNr", tableNr);
+
+                connection.Open();
+
+                orderId = command.ExecuteScalar() as int?;
+                return orderId; // Returns the highest order ID for the table if the table is occupied.
+            }
+
+        }
+
+        // Creates a new order and returns the order ID
+        public int CreateOrder(int tableId, int employeeId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to insert a new order with default status 'In Progress'
+                string sql = @"INSERT INTO [order] (table_id, employee_id , date_ordered, time_ordered)
+                               VALUES (@tableId, @employeeId, @dateOrdered, @timeOrdered);
+                               SELECT SCOPE_IDENTITY();";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@tableId", tableId);
+                command.Parameters.AddWithValue("@employeeId", employeeId);
+                command.Parameters.AddWithValue("@dateOrdered", DateTime.Now.Date);
+                command.Parameters.AddWithValue("@timeOrdered", DateTime.Now.TimeOfDay);
+
+                connection.Open();
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+
+        public void AddItem(int orderId, int menuItemId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to insert a new order item
+                string sql = @"INSERT INTO order_item (order_id, menu_item_id, comment, status)
+                               VALUES (@orderId, @menuItemId, @comment, @status)";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@orderId", orderId);
+                command.Parameters.AddWithValue("@menuItemId", menuItemId);
+                command.Parameters.AddWithValue("@comment", string.Empty); // Default comment is empty
+                command.Parameters.AddWithValue("@status", Status.Ordered.ToString());
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
         }
     }
 }
