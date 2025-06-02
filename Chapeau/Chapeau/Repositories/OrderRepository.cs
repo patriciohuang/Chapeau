@@ -84,6 +84,7 @@ namespace Chapeau.Repositories
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
+                connection.Open();
                 // SQL query to get all orders for today (optionally filtered by status)
                 string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered,
                                         i.count, i.comment, i.status AS item_status,
@@ -101,7 +102,6 @@ namespace Chapeau.Repositories
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@status", $"%{status.ToString()}%");
 
-                connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
                 while (reader.Read())

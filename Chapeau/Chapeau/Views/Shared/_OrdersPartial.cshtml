@@ -2,7 +2,7 @@
 
 @foreach (var order in Model)
 {
-    @if(order.Status.ToString().ToLower() == "preparing" || order.Status.ToString().ToLower() == "served")
+    @if (order.Status.ToString().ToLower() == "ordered" || order.Status.ToString().ToLower() == "preparing" || order.Status.ToString().ToLower() == "served")
     {
         var urgentClass = order.MinutesSinceOrdered > 20 && order.Status.ToString().ToLower() == "preparing" ? "urgent-order" : "";
         <div class="col-md-4">

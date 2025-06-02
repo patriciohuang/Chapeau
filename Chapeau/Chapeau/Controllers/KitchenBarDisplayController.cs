@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Chapeau.Models;
 using Chapeau.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Chapeau.Controllers
 {
@@ -56,11 +57,30 @@ namespace Chapeau.Controllers
             return false;
         }
 
-        public IActionResult Index(Status? status)
+        public IActionResult Index(string status)
         {
-            // Get the orders from the service with optional status filter
-            List<Order> orders = _kitchenBarDisplaySevice.GetOrders(status);
 
+            if (string.IsNullOrEmpty(status))
+            {
+                return RedirectToAction("Index", new { status = "Preparing,Ordered" });
+            }
+
+            List<Status>? statusList = new List<Status>();
+
+            statusList = status
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => Enum.Parse<Status>(s.Trim(), true))
+                .ToList();
+
+
+            List<Order>? orders = new List<Order>(); 
+
+            foreach (var statusItem in statusList)
+            {
+                orders.AddRange(_kitchenBarDisplaySevice.GetOrders(statusItem));
+            }
+
+            // Filter the orders based on the current role
             foreach (var order in orders)
             {
                 order.OrderItems = order.OrderItems
@@ -68,7 +88,7 @@ namespace Chapeau.Controllers
                     .ToList();
             }
 
-            // Also remove orders with no matching items
+            // Remove orders with no matching items
             orders = orders.Where(o => o.OrderItems.Any()).ToList();
 
             ViewBag.Rol = CurrentEmployee.Role;

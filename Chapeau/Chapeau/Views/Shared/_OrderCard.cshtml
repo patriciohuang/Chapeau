@@ -38,7 +38,7 @@
 </div>
 
 <button class="btn btn-sm bg-@GetStatusColor(Model.Status) bg-opacity-75 status-btn">
-    @(Model.Status.ToString().ToUpper() == "PREPARING" ? "DONE" : "COMPLETED")
+	@ChangeStatusName(Model.Status)
 </button>
 
 @functions {
@@ -48,8 +48,18 @@
         {
             Status.Served => "secondary",
             Status.Preparing => "success",
-            Status.Ready => "secondary",
-            _ => "dark"
+            Status.Ordered => "primary",
+            _=> "dark"
+        };
+    }
+    string ChangeStatusName(Status status)
+    {
+        return status switch
+        {
+            Status.Served => "COMPLETED",
+            Status.Preparing => "DONE",
+            Status.Ordered => "START PREPARING",
+            _=> ""
         };
     }
 }

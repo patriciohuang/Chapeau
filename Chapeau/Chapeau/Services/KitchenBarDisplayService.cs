@@ -8,22 +8,15 @@ namespace Chapeau.Services
     public class KitchenBarDisplayService : IKitchenBarDisplayService
     {
         private readonly IOrderRepository _kitchenBarDisplayRepository;
+
         public KitchenBarDisplayService(IOrderRepository kitchenBarDisplayRepository)
         {
             _kitchenBarDisplayRepository = kitchenBarDisplayRepository;
         }
-        public List<Order> GetOrders(Status? status = null)
+
+        public List<Order> GetOrders(Status status)
         {
-            List<Order> incommingorders = _kitchenBarDisplayRepository.GetOrders(status);
-            return incommingorders;
+            return _kitchenBarDisplayRepository.GetOrders(status);
         }
-/*        public void UpdateOrderStatus(int orderId, Status status)
-        {
-            _kitchenBarDisplayRepository.UpdateOrderStatus(orderId, status);
-        }
-        public List<MenuItem> GetMenuItemsForOrder(int orderId)
-        {
-            return _kitchenBarDisplayRepository.GetMenuItemsForOrder(orderId);
-        }*/
     }
 }
