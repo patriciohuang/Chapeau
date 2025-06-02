@@ -131,7 +131,7 @@ namespace Chapeau.Controllers
         // GET: /Waiter/Orders
         // Shows all orders for the waiter to manage
         // Jeroen's note: Psycho code, don't use Viewbag
-        public IActionResult Orders(Status? status = null, int? tableNr = null)
+        public IActionResult Orders(string filter = "active", int? tableNr = null)
         {
             try
             {
@@ -143,17 +143,37 @@ namespace Chapeau.Controllers
                     orders = _orderService.GetOrdersByTable(tableNr.Value);
                     ViewBag.FilteredByTable = tableNr.Value;
                 }
-                // Filter by status if specified
-                else if (status.HasValue)
-                {
-                    orders = _orderService.GetOrdersByStatus(status.Value);
-                    ViewBag.FilteredByStatus = status.Value;
-                }
-                // Otherwise get all today's orders
                 else
                 {
+                    // Get all today's orders first
                     orders = _orderService.GetTodaysOrders();
                 }
+
+                // Apply the main filter
+                switch (filter.ToLower())
+                {
+                    case "active":
+                        // Active orders: orders that are not completed or cancelled
+                        orders = orders.Where(o => o.Status != Status.Completed && o.Status != Status.Cancelled).ToList();
+                        ViewBag.CurrentFilter = "active";
+                        break;
+
+                    case "ready":
+                        // Ready orders: orders that have at least one order item with status "Ready"
+                        orders = orders.Where(o => o.OrderItems.Any(item => item.Status == Status.Ready)).ToList();
+                        ViewBag.CurrentFilter = "ready";
+                        break;
+
+                    case "all":
+                    default:
+                        // All orders from today (no additional filtering needed)
+                        ViewBag.CurrentFilter = "all";
+                        break;
+                }
+
+                // Get available table numbers for the current filter (for table filter buttons)
+                var availableTableNumbers = orders.Select(o => o.Table.TableNr).Distinct().OrderBy(t => t).ToList();
+                ViewBag.AvailableTableNumbers = availableTableNumbers;
 
                 // Sort orders by time (most recent first)
                 orders = orders.OrderByDescending(o => o.Time_ordered).ToList();

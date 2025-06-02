@@ -37,6 +37,30 @@ namespace Chapeau.Services
             return allOrders.Where(o => o.Table.TableNr == tableNr).ToList();
         }
 
+        public List<Order> GetActiveOrders()
+        {
+            List<Order> allOrders = _orderRepository.GetOrders(null);
+            return allOrders.Where(o => o.Status != Status.Completed && o.Status != Status.Cancelled).ToList();
+        }
+
+        public List<Order> GetReadyOrders()
+        {
+            List<Order> allOrders = _orderRepository.GetOrders(null);
+            return allOrders.Where(o => o.OrderItems.Any(oi => oi.Status == Status.Ready)).ToList();
+        }
+
+        public List<Order> GetActiveOrdersByTable(int tableNr)
+        {
+            List<Order> allOrders = _orderRepository.GetOrders(null);
+            return allOrders.Where(o => o.Table.TableNr == tableNr && o.Status != Status.Completed && o.Status != Status.Cancelled).ToList();
+        }
+
+        public List<Order> GetReadyOrdersByTable(int tableNr)
+        {
+            List<Order> allOrders = _orderRepository.GetOrders(null);
+            return allOrders.Where(o => o.Table.TableNr == tableNr && o.OrderItems.Any(oi => oi.Status == Status.Ready)).ToList();
+        }
+
         public Order GetOrderById(int orderId)
         {
             return _orderRepository.GetOrder(orderId);
