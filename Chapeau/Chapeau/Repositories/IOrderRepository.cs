@@ -6,7 +6,7 @@ namespace Chapeau.Repositories
     public interface IOrderRepository
     {
         List<Order> GetOrders(Status? status);
-
+        bool UpdateOrderStatus(int orderId, Status status);
         Order GetOrder(int orderId);
     }
 }

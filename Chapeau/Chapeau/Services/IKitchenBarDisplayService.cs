@@ -6,10 +6,7 @@ namespace Chapeau.Services
     public interface IKitchenBarDisplayService
     {
         List<Order> GetOrders(Status status);
-
-        /*  
-        void UpdateOrderStatus(int orderId, Status status);  
-        List<MenuItem> GetMenuItemsForOrder(int orderId);  
-        */
+        List<Order> GetOrdersByStatus(List<Status> statuses);
+        bool UpdateOrderStatus(int orderId, Status currentStatus);
     }
 }

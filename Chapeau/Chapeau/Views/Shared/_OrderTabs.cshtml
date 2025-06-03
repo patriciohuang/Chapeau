@@ -1,10 +1,10 @@
 ﻿@{
-    var status = Context.Request.Query["status"].ToString();
+    string status = Context.Request.Query["status"].ToString();
 }
 <ul class="nav nav-tabs custom-tabs mb-4">
     <li class="nav-item">
-        <a class="nav-link @(status == "Preparing,Ordered,Served" ? "active" : "")"
-           asp-action="Index" asp-route-status="Preparing,Ordered,Served">
+        <a class="nav-link @(status == "Preparing,Ordered,Ready" ? "active" : "")"
+           asp-action="Index" asp-route-status="Preparing,Ordered,Ready">
             All orders
         </a>
     </li>
@@ -15,8 +15,8 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link @(status == "Served" ? "active" : "")"
-           asp-action="Index" asp-route-status="Served">
+        <a class="nav-link @(status == "Ready" ? "active" : "")"
+           asp-action="Index" asp-route-status="Ready">
             Completed
         </a>
     </li>

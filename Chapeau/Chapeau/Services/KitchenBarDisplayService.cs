@@ -18,5 +18,38 @@ namespace Chapeau.Services
         {
             return _kitchenBarDisplayRepository.GetOrders(status);
         }
+        public List<Order> GetOrdersByStatus(List<Status> statuses)
+        {
+            List<Order> orders = new List<Order>();
+
+            foreach (Status status in statuses)
+            {
+                orders.AddRange(_kitchenBarDisplayRepository.GetOrders(status));
+            }
+
+            return orders;
+        }
+
+        public bool UpdateOrderStatus(int orderId, Status currentStatus)
+        {
+            try
+            {
+                Status newStatus;
+                if (currentStatus != Status.Ready)
+                {
+                    newStatus = StatusHelper.NextStatus(currentStatus);
+                }
+                else
+                {
+                    newStatus = StatusHelper.PreviousStatus(currentStatus);
+                }
+                return _kitchenBarDisplayRepository.UpdateOrderStatus(orderId, newStatus);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e}");
+                return false;
+            }
+        }
     }
 }

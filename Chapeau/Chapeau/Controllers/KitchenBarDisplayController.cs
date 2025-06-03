@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Chapeau.Models;
 using Chapeau.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.IdentityModel.Tokens;
+using Chapeau.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Chapeau.Controllers
 {
@@ -11,10 +12,12 @@ namespace Chapeau.Controllers
     public class KitchenBarDisplayController : BaseController
     {
         private readonly IKitchenBarDisplayService _kitchenBarDisplaySevice;
+        private readonly IHubContext<OrderHub> _hubContext;
 
-        public KitchenBarDisplayController(IKitchenBarDisplayService kitchenBarDisplayServices)
+        public KitchenBarDisplayController(IKitchenBarDisplayService kitchenBarDisplayServices, IHubContext<OrderHub> hubContext)
         {
             _kitchenBarDisplaySevice = kitchenBarDisplayServices;
+            _hubContext = hubContext;
         }
 
         // This method runs before every action in this controller
@@ -57,44 +60,78 @@ namespace Chapeau.Controllers
             return false;
         }
 
-        public IActionResult Index(string status)
+        private List<Status> ParseStatuses(string status)
         {
+            List<Status> result = new List<Status>();
 
-            if (string.IsNullOrEmpty(status))
+            foreach (string s in status.Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
-                return RedirectToAction("Index", new { status = "Preparing,Ordered" });
+                // TryParse will return false if the string cannot be parsed to a Status enum
+                // out Status parsed: This is where the resulting parsed enum will be stored if parsing succeeds. So I can use it later to add to the list.
+                if (Enum.TryParse(s.Trim(), true, out Status parsed))
+                {
+                    result.Add(parsed);
+                }
             }
 
-            List<Status>? statusList = new List<Status>();
+            return result;
+        }
+        private List<Order> GetOrdersByStatus(string status)
+        {
+            List<Status> statusList = ParseStatuses(status);
+            List<Order> orders = _kitchenBarDisplaySevice.GetOrdersByStatus(statusList);
+            FilterOrdersByRole(orders);
 
-            statusList = status
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => Enum.Parse<Status>(s.Trim(), true))
-                .ToList();
+            ViewBag.Role = CurrentEmployee.Role;
+            return orders;
+        }
 
-
-            List<Order>? orders = new List<Order>(); 
-
-            foreach (var statusItem in statusList)
-            {
-                orders.AddRange(_kitchenBarDisplaySevice.GetOrders(statusItem));
-            }
-
+        public void FilterOrdersByRole(List<Order> orders)
+        {
             // Filter the orders based on the current role
-            foreach (var order in orders)
+            foreach (Order order in orders)
             {
                 order.OrderItems = order.OrderItems
                     .Where(item => IsItemForCurrentRole(item))
                     .ToList();
             }
-
             // Remove orders with no matching items
-            orders = orders.Where(o => o.OrderItems.Any()).ToList();
+            orders.RemoveAll(o => !o.OrderItems.Any());
+        }
 
-            ViewBag.Rol = CurrentEmployee.Role;
+
+        public IActionResult Index(string status)
+        {
+            // If the status parameter is null or empty, default to "Preparing,Ordered" so the first page shows orders that are either preparing or ordered
+            if (string.IsNullOrEmpty(status))
+            {
+                return RedirectToAction("Index", new { status = "Preparing,Ordered" });
+            }
+
+            List<Order> orders = GetOrdersByStatus(status);
 
             // Pass the filtered orders to the view
             return View(orders);
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateStatus(int orderId, Status currentStatus)
+        {
+            bool result = _kitchenBarDisplaySevice.UpdateOrderStatus(orderId, currentStatus);
+            if (result)
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveOrders");
+                return Ok();
+            }
+            else
+            {
+                return Problem();
+            }
+        }
+        public IActionResult OrdersPartial(string status)
+        {
+            List<Order> orders = GetOrdersByStatus(status);
+            return PartialView("_OrdersPartial", orders); // Make sure this partial view exists
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿@model Chapeau.Models.Order
-@using Chapeau.Models.Enums;
-
+@using Chapeau.Models.Enums
 
 <div class="d-flex justify-content-between mb-2">
     <div>
@@ -12,7 +11,7 @@
     </div>
 </div>
 
-@foreach (var group in Model.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
+@foreach (var group in Model.OrderItems.OrderBy(i => i.MenuItem.CourseCategory).GroupBy(i => i.MenuItem.CourseCategory))
 {
     <div class="mb-2">
         <div class="d-flex justify-content-between border-bottom">
@@ -29,16 +28,15 @@
 }
 
 <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
-    <div class="text-muted small">
-        <p>@Model.OrderId</p>
-    </div>
+    <span class="badge bg-@GetStatusColor(Model.Status)">@Model.Status</span>
     <div class="text-end">
         <p>@Model.MinutesSinceOrdered min</p>
     </div>
 </div>
 
-<button class="btn btn-sm bg-@GetStatusColor(Model.Status) bg-opacity-75 status-btn">
-	@ChangeStatusName(Model.Status)
+<button class="btn btn-sm bg-@GetStatusColor(Model.Status) bg-opacity-75 status-btn"
+        onclick="updateOrderStatus(@Model.OrderId, '@Model.Status.ToString()')">
+    @ChangeStatusName(Model.Status)
 </button>
 
 @functions {
@@ -46,20 +44,21 @@
     {
         return status switch
         {
-            Status.Served => "secondary",
+            Status.Ready => "secondary",
             Status.Preparing => "success",
             Status.Ordered => "primary",
-            _=> "dark"
+            _ => "dark"
         };
     }
+
     string ChangeStatusName(Status status)
     {
         return status switch
         {
-            Status.Served => "COMPLETED",
+            Status.Ready => "UNDO",
             Status.Preparing => "DONE",
             Status.Ordered => "START PREPARING",
-            _=> ""
+            _ => ""
         };
     }
 }

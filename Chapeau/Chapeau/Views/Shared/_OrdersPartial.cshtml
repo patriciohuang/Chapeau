@@ -1,10 +1,10 @@
 ﻿@model List<Chapeau.Models.Order>
 
-@foreach (var order in Model)
+@foreach (Order order in Model)
 {
-    @if (order.Status.ToString().ToLower() == "ordered" || order.Status.ToString().ToLower() == "preparing" || order.Status.ToString().ToLower() == "served")
+    @if (order.Status.ToString().ToLower() == "ordered" || order.Status.ToString().ToLower() == "preparing" || order.Status.ToString().ToLower() == "ready")
     {
-        var urgentClass = order.MinutesSinceOrdered > 20 && order.Status.ToString().ToLower() == "preparing" ? "urgent-order" : "";
+        string urgentClass = order.MinutesSinceOrdered > 20 && order.Status.ToString().ToLower() == "preparing" ? "urgent-order" : "";
         <div class="col-md-4">
             <div class="card-body d-flex flex-column order-card @urgentClass">
                 @await Html.PartialAsync("_OrderCard", order)

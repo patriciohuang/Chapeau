@@ -1,6 +1,6 @@
 ﻿@model List<Chapeau.Models.Order>
 @{
-	if (ViewBag.Rol.ToLower() == "kitchen")
+	if (ViewBag.Role.ToLower() == "kitchen")
 	{
 		ViewData["Title"] = "Kitchen";
 	}
@@ -12,7 +12,7 @@
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="mb-0">@ViewBag.Rol Display</h1>
+        <h1 class="mb-0">@ViewBag.Role Display</h1>
     </div>
 
     <!-- Tabs -->
@@ -20,7 +20,7 @@
 
     <!-- Orders -->
     <div class="row g-4" 
-    ="orders-container">
+    id="orders-container">
 		@await Html.PartialAsync("_OrdersPartial", Model)
     </div>
 </div>
@@ -35,15 +35,36 @@
             .withUrl("/orderHub")
             .build();
 
+         const currentStatus = "@Context.Request.Query["status"]"
+
         connection.start().catch(err => console.error(err.toString()));
 
         connection.on("ReceiveOrders", function () {
-            // Fetch updated partial via AJAX
-            fetch("/KitchenBarDisplay/OrdersPartial")
+            // Fetch updated partial via AJAX and passing the status
+            fetch(`/KitchenBarDisplay/OrdersPartial?status=${currentStatus}`)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById("orders-container").innerHTML = html;
                 });
         });
+        function updateOrderStatus(orderId, currentStatus) {
+			// Prepare form data to send to the server
+            const formData = new URLSearchParams();
+            formData.append("orderId", orderId);
+            formData.append("currentStatus", currentStatus);
+
+            fetch('/KitchenBarDisplay/UpdateStatus', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update status');
+            })
+            .catch(err => console.error(err));
+        }
     </script>
+
 }

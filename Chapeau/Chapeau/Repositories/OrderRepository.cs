@@ -80,6 +80,7 @@ namespace Chapeau.Repositories
         public List<Order> GetOrders(Status? status)
         {
             // Create a dictionary to store orders with their order_id as the key
+            // Is a dictionary because I'm using a Join that will bring repeat orders, using dictionary will allow me to check by order id
             Dictionary<int, Order> orders = new();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -100,6 +101,7 @@ namespace Chapeau.Repositories
                             ORDER BY o.time_ordered";
 
                 SqlCommand command = new SqlCommand(sql, connection);
+                //if the status is null, I want to get all orders, so I use a wildcard
                 command.Parameters.AddWithValue("@status", $"%{status.ToString()}%");
 
                 SqlDataReader reader = command.ExecuteReader();
@@ -110,13 +112,11 @@ namespace Chapeau.Repositories
                     // check if the order already exists in the dictionary
                     if (!orders.ContainsKey(orderId))
                     {
-                        var order = ReadOrder(reader);
-                        // add the order to the dictionary
+                        Order order = ReadOrder(reader);
                         orders.Add(orderId, order);
                     }
 
-                    var order_item = ReadOrderItem(reader);
-                    // add the item to the existing order
+                    OrderItem order_item = ReadOrderItem(reader);
                     orders[orderId].OrderItems.Add(order_item);
                 }  
 
@@ -124,6 +124,21 @@ namespace Chapeau.Repositories
             }
             // return the list of orders
             return orders.Values.ToList();
+        }
+
+        public bool UpdateOrderStatus(int orderId, Status status)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to update the status of an order
+                string sql = "UPDATE [order] SET status = @status WHERE order_id = @orderId";
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@status", status.ToString());
+                command.Parameters.AddWithValue("@orderId", orderId);
+                connection.Open();
+                int affected = command.ExecuteNonQuery();
+                return affected > 0;
+            }
         }
 
         // TODO, get a method that returns a (filled) order object when an orderId parameter is entered

@@ -7,9 +7,9 @@ namespace Chapeau.Models
     {
         // Basic order info
         public int OrderId { get; set; }
-        public Status Status { get; set; } // Status of the order (e.g., Preparing, Ready, Served, etc.)
-        public DateOnly Date_ordered { get; set; } // Date when the order was placed
-        public TimeOnly Time_ordered { get; set; } // Time when the order was placed
+        public Status Status { get; set; }
+        public DateOnly Date_ordered { get; set; }
+        public TimeOnly Time_ordered { get; set; }
         public Table Table { get; set; }
         public Employee Employee { get; set; }
 
@@ -35,6 +35,5 @@ namespace Chapeau.Models
             Employee = employee;
             OrderItems = new List<OrderItem>();
         }
-
     }
 }

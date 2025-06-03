@@ -3,6 +3,7 @@
     //Pato
     public enum Status
     {
+        Unordered,
         Ordered,
         Preparing,
         Ready,
