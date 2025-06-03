@@ -116,7 +116,7 @@ namespace Chapeau.Repositories
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
-                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status
+                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status AND o.status != 'Unordered'
                             ORDER BY o.time_ordered";
 
                 //CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND            IN THE WHERE
@@ -246,6 +246,25 @@ namespace Chapeau.Repositories
                 command.Parameters.AddWithValue("@menuItemId", menuItemId);
                 command.Parameters.AddWithValue("@comment", string.Empty); // Default comment is empty
                 command.Parameters.AddWithValue("@status", Status.Unordered.ToString());
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void SendOrder(int orderId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to update the order status to 'In Progress'
+                string sql = @"UPDATE [order_item]
+                               SET status = @status
+                               WHERE order_id = @orderId AND status = 'Unordered'";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@orderId", orderId);
+                command.Parameters.AddWithValue("@status", Status.Ordered.ToString());
 
                 connection.Open();
                 command.ExecuteNonQuery();

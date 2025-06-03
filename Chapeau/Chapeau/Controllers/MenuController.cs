@@ -64,10 +64,27 @@ namespace Chapeau.Controllers
             }
         }
 
+        //Should I do this with just the tableNr, it's an extra database query to get the orderId, but it makes it impossible to enter your own orderId in the form
+        [HttpPost]
+        public IActionResult SendOrder (int orderId, int tableNr)
+        {
+            try
+            {
+                _orderService.SendOrder(orderId);
 
+                TempData["Success"] = "Order sent successfully!";
 
-        //
-        [HttpGet]
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+
+            }
+
+            return RedirectToAction("Overview", "Menu", new { tableNr });
+            }
+            //
+            [HttpGet]
         public IActionResult Card(string? card, int tableNr)
         {
             // Fill the menu card enum (this is used to filter by card) and get a list of all course categories in the current menu card, then send that to the view

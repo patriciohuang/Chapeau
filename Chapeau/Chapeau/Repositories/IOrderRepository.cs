@@ -14,5 +14,7 @@ namespace Chapeau.Repositories
         int CreateOrder(int tableNr, int employeeId);
 
         void AddItem(int orderId, int menuItemId);
+
+        void SendOrder(int orderId);
     }
 }

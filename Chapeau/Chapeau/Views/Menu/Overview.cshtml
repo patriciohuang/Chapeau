@@ -4,6 +4,9 @@
     ViewData["Title"] = $"Table {@Model.Table.TableNr} order overview";
 }
 
+<partial name="_ErrorMessage" />
+<partial name="_ConfirmMessage" />
+
 <div class="d-flex justify-content-between mb-2">
     <div>
         <p class="h2">Table @Model.Table.TableNr</p>
@@ -44,3 +47,12 @@
 <a class="btn btn-primary btn-sm" asp-controller="Payment" asp-action="Index" asp-route-orderId="@Model.OrderId">
     <i class="bi bi-credit-card"></i> To payment
 </a>
+
+<form action="/Menu/SendOrder" method="post">
+    <input type="hidden" name="tableNr" value="@Model.Table.TableNr" />
+    <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+    <button type="submit" class="btn btn-primary shadow-button">
+        <i class="fas fa-plus-circle me-2"></i> Send order
+    </button>
+</form>

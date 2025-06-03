@@ -22,5 +22,7 @@ namespace Chapeau.Services
         int CreateOrder(int tableNr, Employee loggedInEmployee);
 
         void AddItem(int orderId, MenuItem menuItem);
+
+        void SendOrder(int orderId);
     }
 }

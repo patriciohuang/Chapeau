@@ -71,5 +71,10 @@ namespace Chapeau.Services
                 _menuRepository.UpdateStock(menuItem.MenuItemId);
             }
         }
+
+        public void SendOrder(int orderId)
+        {
+            _orderRepository.SendOrder(orderId);
+        }
     }
 }
