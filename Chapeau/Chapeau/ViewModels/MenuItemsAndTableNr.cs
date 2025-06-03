@@ -1,21 +1,22 @@
-﻿using Chapeau.Models.Enums;
+﻿using Chapeau.Models;
+using Chapeau.Models.Enums;
 
 namespace Chapeau.ViewModels
 {
-    public class MenuCardCategory
+    public class MenuItemsAndTableNr
     {
         // Fields and properties
         public int TableNr { get; set; }
         public MenuCard MenuCard { get; set; }
-        public List<CourseCategory> CourseCategory { get; set; }
+        public List<MenuItem> MenuItems { get; set; }
 
 
         //constructors
-        public MenuCardCategory(int tableNr, List<CourseCategory> courseCategory, MenuCard menuCard)
+        public MenuItemsAndTableNr(int tableNr, MenuCard menuCard, List<MenuItem> menuItems)
         {
             TableNr = tableNr;
-            CourseCategory = courseCategory;
             MenuCard = menuCard;
+            MenuItems = menuItems;
         }
 
         //methods

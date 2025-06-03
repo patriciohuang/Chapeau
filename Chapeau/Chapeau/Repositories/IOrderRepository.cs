@@ -7,7 +7,7 @@ namespace Chapeau.Repositories
     {
         List<Order> GetOrders(Status? status);
 
-        Order GetOrder(int orderId);
+        Order GetOrderById(int orderId);
 
         int? CheckIfOrderExists(int tableNr);
 

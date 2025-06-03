@@ -10,6 +10,7 @@ namespace Chapeau.Models
         public Status Status { get; set; } // Status of the order (e.g., Preparing, Ready, Served, etc.)
         public DateOnly Date_ordered { get; set; } // Date when the order was placed
         public TimeOnly Time_ordered { get; set; } // Time when the order was placed
+        public bool IsPaid { get; set; }
         public Table Table { get; set; }
         public Employee Employee { get; set; }
 
@@ -25,12 +26,13 @@ namespace Chapeau.Models
         // Constructors
         public Order() { }
 
-        public Order(int orderId, Status status, DateOnly date_ordered, TimeOnly time_ordered, Table table, Employee employee)
+        public Order(int orderId, Status status, DateOnly date_ordered, TimeOnly time_ordered, bool isPaid, Table table, Employee employee)
         {
             OrderId = orderId;
             Status = status;
             Date_ordered = date_ordered;
             Time_ordered = time_ordered;
+            IsPaid = isPaid;
             Table = table;
             Employee = employee;
             OrderItems = new List<OrderItem>();

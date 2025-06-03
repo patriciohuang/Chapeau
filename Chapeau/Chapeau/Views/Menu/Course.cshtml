@@ -1,13 +1,17 @@
-﻿@model Chapeau.ViewModels.MenuItemsAndOrder;
+﻿@model Chapeau.ViewModels.MenuItemsAndTableNr;
 
 @{
     ViewData["Title"] = "Menu";
 }
 
 <div class="Menu">
+    <div>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">Order overview</a>
+    </div>
+
 
     <div>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-orderId="@Model.OrderId">Back</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr">Back</a>
     </div>
 
     <partial name="_ErrorMessage" />
@@ -29,8 +33,10 @@
                     stockStyling = "bg-warning";
                 }
                 <form action="/Menu/Course" method="post">
-                    <input type="hidden" name="orderId" value="@Model.OrderId" />
+                    <input type="hidden" name="tableNr" value="@Model.TableNr" />
+                    <input type="hidden" name="card" value="@Model.MenuCard" />
 
+                    <input type="hidden" name="MenuItemId" value="@menuItem.MenuItemId" />
                     <input type="hidden" name="Name" value="@menuItem.Name" />
                     <input type="hidden" name="Price" value="@menuItem.Price" />
                     <input type="hidden" name="MenuCard" value="@menuItem.MenuCard" />

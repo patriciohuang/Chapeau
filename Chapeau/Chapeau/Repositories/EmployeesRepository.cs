@@ -97,7 +97,7 @@ namespace Chapeau.Repositories
             {
                 // SQL query to find employee by employee number
                 // Selects all necessary fields including the hashed password for authentication
-                string query = "SELECT first_name, last_name, role, employee_nr, password " +
+                string query = "SELECT employee_id, first_name, last_name, role, employee_nr, password " +
                                "FROM employee WHERE employee_nr = @EmployeeNr";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
@@ -113,6 +113,7 @@ namespace Chapeau.Repositories
                     // Create Employee object from database record
                     employee = new Employee
                     {
+                        EmployeeId = reader.GetInt32(reader.GetOrdinal("employee_id")),
                         EmployeeNr = reader.GetInt32(reader.GetOrdinal("employee_nr")),
                         FirstName = reader.GetString(reader.GetOrdinal("first_name")),
                         LastName = reader.GetString(reader.GetOrdinal("last_name")),
@@ -157,7 +158,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all employees (excluding passwords for security)
-                string query = "SELECT first_name, last_name, role, employee_nr FROM employee";
+                string query = "SELECT employee_id, first_name, last_name, role, employee_nr FROM employee";
 
                 SqlCommand cmd = new SqlCommand(query, connection);
                 connection.Open();
@@ -169,6 +170,7 @@ namespace Chapeau.Repositories
                 {
                     Employee employee = new Employee
                     {
+                        EmployeeId = reader.GetInt32(reader.GetOrdinal("employee_id")),
                         EmployeeNr = reader.GetInt32(reader.GetOrdinal("employee_nr")),
                         FirstName = reader.GetString(reader.GetOrdinal("first_name")),
                         LastName = reader.GetString(reader.GetOrdinal("last_name")),
@@ -184,23 +186,6 @@ namespace Chapeau.Repositories
             }
 
             return employees;
-        }
-
-        public int GetEmployeeId(int employeeNr)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                // SQL query to get the employee ID by employee number
-                string query = "SELECT employee_id FROM employee WHERE employee_nr = @EmployeeNr";
-
-                SqlCommand cmd = new SqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("@EmployeeNr", employeeNr);
-
-                connection.Open();
-
-                // Execute the command and return the employee number
-                return (int)cmd.ExecuteScalar();
-            }
         }
     }
 }

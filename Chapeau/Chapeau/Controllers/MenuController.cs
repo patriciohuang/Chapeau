@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Chapeau.Controllers
 {
+
+    //TODO: SHOULD I RENAME THIS CONTROLLER TO ORDERCONTROLLER?
     public class MenuController : BaseController
     {
         private readonly IMenuService _menuService;
@@ -36,9 +38,37 @@ namespace Chapeau.Controllers
             }
         }
 
-        // 
+
         [HttpGet]
-        public IActionResult Index(string? card, int orderId)
+        public IActionResult Overview(int tableNr)
+        {
+            try
+            {
+                int? orderId = _orderService.CheckIfOrderExists(tableNr);
+
+                //instead of an error message, should I just create a new order?
+                if (!orderId.HasValue)
+                {
+                    throw new Exception("No order found for this table. Please add a menu item to it first.");
+                }
+
+                Order order = _orderService.GetOrderById((int)orderId);
+
+                return View(order);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Tables", "Waiter");
+            }
+        }
+
+
+
+        //
+        [HttpGet]
+        public IActionResult Card(string? card, int tableNr)
         {
             // Fill the menu card enum (this is used to filter by card) and get a list of all course categories in the current menu card, then send that to the view
             try
@@ -49,7 +79,7 @@ namespace Chapeau.Controllers
 
                 List<CourseCategory> menuCourses = _menuService.GetAllCourses(menuCard);
 
-                MenuCardCategory Menu = new MenuCardCategory(orderId, menuCourses, menuCard);
+                MenuCardCategory Menu = new MenuCardCategory(tableNr, menuCourses, menuCard);
 
                 return View(Menu);
             }
@@ -63,7 +93,7 @@ namespace Chapeau.Controllers
 
         //change name to something referring the fact that you display things
         [HttpGet]
-        public IActionResult Course(int orderId, string course, string card)
+        public IActionResult Course(int tableNr, string course, string card)
         {
             try
             {
@@ -72,7 +102,7 @@ namespace Chapeau.Controllers
 
                 List<MenuItem> menuItems = _menuService.GetMenuItems(courseCategory, menuCard);
 
-                MenuItemsAndOrder menuItemsAndOrder = new MenuItemsAndOrder(orderId, menuItems);    //TODO give this a better name
+                MenuItemsAndTableNr menuItemsAndOrder = new MenuItemsAndTableNr(tableNr, menuCard, menuItems);
 
                 return View(menuItemsAndOrder);
             }
@@ -80,26 +110,39 @@ namespace Chapeau.Controllers
             {
                 TempData["Error"] = $"Error: {ex.Message}";
 
-                return RedirectToAction("Index", "Menu");
+                return RedirectToAction("Tables", "Waiter");
             }
         }
 
         [HttpPost]
-        public IActionResult Course(int orderId, MenuItem menuItem)
+        public IActionResult Course(int tableNr, string card, MenuItem menuItem)
         {
             try
             {
-                _orderService.AddItem(orderId, menuItem);
+                int? orderId = _orderService.CheckIfOrderExists(tableNr);
+                MenuCard menuCard = (MenuCard)Enum.Parse(typeof(MenuCard), card.ToString());
+
+                //If the orderId is empty, that means there is no order for that table yet, this creates an order for the table AND saves the orderId
+                if (!orderId.HasValue)
+                {
+                    Employee loggedInEmployee = HttpContext.Session.GetObject<Employee>("LoggedInEmployee");
+                    
+                    //Create a new order
+                    orderId = _orderService.CreateOrder(tableNr, loggedInEmployee);
+                }
+
+                _orderService.AddItem((int)orderId, menuItem);
 
                 TempData["Success"] = $"{menuItem.Name} added to order successfully!";
+                
+                return RedirectToAction("Course", new {tableNr, card = menuCard, course = menuItem.CourseCategory.ToString() });
 
-                return RedirectToAction("Course", new { orderId, course = menuItem.CourseCategory, card = menuItem.MenuCard });
             }
             catch (Exception ex)
             {
                 TempData["Error"] = $"Error: {ex.Message}";
 
-                return RedirectToAction("Index", "Menu");
+                return RedirectToAction("Tables", "Waiter");
             }
         }
 

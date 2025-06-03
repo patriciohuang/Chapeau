@@ -31,7 +31,7 @@ namespace Chapeau.Repositories
             {
                 // SQL query to get all tables ordered by table number
                 // This ensures consistent display order in the UI
-                string query = "SELECT table_nr, availability FROM [table] ORDER BY table_nr";
+                string query = "SELECT table_id, table_nr, availability FROM [table] ORDER BY table_nr";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 connection.Open();
@@ -44,6 +44,8 @@ namespace Chapeau.Repositories
                         // Create Table object from database record
                         Table table = new Table
                         {
+                            // Get table ID from database (primary key)
+                            TableId = reader.GetInt32(reader.GetOrdinal("table_id")),
                             // Get table number from database
                             TableNr = reader.GetInt32(reader.GetOrdinal("table_nr")),
 
@@ -72,7 +74,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to find specific table by number
-                string query = "SELECT table_nr, availability FROM [table] WHERE table_nr = @TableNr";
+                string query = "SELECT table_id, table_nr, availability FROM [table] WHERE table_nr = @TableNr";
 
                 SqlCommand command = new SqlCommand(query, connection);
                 // Use parameter to prevent SQL injection
@@ -88,6 +90,7 @@ namespace Chapeau.Repositories
                         // Create Table object from database record
                         table = new Table
                         {
+                            TableId = reader.GetInt32(reader.GetOrdinal("table_id")),
                             TableNr = reader.GetInt32(reader.GetOrdinal("table_nr")),
                             Available = reader.GetBoolean(reader.GetOrdinal("availability"))
                         };

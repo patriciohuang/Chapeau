@@ -2,6 +2,7 @@
 {
     public class Table
     {
+        public int TableId { get; set; }
         public int TableNr { get; set; }
         public bool Available { get; set; } // Boolean field for availability
 
@@ -14,8 +15,9 @@
             Available = true; // Default to available
         }
 
-        public Table(int tableNr, bool available)
+        public Table(int tableId, int tableNr, bool available)
         {
+            TableId = tableId;
             TableNr = tableNr;
             Available = available;
         }

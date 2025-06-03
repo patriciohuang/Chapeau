@@ -96,35 +96,30 @@ namespace Chapeau.Repositories
             return menuItems;
         }
 
-        public int GetMenuItemId(string name)
+        public void UpdateStock(int menuItemId)
         {
-            int menuItemId = 0;
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT menu_item_id FROM menu_item WHERE name LIKE @name;";
+                string query =  "UPDATE menu_item " +
+                                "SET stock = stock - 1 " +
+                                "WHERE menu_item_id = @menuItemId;";
+                
                 SqlCommand command = new SqlCommand(query, connection);
 
-                command.Parameters.AddWithValue("@name", name);
+                // Use parameter to prevent SQL injection
+                command.Parameters.AddWithValue("@menuItemId", menuItemId);
 
                 command.Connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
 
-                if (reader.Read())
-                {
-                    menuItemId = (int)reader["menu_item_id"];
-                }
-                reader.Close();
-                
-                return menuItemId;
+                // Execute the update command
+                command.ExecuteNonQuery();
             }
         }
-
-
 
         //Here are reusable private methods
         private MenuItem ReadMenuItem(SqlDataReader reader)
         {
+            int menuItemId = (int)reader["menu_item_id"];
             string name = (string)reader["name"];
             decimal price = (decimal)reader["price"];
             MenuCard menuCard = (MenuCard)Enum.Parse(typeof(MenuCard), (string)reader["menu_card"]);
@@ -132,7 +127,7 @@ namespace Chapeau.Repositories
             int stock = (int)reader["stock"];
             bool isAlcoholic = (bool)reader["isAlcoholic"];
 
-            return new MenuItem(name, price, menuCard, courseCategory, stock, isAlcoholic);
+            return new MenuItem(menuItemId, name, price, menuCard, courseCategory, stock, isAlcoholic);
         }
 
     }

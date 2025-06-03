@@ -22,6 +22,7 @@ namespace Chapeau.Repositories
             Status status = Enum.Parse<Status>((string)reader["order_status"], true);
             DateOnly dateOrdered = DateOnly.FromDateTime((DateTime)reader["date_ordered"]);
             TimeOnly timeOrdered = TimeOnly.FromTimeSpan((TimeSpan)reader["time_ordered"]);
+            bool isPaid = (bool)reader["is_paid"];
 
 
             // Read employee
@@ -30,26 +31,28 @@ namespace Chapeau.Repositories
             // Read table
             Table table = ReadTable(reader);
 
-            return new Order(orderId, status, dateOrdered, timeOrdered, table, employee);
+            return new Order(orderId, status, dateOrdered, timeOrdered, isPaid, table, employee);
         }
 
         private Employee ReadEmployee(SqlDataReader reader)
         {
+            int employeeId = (int)reader["employee_id"];
             int employeeNr = (int)reader["employee_nr"];
             string firstName = (string)reader["first_name"];
             string lastName = (string)reader["last_name"];
             string role = (string)reader["role"];
             string password = (string)reader["password"];
 
-            return new Employee(employeeNr, firstName, lastName, role, password);
+            return new Employee(employeeId, employeeNr, firstName, lastName, role, password);
         }
 
         private Table ReadTable(SqlDataReader reader)
         {
+            int tableId = (int)reader["table_id"];
             int tableNr = (int)reader["table_nr"];
             bool availability = (bool)reader["availability"];
 
-            return new Table(tableNr, availability);
+            return new Table(tableId, tableNr, availability);
         }
 
         /// Read order item from the database
@@ -67,6 +70,7 @@ namespace Chapeau.Repositories
         private MenuItem ReadMenuItem(SqlDataReader reader)
         {
             // Read menu item
+            int menuItemId = (int)reader["menu_item_id"];
             string name = (string)reader["name"];
             decimal price = (decimal)reader["price"];
             MenuCard menuCard = Enum.Parse<MenuCard>((string)reader["menu_card"], true);
@@ -74,7 +78,23 @@ namespace Chapeau.Repositories
             int stock = (int)reader["stock"];
             bool isAlcoholic = (bool)reader["isAlcoholic"];
 
-            return new MenuItem(name, price, menuCard, courseCategory, stock, isAlcoholic);
+            return new MenuItem(menuItemId, name, price, menuCard, courseCategory, stock, isAlcoholic);
+        }
+
+        private void AddOrderItemToOrder(Order order, OrderItem newOrderItem)
+        {
+            // Check if the item already exists in the order by comparing the Name, Status, and Comment
+            OrderItem? existingOrderItem = order.OrderItems.FirstOrDefault(i => i.MenuItem.Name == newOrderItem.MenuItem.Name && i.Status == newOrderItem.Status && i.Comment == newOrderItem.Comment);
+            if (existingOrderItem != null)
+            {
+                // If it exists, increment the count
+                existingOrderItem.Count++;
+            }
+            else
+            {
+                // If it doesn't exist, add the new item to the order
+                order.OrderItems.Add(newOrderItem);
+            }
         }
 
 
@@ -86,11 +106,11 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all orders for today (optionally filtered by status)
-                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered,
+                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
                                         i.count, i.comment, i.status AS item_status,
-                                        e.employee_nr, e.first_name, e.last_name, e.role, e.password,
-                                        t.table_nr, t.availability,
-                                        m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic
+                                        e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
+                                        t.table_id, t.table_nr, t.availability,
+                                        m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic
                             FROM [order] o
                             JOIN order_item i ON o.order_id = i.order_id
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
@@ -118,10 +138,8 @@ namespace Chapeau.Repositories
                         orders.Add(orderId, order);
                     }
 
-                    var order_item = ReadOrderItem(reader);
-                    // add the item to the existing order
-                    orders[orderId].OrderItems.Add(order_item);
-                }  
+                    AddOrderItemToOrder(orders[orderId], ReadOrderItem(reader));
+                }
 
                 reader.Close();
             }
@@ -129,19 +147,18 @@ namespace Chapeau.Repositories
             return orders.Values.ToList();
         }
 
-        // TODO, get a method that returns a (filled) order object when an orderId parameter is entered
-        public Order GetOrder(int orderId)
+        public Order GetOrderById(int orderId)
         {
             Order? order = null;
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all orders for today (optionally filtered by status)
-                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered,
+                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
                                         i.count, i.comment, i.status AS item_status,
-                                        e.employee_nr, e.first_name, e.last_name, e.role, e.password,
+                                        e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_nr, t.table_id, t.availability,
-                                        m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic
+                                        m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic
                             FROM [order] o
                             JOIN order_item i ON o.order_id = i.order_id
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
@@ -161,7 +178,7 @@ namespace Chapeau.Repositories
                     //IT IS ALWAYS NULL ON THE FIRST PASS
                     order ??= ReadOrder(reader);
 
-                    order.OrderItems.Add(ReadOrderItem(reader));
+                    AddOrderItemToOrder(order, ReadOrderItem(reader));
                 }
                 reader.Close();
             }
@@ -180,8 +197,8 @@ namespace Chapeau.Repositories
                 string sql = @"Select MAX([order_id]) AS order_id
                                 FROM [order] AS ord
                                 JOIN [table] AS tab ON ord.table_id = tab.table_id
-                                WHERE table_nr = @tableNr AND [availability] = 0";
-                //TODO Ask Dan if order has to be computed, if so ask him how we're going to figure out that the order is paid for (through a subquery?)
+                                WHERE table_nr = @tableNr AND [is_paid] = 0";
+                //TODO see if MAX order_id can become a regular order_id
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@tableNr", tableNr);
@@ -191,7 +208,6 @@ namespace Chapeau.Repositories
                 orderId = command.ExecuteScalar() as int?;
                 return orderId; // Returns the highest order ID for the table if the table is occupied.
             }
-
         }
 
         // Creates a new order and returns the order ID
@@ -229,7 +245,7 @@ namespace Chapeau.Repositories
                 command.Parameters.AddWithValue("@orderId", orderId);
                 command.Parameters.AddWithValue("@menuItemId", menuItemId);
                 command.Parameters.AddWithValue("@comment", string.Empty); // Default comment is empty
-                command.Parameters.AddWithValue("@status", Status.Ordered.ToString());
+                command.Parameters.AddWithValue("@status", Status.Unordered.ToString());
 
                 connection.Open();
                 command.ExecuteNonQuery();

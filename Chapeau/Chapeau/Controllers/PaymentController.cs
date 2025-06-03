@@ -45,7 +45,7 @@ namespace Chapeau.Controllers
 
             try
             {
-                Order order = _orderRepository.GetOrder(orderId);
+                Order order = _orderRepository.GetOrderById(orderId);
 
                 decimal totalAmount;
                 foreach (OrderItem orderItem in order.OrderItems)
