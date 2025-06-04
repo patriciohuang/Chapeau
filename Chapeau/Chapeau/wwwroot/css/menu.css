@@ -1,6 +1,6 @@
-/* Menu/Waiter Specific Styles */
+/* Menu/Waiter Specific Styles - Conservative Updates */
 
-/* Main menu container */
+/* Main menu container - keep existing structure but improve styling */
 .Menu {
     width: 60%;
     margin-left: auto;
@@ -9,16 +9,48 @@
     flex-direction: column;
     align-items: center;
     flex-wrap: wrap;
+    padding: 1rem;
 }
 
 /* Mobile responsive - full width on small screens */
 @media (max-width: 768px) {
     .Menu {
         width: 100%;
+        padding: 0.5rem;
     }
 }
 
-/* Menu card filters (Lunch/Dinner/Drinks) */
+/* Navigation links in menu - clean without icons */
+.Menu > div:first-child a,
+.Menu > div:nth-child(2) a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+}
+
+    /* Hide any icons in navigation links */
+    .Menu > div:first-child a i,
+    .Menu > div:nth-child(2) a i {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    .Menu > div:first-child a:hover,
+    .Menu > div:nth-child(2) a:hover {
+        background: #e3f2fd;
+        border-color: #3b82f6;
+        transform: translateY(-1px);
+    }
+
+/* Menu card filters (Lunch/Dinner/Drinks) - improve existing structure */
 .MenuCardFilters {
     width: 100%;
     display: flex;
@@ -27,22 +59,683 @@
     flex-wrap: wrap;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    gap: 0.5rem;
 }
 
-/* Individual menu card button */
+/* Individual menu card button - enhance existing */
 .menuCard {
     width: 32%;
-    height: 3rem;
-    text-align: center;
+    min-width: 120px;
+    height: 4rem;
+    background: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
-/* Menu course category items */
+    .menuCard:hover {
+        border-color: #3b82f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+
+    /* Active menu card indicator */
+    .menuCard.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border-color: #3b82f6;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        position: relative;
+    }
+
+        .menuCard.active::before {
+            content: "";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            border: 2px solid white;
+        }
+
+        .menuCard.active::after {
+            content: "";
+            position: absolute;
+            top: 12px;
+            right: 11px;
+            width: 6px;
+            height: 3px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg);
+        }
+
+    .menuCard a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        color: #374151;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+
+    .menuCard:hover a {
+        color: #3b82f6;
+    }
+
+    .menuCard.active a {
+        color: white;
+    }
+
+    .menuCard.active:hover a {
+        color: white;
+    }
+
+/* Mobile menu card adjustments */
+@media (max-width: 768px) {
+    .menuCard {
+        width: 30%;
+        min-width: 100px;
+        height: 3.5rem;
+    }
+
+        .menuCard a {
+            font-size: 0.9rem;
+        }
+}
+
+/* Menu course category items - clean without icons */
 .MenuCourseCategory {
     display: flex;
     justify-content: center;
     min-width: 80%;
-    padding: 0.5rem;
+    padding: 0;
     margin-top: 1rem;
-    border: 1px solid black;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+    .MenuCourseCategory:hover {
+        border-color: #3b82f6;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+
+    .MenuCourseCategory a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 1.25rem;
+        color: #374151;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+    }
+
+        /* Hide any icons in menu category links */
+        .MenuCourseCategory a i {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+    .MenuCourseCategory:hover a {
+        color: #3b82f6;
+        background: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Menu item forms - improve button styling without any icons */
+    .MenuCourseCategory form {
+        width: 100%;
+        margin: 0;
+    }
+
+    .MenuCourseCategory button {
+        width: 100%;
+        border: none;
+        background: transparent;
+        padding: 1.25rem;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #374151;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+        .MenuCourseCategory button:hover {
+            background: rgba(59, 130, 246, 0.05);
+            color: #3b82f6;
+        }
+
+        /* Completely hide any icons in menu item buttons */
+        .MenuCourseCategory button .fas,
+        .MenuCourseCategory button .bi,
+        .MenuCourseCategory button i {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        .MenuCourseCategory button p {
+            margin: 0;
+            font-weight: 600;
+            color: #10b981;
+            font-size: 1.1rem;
+        }
+
+    /* Stock-based styling - very light backgrounds */
+    .MenuCourseCategory.bg-secondary {
+        background: #fefefe;
+        border: 2px dashed #d6d8db;
+        opacity: 1;
+    }
+
+        .MenuCourseCategory.bg-secondary button {
+            cursor: not-allowed;
+            color: #495057;
+            font-weight: 600;
+        }
+
+            .MenuCourseCategory.bg-secondary button:hover {
+                background: transparent;
+                color: #495057;
+                transform: none;
+            }
+
+    .MenuCourseCategory.bg-warning {
+        background: #fffbf0;
+        border: 2px solid #ffc107;
+        border-left: 6px solid #ff8c00;
+    }
+
+        .MenuCourseCategory.bg-warning button {
+            color: #856404;
+            font-weight: 600;
+        }
+
+        .MenuCourseCategory.bg-warning:hover {
+            background: #fff8e1;
+            border-color: #ff8c00;
+        }
+
+/* Order overview improvements - enhance existing structure */
+.Menu .d-flex.justify-content-between.mb-2 {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.Menu .h2 {
+    color: #111827;
+    font-weight: 700;
+}
+
+.Menu .mb-2:has(.border-bottom) {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.Menu .border-bottom {
+    border-bottom: 2px solid #e5e7eb !important;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.Menu .check-icon {
+    color: #10b981;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.Menu .list-unstyled {
+    margin: 0;
+    padding: 0;
+}
+
+    .Menu .list-unstyled li {
+        padding: 0.25rem 0;
+        color: #6b7280;
+        font-size: 0.95rem;
+    }
+
+        .Menu .list-unstyled li::before {
+            content: "-";
+            color: #3b82f6;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+/* Action buttons - clean modern style for overview */
+.Menu .table-link,
+.Menu .btn.btn-primary,
+.Menu .shadow-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    margin: 0.5rem 0.25rem;
+}
+
+    .Menu .table-link:hover,
+    .Menu .btn.btn-primary:hover,
+    .Menu .shadow-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Hide any icons in action buttons */
+    .Menu .shadow-button .fas,
+    .Menu .btn.btn-primary .bi,
+    .Menu .table-link i {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+/* Desktop improvements */
+@media (min-width: 768px) {
+    .MenuCardFilters {
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .menuCard {
+        width: 30%;
+        height: 5rem;
+    }
+
+    .MenuCourseCategory {
+        min-width: 70%;
+        margin-top: 1.5rem;
+    }
+
+        .MenuCourseCategory a,
+        .MenuCourseCategory button {
+            padding: 1.5rem;
+            font-size: 1.2rem;
+        }
+}
+
+/* Error and success messages - scope to menu only */
+.Menu .login-alert {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.Menu .alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.Menu .login-alert i {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+/* ORDER OVERVIEW SPECIFIC STYLES - SIMPLIFIED */
+
+/* Simple navigation */
+.overview-nav {
+    margin-bottom: 1.5rem;
+}
+
+    .overview-nav a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+        .overview-nav a:hover {
+            background: #e3f2fd;
+            border-color: #3b82f6;
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+/* Order Items Container */
+.order-items-container {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.order-items-header {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header-left h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+.order-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.order-time {
+    background: #e5e7eb;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-weight: 500;
+}
+
+.waiter-name {
+    color: #374151;
+    font-weight: 500;
+}
+
+.time-elapsed {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.items-count {
+    background: #3b82f6;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+/* Course Groups */
+.course-group {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+    .course-group:last-child {
+        border-bottom: none;
+    }
+
+.course-header {
+    background: #fafafa;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+    .course-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #374151;
+    }
+
+.course-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+}
+
+.status-text {
+    font-size: 0.85rem;
+    color: #10b981;
+    font-weight: 500;
+}
+
+/* Course Items */
+.course-items {
+    padding: 0.5rem 0;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    transition: background-color 0.2s ease;
+}
+
+    .order-item:hover {
+        background: #f9fafb;
+    }
+
+.item-quantity {
+    background: #e5e7eb;
+    color: #374151;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-name {
+    font-weight: 500;
+    color: #374151;
+    font-size: 1rem;
+}
+
+.item-comment {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+.item-status {
+    margin-right: 1rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.item-price {
+    color: #10b981;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Action Buttons - Mobile-First Design (360x640 optimized) */
+.order-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+    .order-actions form {
+        width: 100%;
+    }
+
+.action-btn {
+    width: 100%;
+    padding: 1.25rem 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 56px; /* Touch-friendly minimum */
+}
+
+    .action-btn.success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+        .action-btn.success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+    .action-btn.primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+
+        .action-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+    .action-btn.secondary {
+        background: white;
+        color: #6b7280;
+        border: 1px solid #d1d5db;
+        font-weight: 500;
+    }
+
+        .action-btn.secondary:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+            color: #374151;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+/* PC/Desktop - Simple centered layout */
+@media (min-width: 768px) {
+    .order-actions {
+        max-width: 400px;
+        margin: 0 auto;
+        gap: 0.75rem;
+    }
+
+    .action-btn {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        min-height: 50px;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 767px) {
+    .order-items-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    .order-meta {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .items-count {
+        margin-top: 0;
+        align-self: flex-end;
+    }
+
+    .order-item {
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .item-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .item-status {
+        margin-right: 0.5rem;
+    }
+
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .course-header {
+        padding: 1rem;
+    }
 }

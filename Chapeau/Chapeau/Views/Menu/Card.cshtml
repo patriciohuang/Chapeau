@@ -11,37 +11,41 @@
 
 <div class="Menu">
     <div>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">Order overview</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">
+            <i class="bi bi-receipt"></i> Order overview
+        </a>
     </div>
 
 
     <div class="MenuCardFilters">
-        <div class="menuCard">
+        <div class="menuCard" @(Model.MenuCard == MenuCard.Lunch ? "active" : "")>
             <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr" asp-route-card="Lunch">Lunch</a>
         </div>
-        <div class="menuCard">
+        <div class="menuCard" @(Model.MenuCard == MenuCard.Lunch ? "active" : "")>
             <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr" asp-route-card="Dinner">Dinner</a>
         </div>
-        <div class="menuCard">
+        <div class="menuCard" @(Model.MenuCard == MenuCard.Lunch ? "active" : "")>
             <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr" asp-route-card="Drinks">Drinks</a>
         </div>
     </div>
 
 
     <div class="MenuCourseCategory">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-tableNr="@Model.TableNr" asp-route-course="@CourseCategory.All" asp-route-card="@Model.MenuCard"> All </a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-tableNr="@Model.TableNr" asp-route-course="@CourseCategory.All" asp-route-card="@Model.MenuCard">
+            <i class="bi bi-grid-3x3"></i> All Items
+        </a>
     </div>
-    
+
 
     @{
         foreach (CourseCategory menuItem in Model.CourseCategory)
-        {   
-            
+        {
+
             <div class="MenuCourseCategory">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-tableNr="@Model.TableNr" asp-route-course="@menuItem" asp-route-card="@Model.MenuCard"> @menuItem</a>
-            </div>    
+                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-tableNr="@Model.TableNr" asp-route-course="@menuItem" asp-route-card="@Model.MenuCard">
+                    @menuItem.ToString().Replace("_", " ")
+                </a>
+            </div>
         }
     }
-
-
 </div>

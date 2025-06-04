@@ -6,32 +6,36 @@
 
 <div class="Menu">
     <div>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">Order overview</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">
+            Order overview
+        </a>
     </div>
 
 
     <div>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr">Back</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr">
+
+        </a>
     </div>
 
     <partial name="_ErrorMessage" />
     <partial name="_ConfirmMessage" />
 
     <div>
+        @foreach (MenuItem menuItem in Model.MenuItems)
+        {
+            string stockStyling = "";
 
-        @{
-            foreach (MenuItem menuItem in Model.MenuItems)
+            if (menuItem.Stock == 0)
             {
-                string stockStyling = "";
+                stockStyling = "bg-secondary";
+            }
+            else if (menuItem.Stock > 0 && menuItem.Stock <= 10)
+            {
+                stockStyling = "bg-warning";
+            }
 
-                if (menuItem.Stock == 0)
-                {
-                    stockStyling = "bg-secondary";
-                }
-                else if (menuItem.Stock > 0 && menuItem.Stock <= 10)
-                {
-                    stockStyling = "bg-warning";
-                }
+            <div class="MenuCourseCategory @stockStyling">
                 <form action="/Menu/Course" method="post">
                     <input type="hidden" name="tableNr" value="@Model.TableNr" />
                     <input type="hidden" name="card" value="@Model.MenuCard" />
@@ -44,16 +48,27 @@
                     <input type="hidden" name="Stock" value="@menuItem.Stock" />
                     <input type="hidden" name="IsAlcoholic" value="@menuItem.IsAlcoholic" />
 
-                    <div class="MenuCourseCategory @stockStyling">
-                        <button type="submit" class="btn btn-primary shadow-button">
-                            <i class="fas fa-plus-circle me-2"></i> @menuItem.Name
-                            <p> &euro; @menuItem.Price </p>
-                        </button>
-                    </div>
+                    <button type="submit" @(menuItem.Stock == 0 ? "disabled" : "")>
+                        <div style="flex: 1;">
+                            <span>@menuItem.Name</span>
+                            @if (menuItem.Stock <= 10 && menuItem.Stock > 0)
+                            {
+                                <small style="color: #856404; font-size: 0.85em; margin-left: 8px; font-weight: 600;">
+                                    (Only @menuItem.Stock left)
+                                </small>
+                            }
+                        </div>
+                        @if (menuItem.Stock == 0)
+                        {
+                            <p style="margin: 0; font-weight: 600; color: #495057; font-size: 1.1rem;">Out of stock</p>
+                        }
+                        else
+                        {
+                            <p style="margin: 0; font-weight: 600; color: #10b981; font-size: 1.1rem;">&euro;@menuItem.Price.ToString("F2")</p>
+                        }
+                    </button>
                 </form>
-            }
+            </div>
         }
-
     </div>
-
 </div>
