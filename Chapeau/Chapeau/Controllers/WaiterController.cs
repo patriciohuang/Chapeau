@@ -14,14 +14,14 @@ namespace Chapeau.Controllers
     public class WaiterController : BaseController
     {
         // Repository that handles table data from the database
-        private readonly ITablesRepository _tablesRepository;
+        private readonly ITableService _tableService;
         // Service that handles order operations
         private readonly IOrderService _orderService;
 
         // Constructor: Receives tables repository through dependency injection
-        public WaiterController(ITablesRepository tablesRepository, IOrderService orderService)
+        public WaiterController(ITableService tableService, IOrderService orderService)
         {
-            _tablesRepository = tablesRepository;
+            _tableService = tableService;
             _orderService = orderService;
         }
 
@@ -54,7 +54,7 @@ namespace Chapeau.Controllers
             try
             {
                 // Get all tables to calculate statistics
-                var tables = _tablesRepository.GetAllTables();
+                var tables = _tableService.GetAllTables();
 
                 // Count free tables (available = true)
                 ViewBag.FreeTablesCount = tables.Count(t => t.Available);
@@ -91,7 +91,7 @@ namespace Chapeau.Controllers
             try
             {
                 // Get all tables from the database with their current availability status
-                IEnumerable<Table> tables = _tablesRepository.GetAllTables();
+                IEnumerable<Table> tables = _tableService.GetAllTables();
 
                 // Pass tables to view for visual display
                 return View(tables);
@@ -113,7 +113,7 @@ namespace Chapeau.Controllers
             try
             {
                 // Update the table availability in the database
-                _tablesRepository.UpdateTableAvailability(tableNr, available);
+                _tableService.UpdateTableAvailability(tableNr, available);
 
                 // Success - set success message
                 TempData["SuccessMessage"] = $"Table {tableNr} updated successfully";
@@ -131,7 +131,7 @@ namespace Chapeau.Controllers
         // GET: /Waiter/Orders
         // Shows all orders for the waiter to manage
         // Jeroen's note: Psycho code, don't use Viewbag
-        public IActionResult Orders(Status? status = null, int? tableNr = null)
+        public IActionResult Orders(string filter = "active", int? tableNr = null)
         {
             try
             {
@@ -143,17 +143,37 @@ namespace Chapeau.Controllers
                     orders = _orderService.GetOrdersByTable(tableNr.Value);
                     ViewBag.FilteredByTable = tableNr.Value;
                 }
-                // Filter by status if specified
-                else if (status.HasValue)
-                {
-                    orders = _orderService.GetOrdersByStatus(status.Value);
-                    ViewBag.FilteredByStatus = status.Value;
-                }
-                // Otherwise get all today's orders
                 else
                 {
+                    // Get all today's orders first
                     orders = _orderService.GetTodaysOrders();
                 }
+
+                // Apply the main filter
+                switch (filter.ToLower())
+                {
+                    case "active":
+                        // Active orders: orders that are not completed or cancelled
+                        orders = orders.Where(o => o.Status != Status.Completed && o.Status != Status.Cancelled).ToList();
+                        ViewBag.CurrentFilter = "active";
+                        break;
+
+                    case "ready":
+                        // Ready orders: orders that have at least one order item with status "Ready"
+                        orders = orders.Where(o => o.OrderItems.Any(item => item.Status == Status.Ready)).ToList();
+                        ViewBag.CurrentFilter = "ready";
+                        break;
+
+                    case "all":
+                    default:
+                        // All orders from today (no additional filtering needed)
+                        ViewBag.CurrentFilter = "all";
+                        break;
+                }
+
+                // Get available table numbers for the current filter (for table filter buttons)
+                var availableTableNumbers = orders.Select(o => o.Table.TableNr).Distinct().OrderBy(t => t).ToList();
+                ViewBag.AvailableTableNumbers = availableTableNumbers;
 
                 // Sort orders by time (most recent first)
                 orders = orders.OrderByDescending(o => o.Time_ordered).ToList();
@@ -166,5 +186,31 @@ namespace Chapeau.Controllers
                 return View(new List<Order>());
             }
         }
+
+        [HttpGet]
+        //This method is used to navigate to either the order overview (if there is no order yet) or create an order
+        public IActionResult OrderNavigator (int tableNr)
+        {
+            int? orderId = _orderService.CheckIfOrderExists(tableNr);
+
+            if (orderId.HasValue)
+            {
+                //Send to order 
+                return RedirectToAction("Index", "Menu", new { orderId }); //TEMPORARY, UNTIL ORDER OVERVIEW IS IMPLEMENTED
+            }
+            else
+            {
+                Employee loggedInEmployee = HttpContext.Session.GetObject<Employee>("LoggedInEmployee");
+                //Create a new order
+                orderId = _orderService.CreateOrder(tableNr, loggedInEmployee);
+                return RedirectToAction("Index", "Menu", new { orderId } );
+            }
+        }
+
+
+
+        
+
+
     }
 }

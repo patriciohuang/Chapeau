@@ -16,5 +16,23 @@ namespace Chapeau.Services
 
         // Get a specific order with all details
         Order GetOrderById(int orderId);
+
+        int? CheckIfOrderExists(int tableNr);
+
+        int CreateOrder(int tableNr, Employee loggedInEmployee);
+
+        void AddItem(int orderId, MenuItem menuItem);
+
+        // Gets all active orders (orders that are not completed or cancelled)
+        List<Order> GetActiveOrders();
+
+        // Gets all orders that have at least one order item with status "Ready"
+        List<Order> GetReadyOrders();
+
+        // Gets active orders for a specific table
+        List<Order> GetActiveOrdersByTable(int tableNr);
+
+        // Gets ready orders for a specific table
+        List<Order> GetReadyOrdersByTable(int tableNr);
     }
 }

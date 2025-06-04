@@ -19,9 +19,9 @@ namespace Chapeau.Repositories
 
         //methods
         //This method returns a list of all courses in the menu, depending on the card selected
-        public MenuCardCategory GetAllCourses(MenuCard menuCard)
+        public List<CourseCategory> GetAllCourses(MenuCard menuCard)
         {
-            MenuCardCategory menuCardCategory = new MenuCardCategory(new List<CourseCategory>(), menuCard);
+            List<CourseCategory> menuCourses = new List<CourseCategory>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -37,11 +37,11 @@ namespace Chapeau.Repositories
                 while (reader.Read())
                 {
                     //This monstrosity is needed to parse from the database into two enums (course_category and menu_card), then makes a menuItem object out of it
-                    menuCardCategory.CourseCategory.Add((CourseCategory)Enum.Parse(typeof(CourseCategory), (string)reader["course_category"]));
+                    menuCourses.Add((CourseCategory)Enum.Parse(typeof(CourseCategory), (string)reader["course_category"]));
                 }
                 reader.Close();
             }
-            return menuCardCategory;
+            return menuCourses;
         }
         public List<MenuItem> GetAllMenuItems(MenuCard menuCard)
         {
@@ -94,6 +94,30 @@ namespace Chapeau.Repositories
                 reader.Close();
             }
             return menuItems;
+        }
+
+        public int GetMenuItemId(string name)
+        {
+            int menuItemId = 0;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT menu_item_id FROM menu_item WHERE name LIKE @name;";
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@name", name);
+
+                command.Connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    menuItemId = (int)reader["menu_item_id"];
+                }
+                reader.Close();
+                
+                return menuItemId;
+            }
         }
 
 

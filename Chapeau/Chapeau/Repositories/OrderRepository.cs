@@ -13,6 +13,7 @@ namespace Chapeau.Repositories
         {
             _connectionString = configuration.GetConnectionString("chapeaudatabase");
         }
+
         /// Read order item from the database
         private Order ReadOrder(SqlDataReader reader)
         {
@@ -80,12 +81,10 @@ namespace Chapeau.Repositories
         public List<Order> GetOrders(Status? status)
         {
             // Create a dictionary to store orders with their order_id as the key
-            // Is a dictionary because I'm using a Join that will bring repeat orders, using dictionary will allow me to check by order id
             Dictionary<int, Order> orders = new();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
                 // SQL query to get all orders for today (optionally filtered by status)
                 string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered,
                                         i.count, i.comment, i.status AS item_status,
@@ -100,10 +99,12 @@ namespace Chapeau.Repositories
                             WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status
                             ORDER BY o.time_ordered";
 
+                //CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND            IN THE WHERE
+
                 SqlCommand command = new SqlCommand(sql, connection);
-                //if the status is null, I want to get all orders, so I use a wildcard
                 command.Parameters.AddWithValue("@status", $"%{status.ToString()}%");
 
+                connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
                 while (reader.Read())
@@ -112,11 +113,13 @@ namespace Chapeau.Repositories
                     // check if the order already exists in the dictionary
                     if (!orders.ContainsKey(orderId))
                     {
-                        Order order = ReadOrder(reader);
+                        var order = ReadOrder(reader);
+                        // add the order to the dictionary
                         orders.Add(orderId, order);
                     }
 
-                    OrderItem order_item = ReadOrderItem(reader);
+                    var order_item = ReadOrderItem(reader);
+                    // add the item to the existing order
                     orders[orderId].OrderItems.Add(order_item);
                 }  
 
@@ -124,21 +127,6 @@ namespace Chapeau.Repositories
             }
             // return the list of orders
             return orders.Values.ToList();
-        }
-
-        public bool UpdateOrderStatus(int orderId, Status status)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                // SQL query to update the status of an order
-                string sql = "UPDATE [order] SET status = @status WHERE order_id = @orderId";
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@status", status.ToString());
-                command.Parameters.AddWithValue("@orderId", orderId);
-                connection.Open();
-                int affected = command.ExecuteNonQuery();
-                return affected > 0;
-            }
         }
 
         // TODO, get a method that returns a (filled) order object when an orderId parameter is entered
@@ -180,41 +168,72 @@ namespace Chapeau.Repositories
             return order;
         }
 
-        public void UpdateOrder(Order order)
+
+        // Checks if an order exists for a given table number
+        public int? CheckIfOrderExists(int tableNr)
+        {
+            int? orderId;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to check if an order exists for the given table number
+                string sql = @"Select MAX([order_id]) AS order_id
+                                FROM [order] AS ord
+                                JOIN [table] AS tab ON ord.table_id = tab.table_id
+                                WHERE table_nr = @tableNr AND [availability] = 0";
+                //TODO Ask Dan if order has to be computed, if so ask him how we're going to figure out that the order is paid for (through a subquery?)
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@tableNr", tableNr);
+
+                connection.Open();
+
+                orderId = command.ExecuteScalar() as int?;
+                return orderId; // Returns the highest order ID for the table if the table is occupied.
+            }
+
+        }
+
+        // Creates a new order and returns the order ID
+        public int CreateOrder(int tableId, int employeeId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string sql = @"UPDATE [order]
-                             SET status = @Status
-                             WHERE order_id = @OrderId";
+                // SQL query to insert a new order with default status 'In Progress'
+                string sql = @"INSERT INTO [order] (table_id, employee_id , date_ordered, time_ordered)
+                               VALUES (@tableId, @employeeId, @dateOrdered, @timeOrdered);
+                               SELECT SCOPE_IDENTITY();";
 
                 SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@OrderId", order.OrderId);
-                command.Parameters.AddWithValue("@Status", order.Status.ToString());
+
+                command.Parameters.AddWithValue("@tableId", tableId);
+                command.Parameters.AddWithValue("@employeeId", employeeId);
+                command.Parameters.AddWithValue("@dateOrdered", DateTime.Now.Date);
+                command.Parameters.AddWithValue("@timeOrdered", DateTime.Now.TimeOfDay);
 
                 connection.Open();
-                int rowsAffected = command.ExecuteNonQuery();
-
-                if (rowsAffected == 0)
-                {
-                    throw new Exception($"Order with ID {order.OrderId} not found or could not be updated");
-                }
+                return Convert.ToInt32(command.ExecuteScalar());
             }
         }
 
-        public List<Order> GetAllOrders()
+        public void AddItem(int orderId, int menuItemId)
         {
-            return GetOrders(null);
-        }
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to insert a new order item
+                string sql = @"INSERT INTO order_item (order_id, menu_item_id, comment, status)
+                               VALUES (@orderId, @menuItemId, @comment, @status)";
 
-        public void AddOrder(Order order)
-        {
-            throw new NotImplementedException("AddOrder method not implemented yet");
-        }
+                SqlCommand command = new SqlCommand(sql, connection);
 
-        public void DeleteOrder(int orderId)
-        {
-            throw new NotImplementedException("DeleteOrder method not implemented yet");
+                command.Parameters.AddWithValue("@orderId", orderId);
+                command.Parameters.AddWithValue("@menuItemId", menuItemId);
+                command.Parameters.AddWithValue("@comment", string.Empty); // Default comment is empty
+                command.Parameters.AddWithValue("@status", Status.Ordered.ToString());
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
         }
     }
 }

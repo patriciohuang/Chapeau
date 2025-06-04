@@ -6,15 +6,13 @@ namespace Chapeau.Repositories
     public interface IOrderRepository
     {
         List<Order> GetOrders(Status? status);
-        bool UpdateOrderStatus(int orderId, Status status);
+
         Order GetOrder(int orderId);
 
-        void UpdateOrder(Order order);
+        int? CheckIfOrderExists(int tableNr);
 
-        List<Order> GetAllOrders();
+        int CreateOrder(int tableNr, int employeeId);
 
-        void AddOrder(Order order);
-
-        void DeleteOrder(int orderId);
+        void AddItem(int orderId, int menuItemId);
     }
 }

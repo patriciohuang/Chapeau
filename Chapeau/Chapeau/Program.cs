@@ -21,7 +21,8 @@ namespace Chapeau
             // Register employees repository
             builder.Services.AddSingleton<IEmployeesRepository, EmployeesRepository>();
 
-            // Register tables repository
+            // Register tables service/repository
+            builder.Services.AddSingleton<ITableService, TableService>();
             builder.Services.AddSingleton<ITablesRepository, TablesRepository>();
 
             // Register password hashing service

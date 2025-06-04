@@ -101,6 +101,9 @@ namespace Chapeau.Repositories
             return table; // Returns null if table not found
         }
 
+
+
+
         // Updates the availability status of a specific table
         // Called when waiters mark tables as occupied or available
         public void UpdateTableAvailability(int tableNr, bool available)
@@ -108,18 +111,18 @@ namespace Chapeau.Repositories
             // TODO: This method needs to be implemented
             // It should execute an UPDATE SQL statement to change the availability
             // Example implementation:
-            /*
+            
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "UPDATE [table] SET availability = @Available WHERE table_nr = @TableNr";
+                string query = "UPDATE [table] SET availability = @available WHERE table_nr = @tableNr";
                 SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Available", available);
-                command.Parameters.AddWithValue("@TableNr", tableNr);
+                command.Parameters.AddWithValue("@available", available);
+                command.Parameters.AddWithValue("@tableNr", tableNr);
                 
                 connection.Open();
                 command.ExecuteNonQuery();
             }
-            */
+            
         }
 
         // Private helper method: Calculates the grid position for tables in the UI
@@ -137,5 +140,21 @@ namespace Chapeau.Repositories
             // Table 1, 3, 5 = Column 0 (left), Table 2, 4, 6 = Column 1 (right)
             table.Column = (table.TableNr - 1) % 2;
         }
+
+        public int GetTableId(int tableNr){
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT table_id FROM [table] WHERE table_nr = @tableNr";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@tableNr", tableNr);
+
+                connection.Open();
+
+                return (int)command.ExecuteScalar(); // Returns the table ID for the given table number
+            }
+        }
+
     }
 }

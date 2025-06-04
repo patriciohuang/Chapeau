@@ -1,4 +1,4 @@
-﻿@model Chapeau.Models.MenuCardCategory;
+﻿@model Chapeau.ViewModels.MenuCardCategory;
 
 @using Chapeau.Models.Enums;
 
@@ -12,19 +12,19 @@
 <div class="Menu">
     <div class="MenuCardFilters">
         <div class="menuCard">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Lunch">Lunch</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-orderId="@Model.OrderId" asp-route-card="Lunch">Lunch</a>
         </div>
         <div class="menuCard">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Dinner">Dinner</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-orderId="@Model.OrderId" asp-route-card="Dinner">Dinner</a>
         </div>
         <div class="menuCard">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-id="Drinks">Drinks</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Index" asp-route-orderId="@Model.OrderId" asp-route-card="Drinks">Drinks</a>
         </div>
     </div>
 
 
     <div class="MenuCourseCategory">
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="@CourseCategory.All" asp-route-card="@Model.MenuCard"> All </a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-orderId="@Model.OrderId" asp-route-course="@CourseCategory.All" asp-route-card="@Model.MenuCard"> All </a>
     </div>
     
 
@@ -33,7 +33,7 @@
         {   
             
             <div class="MenuCourseCategory">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-course="@menuItem" asp-route-card="@Model.MenuCard"> @menuItem</a>
+                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-orderId="@Model.OrderId" asp-route-course="@menuItem" asp-route-card="@Model.MenuCard"> @menuItem</a>
             </div>    
         }
     }

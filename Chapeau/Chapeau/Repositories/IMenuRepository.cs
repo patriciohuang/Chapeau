@@ -10,10 +10,12 @@ namespace Chapeau.Repositories
         //constructors
 
         //methods
-        MenuCardCategory GetAllCourses(MenuCard menuCard);
+        List<CourseCategory> GetAllCourses(MenuCard menuCard);
         List<MenuItem> GetAllMenuItems(MenuCard menuCard);
 
         List<MenuItem> GetMenuItemsByCourse(CourseCategory courseCategory, MenuCard menuCard);
+
+        int GetMenuItemId(string name);
 
     }
 }

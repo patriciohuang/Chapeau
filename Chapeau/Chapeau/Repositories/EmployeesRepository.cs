@@ -185,5 +185,22 @@ namespace Chapeau.Repositories
 
             return employees;
         }
+
+        public int GetEmployeeId(int employeeNr)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to get the employee ID by employee number
+                string query = "SELECT employee_id FROM employee WHERE employee_nr = @EmployeeNr";
+
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@EmployeeNr", employeeNr);
+
+                connection.Open();
+
+                // Execute the command and return the employee number
+                return (int)cmd.ExecuteScalar();
+            }
+        }
     }
 }

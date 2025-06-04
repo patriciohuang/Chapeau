@@ -2,8 +2,9 @@
 @using Chapeau.Models.Enums
 @{
     ViewData["Title"] = "Orders";
-    var statusFilter = ViewBag.FilteredByStatus as Status?;
+    var currentFilter = ViewBag.CurrentFilter as string ?? "active";
     var tableFilter = ViewBag.FilteredByTable as int?;
+    var availableTableNumbers = ViewBag.AvailableTableNumbers as List<int> ?? new List<int>();
 }
 
 
@@ -15,37 +16,51 @@
         </a>
     </div>
 
-    <!-- Filter Tabs - Scrollable on mobile -->
-    <div class="order-tabs-wrapper mb-4">
+    <!-- Main Filter Tabs -->
+    <div class="order-tabs-wrapper mb-3">
         <ul class="nav nav-tabs order-tabs">
             <li class="nav-item">
-                <a class="nav-link @(statusFilter == null && tableFilter == null ? "active" : "")"
-                   asp-action="Orders">All</a>
+                <a class="nav-link @(currentFilter == "active" && !tableFilter.HasValue ? "active" : "")"
+                   asp-action="Orders" asp-route-filter="active">
+                    <i class="bi bi-clock me-1"></i>Active
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(statusFilter == Status.Ordered ? "active" : "")"
-                   asp-action="Orders" asp-route-status="Ordered">New</a>
+                <a class="nav-link @(currentFilter == "ready" && !tableFilter.HasValue ? "active" : "")"
+                   asp-action="Orders" asp-route-filter="ready">
+                    <i class="bi bi-check-circle me-1"></i>Ready
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link @(statusFilter == Status.Preparing ? "active" : "")"
-                   asp-action="Orders" asp-route-status="Preparing">Preparing</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @(statusFilter == Status.Ready ? "active" : "")"
-                   asp-action="Orders" asp-route-status="Ready">Ready</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @(statusFilter == Status.Served ? "active" : "")"
-                   asp-action="Orders" asp-route-status="Served">Served</a>
+                <a class="nav-link @(currentFilter == "all" && !tableFilter.HasValue ? "active" : "")"
+                   asp-action="Orders" asp-route-filter="all">
+                    <i class="bi bi-list me-1"></i>All
+                </a>
             </li>
         </ul>
     </div>
 
-    @if (tableFilter.HasValue)
+    <!-- Table Filter Buttons -->
+    @if (availableTableNumbers.Any())
     {
-        <div class="alert alert-info d-flex justify-content-between align-items-center">
-            <span><i class="bi bi-info-circle"></i> Table @tableFilter only</span>
-            <a asp-action="Orders" class="btn btn-sm btn-outline-primary">Show All</a>
+        <div class="table-filter-buttons mb-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <small class="text-muted me-2 fw-semibold">Filter by table:</small>
+                @foreach (var tableNumber in availableTableNumbers)
+                {
+                    <a class="btn btn-sm table-filter-btn @(tableFilter == tableNumber ? "active" : "")"
+                       asp-action="Orders" asp-route-filter="@currentFilter" asp-route-tableNr="@tableNumber">
+                        T@(tableNumber)
+                    </a>
+                }
+                @if (tableFilter.HasValue)
+                {
+                    <a class="btn btn-sm btn-outline-secondary ms-2"
+                       asp-action="Orders" asp-route-filter="@currentFilter">
+                        <i class="bi bi-x"></i> Clear
+                    </a>
+                }
+            </div>
         </div>
     }
 
@@ -53,7 +68,27 @@
     {
         <div class="alert alert-warning text-center">
             <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-            <p class="mt-2">No orders found.</p>
+            <p class="mt-2 mb-0">
+                @if (tableFilter.HasValue)
+                {
+                    <text>No orders found for Table @tableFilter with the current filter.</text>
+                }
+                else
+                {
+                    @switch (currentFilter)
+                    {
+                        case "active":
+                            <text>No active orders found.</text>
+                            break;
+                        case "ready":
+                            <text>No orders with ready items found.</text>
+                            break;
+                        default:
+                            <text>No orders found.</text>
+                            break;
+                    }
+                }
+            </p>
         </div>
     }
     else
@@ -72,7 +107,7 @@
                                 </span>
                             </div>
                             <div class="text-end">
-                                <a asp-action="Orders" asp-route-tableNr="@order.Table.TableNr"
+								<a asp-action="Orders" asp-route-filter="@currentFilter" asp-route-tableNr="@order.Table.TableNr"
                                    class="text-decoration-none fs-5">
                                     <i class="bi bi-square-fill"></i> @order.Table.TableNr
                                 </a>
@@ -90,13 +125,29 @@
                                 <ul class="list-unstyled ms-3 mb-0">
                                     @foreach (var item in group)
                                     {
-                                        <li>@item.Count× @item.MenuItem.Name</li>
+                                        <li class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <span>@item.Count× @item.MenuItem.Name</span>
+                                                @if (!string.IsNullOrWhiteSpace(item.Comment))
+                                                {
+                                                    <div class="mt-1">
+                                                        <small class="text-muted">
+                                                            <i class="bi bi-chat-left-text me-1"></i>
+                                                            <em>@item.Comment</em>
+                                                        </small>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <span class="badge bg-@GetItemStatusColor(item.Status) badge-sm">
+                                                @item.Status.ToString()
+                                            </span>
+                                        </li>
                                     }
                                 </ul>
                             </div>
                         }
                         <div class="mt-2 text-muted small">
-                            <i class="bi bi-person"></i> @order.Employee.FirstName
+							<i class="bi bi-person"></i> @order.Employee.FirstName @order.Employee.LastName
                         </div>
                     </div>
 
@@ -144,8 +195,8 @@
                             <th>Order #</th>
                             <th>Table</th>
                             <th>Time</th>
-                            <th>Items</th>
-                            <th>Status</th>
+                            <th>Items & Status</th>
+                            <th>Order Status</th>
                             <th>Waiter</th>
                             <th>Actions</th>
                         </tr>
@@ -156,7 +207,7 @@
                             <tr>
                                 <td>#@order.OrderId</td>
                                 <td>
-                                    <a asp-action="Orders" asp-route-tableNr="@order.Table.TableNr"
+                                    <a asp-action="Orders" asp-route-filter="@currentFilter" asp-route-tableNr="@order.Table.TableNr"
                                        class="text-decoration-none">
                                         <i class="bi bi-square-fill"></i> Table @order.Table.TableNr
                                     </a>
@@ -167,22 +218,41 @@
                                     <small class="text-muted">@order.MinutesSinceOrdered min ago</small>
                                 </td>
                                 <td>
-                                    <ul class="list-unstyled mb-0">
-                                        @foreach (var group in order.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
-                                        {
-                                            <li>
-                                                <strong>@group.Key:</strong>
-                                                @string.Join(", ", group.Select(i => $"{i.Count}x {i.MenuItem.Name}"))
-                                            </li>
-                                        }
-                                    </ul>
+                                    @foreach (var group in order.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
+                                    {
+                                        <div class="mb-2">
+                                            <strong>@group.Key:</strong>
+                                            <ul class="list-unstyled ms-2 mb-0">
+                                                @foreach (var item in group)
+                                                {
+                                                    <li class="d-flex justify-content-between align-items-start">
+                                                        <div class="flex-grow-1">
+                                                            <span class="item-name">@item.Count× @item.MenuItem.Name</span>
+                                                            @if (!string.IsNullOrWhiteSpace(item.Comment))
+                                                            {
+                                                                <div class="mt-1">
+                                                                    <small class="text-muted">
+                                                                        <i class="bi bi-chat-left-text me-1"></i>
+                                                                        <em>@item.Comment</em>
+                                                                    </small>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        <span class="badge bg-@GetItemStatusColor(item.Status) badge-sm ms-2">
+                                                            @item.Status.ToString()
+                                                        </span>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    }
                                 </td>
                                 <td>
                                     <span class="badge bg-@GetStatusColor(order.Status)">
                                         @order.Status.ToString().ToUpper()
                                     </span>
                                 </td>
-                                <td>@order.Employee.LastName</td>
+                                <td>@order.Employee.FirstName<br><small class="text-muted">@order.Employee.LastName</small></td>
                                 <td>
                                     <div class="btn-group" role="group">
                                         <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle"
@@ -239,8 +309,23 @@
             Status.Preparing => "warning",
             Status.Ready => "success",
             Status.Served => "secondary",
+            Status.Completed => "primary",
             Status.Cancelled => "danger",
             _ => "dark"
+        };
+    }
+
+    string GetItemStatusColor(Status status)
+    {
+        return status switch
+        {
+            Status.Ordered => "info",
+            Status.Preparing => "warning",
+            Status.Ready => "success",
+            Status.Served => "secondary",
+            Status.Completed => "primary",
+            Status.Cancelled => "danger",
+            _ => "secondary"
         };
     }
 }
