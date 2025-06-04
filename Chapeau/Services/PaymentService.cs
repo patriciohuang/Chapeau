@@ -1,4 +1,4 @@
-﻿using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Chapeau.Models;
 using Chapeau.Models.Enums;
 using Chapeau.Repositories;
@@ -90,10 +90,23 @@ namespace Chapeau.Services
                     throw new Exception("Order not found");
                 }
 
+                decimal orderTotal = order.TotalCost + order.TotalVAT;
+                decimal tipAmount;
+
+                // Calculate tip amount based on whether it's a percentage or direct amount
+                if (model.IsTipPercentage)
+                {
+                    tipAmount = orderTotal * (model.TipAmount / 100m);
+                }
+                else
+                {
+                    tipAmount = model.TipAmount;
+                }
+
                 // Create payment record
                 var payment = new Payment(
-                    totalAmount: order.TotalCost + order.TotalVAT + model.TipAmount,
-                    tip: model.TipAmount,
+                    totalAmount: orderTotal,
+                    tip: tipAmount,
                     vatValue: (int)((order.TotalVAT / order.TotalCost) * 100), // Calculate VAT percentage
                     paymentMethod: model.PaymentMethod,
                     feedBack: model.Feedback ?? string.Empty // Handle null feedback
@@ -113,50 +126,5 @@ namespace Chapeau.Services
                 throw;
             }
         }
-
-        public TipCalculationResult CalculateTip(int orderId, decimal value, bool isPercentage)
-        {
-            try
-            {
-                var order = _orderRepository.GetOrder(orderId);
-                if (order == null)
-                {
-                    throw new Exception("Order not found");
-                }
-
-                decimal baseAmount = order.TotalCost + order.TotalVAT;
-                decimal tipAmount;
-
-                if (isPercentage)
-                {
-                    // Calculate tip based on percentage
-                    tipAmount = Math.Round((baseAmount * value) / 100, 2);
-                }
-                else
-                {
-                    // Use direct amount
-                    tipAmount = Math.Round(value, 2);
-                }
-
-                // Ensure tip is not negative
-                tipAmount = Math.Max(0, tipAmount);
-
-                return new TipCalculationResult
-                {
-                    TipAmount = tipAmount,
-                    NewTotal = baseAmount + tipAmount
-                };
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
     }
-
-    public class TipCalculationResult
-    {
-        public decimal TipAmount { get; set; }
-        public decimal NewTotal { get; set; }
-    }
-}
+} 

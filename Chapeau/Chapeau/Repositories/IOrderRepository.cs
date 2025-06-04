@@ -8,5 +8,13 @@ namespace Chapeau.Repositories
         List<Order> GetOrders(Status? status);
 
         Order GetOrder(int orderId);
+
+        void UpdateOrder(Order order);
+
+        List<Order> GetAllOrders();
+
+        void AddOrder(Order order);
+
+        void DeleteOrder(int orderId);
     }
 }

@@ -164,5 +164,42 @@ namespace Chapeau.Repositories
             }
             return order;
         }
+
+        public void UpdateOrder(Order order)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string sql = @"UPDATE [order]
+                             SET status = @Status
+                             WHERE order_id = @OrderId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@OrderId", order.OrderId);
+                command.Parameters.AddWithValue("@Status", order.Status.ToString());
+
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected == 0)
+                {
+                    throw new Exception($"Order with ID {order.OrderId} not found or could not be updated");
+                }
+            }
+        }
+
+        public List<Order> GetAllOrders()
+        {
+            return GetOrders(null);
+        }
+
+        public void AddOrder(Order order)
+        {
+            throw new NotImplementedException("AddOrder method not implemented yet");
+        }
+
+        public void DeleteOrder(int orderId)
+        {
+            throw new NotImplementedException("DeleteOrder method not implemented yet");
+        }
     }
 }
