@@ -35,13 +35,8 @@
 </div>
 
 <button class="btn btn-sm bg-@GetStatusColor(Model.Status) bg-opacity-75 status-btn"
-        onclick="update
-        
-        
-        
-        
-        (@Model.OrderId, '@Model.Status.ToString()')">
-    @ChangeStatusName(Model.Status)
+        onclick="updateOrderStatus(@Model.OrderId, '@Model.Status.ToString()' )">
+        @ChangeStatusName(Model.Status)
 </button>
 
 @functions {
