@@ -13,6 +13,21 @@ namespace Chapeau.Models
 
         public MenuItem MenuItem { get; set; } = new MenuItem(); // Initialize to avoid null
 
+
+        //Payment stuff
+
+        public decimal TotalCost 
+        { 
+            get
+            {
+                return Count * MenuItem.Price;
+            }
+        }
+
+        public decimal TotalHighVAT { get; set; }
+
+        public decimal TotalLowVAT { get; set; }
+
         public OrderItem(int count, string comment, Status status, MenuItem menuItem)
         {
             Count = count;

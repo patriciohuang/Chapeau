@@ -1,4 +1,4 @@
-﻿using Chapeau.Repositories;
+﻿using Chapeau.Services;
 using Chapeau.Models;
 using Chapeau.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +9,11 @@ namespace Chapeau.Controllers
 {
     public class PaymentController : BaseController
     {
-        //TODO nest both of these repositories into the payment service
-        private readonly IPaymentRepository _paymentRepository;
-        private readonly IOrderRepository _orderRepository;
+        private readonly IPaymentService _paymentService;
 
-        public PaymentController(IPaymentRepository paymentRepository, IOrderRepository orderRepository)
+        public PaymentController(IPaymentService paymentService)
         {
-            _paymentRepository = paymentRepository;
-            _orderRepository = orderRepository;
+            _paymentService = paymentService;
         }
 
         // This method runs before every action in this controller
@@ -36,42 +33,138 @@ namespace Chapeau.Controllers
                 context.Result = RedirectToAction("Unauthorized", "Auth");
             }
         }
-        //payment information for a specific order
+
         public IActionResult Index(int orderId)
         {
-            //TODO: add a try catch block to handle exceptions and "make the code more robust"
-
-            //How I (Jeroen) would implement it: After you retrieve the order, you can calculate the total price and VAT using a service method/the controller. Then put those three in a viewModel and return that to the view.
-
             try
             {
-                Order order = _orderRepository.GetOrder(orderId);
-
-                decimal totalAmount;
-                foreach (OrderItem orderItem in order.OrderItems)
+                var viewModel = _paymentService.GetPaymentDetails(orderId);
+                
+                // Set the feedback from TempData if it exists
+                if (TempData["Feedback"] is string feedback)
                 {
-                    totalAmount = orderItem.Count * orderItem.MenuItem.Price;
-
+                    viewModel.Feedback = feedback;
                 }
-                return View(order);
+                
+                ViewBag.OrderId = orderId;
+                return View(viewModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                // Log the error
+                return RedirectToAction("Index", "Waiter");
             }
-            
-            //TODO add a service that automatically calculates the total price/VAT of the order, you can also do this in the controller to make your life easier
-
-            
         }
 
+        public IActionResult CashPayment(int orderId)
+        {
+            try
+            {
+                var viewModel = _paymentService.GetOrderForPayment(orderId);
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return RedirectToAction("Error", "Home");
+            }
+        }
 
+        [HttpPost]
+        public IActionResult ProcessPayment([FromBody] PaymentProcessViewModel model)
+        {
+            try
+            {
+                bool success = _paymentService.ProcessPayment(model);
+                return Json(new { success = success });
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
+
+        public IActionResult SplitPay()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult SaveFeedback(int orderId, string feedback)
+        {
+            try
+            {
+                var viewModel = _paymentService.GetPaymentDetails(orderId);
+                viewModel.Feedback = feedback;
+                
+                // Store the feedback in TempData to persist across redirects
+                TempData["Feedback"] = feedback;
+                
+                return RedirectToAction("Index", new { orderId = orderId });
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return RedirectToAction("Index", new { orderId = orderId, error = "Failed to save feedback" });
+            }
+        }
+
+        public IActionResult SplitByDish(int orderId)
+        {
+            try
+            {
+                var viewModel = _paymentService.GetPaymentDetails(orderId);
+                return View("SplitByDish", viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return RedirectToAction("Index", new { orderId });
+            }
+        }
+
+        public IActionResult SplitByAmount(int orderId)
+        {
+            try
+            {
+                var viewModel = _paymentService.GetPaymentDetails(orderId);
+                return View("SplitByAmount", viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return RedirectToAction("Index", new { orderId });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult CalculateTip([FromBody] TipCalculationRequest request)
+        {
+            try
+            {
+                var result = _paymentService.CalculateTip(request.OrderId, request.Value, request.IsPercentage);
+                return Json(new { 
+                    success = true, 
+                    tipAmount = result.TipAmount.ToString("0.00"),
+                    newTotal = result.NewTotal,
+                    formattedTip = $"€{result.TipAmount:0.00}",
+                    formattedTotal = $"€{result.NewTotal:0.00}"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, error = ex.Message });
+            }
+        }
     }
 
-
-
-
+    public class TipCalculationRequest
+    {
+        public int OrderId { get; set; }
+        public decimal Value { get; set; }
+        public bool IsPercentage { get; set; }
+    }
 }
 
 

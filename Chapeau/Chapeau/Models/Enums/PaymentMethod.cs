@@ -5,7 +5,6 @@
         Cash,
         CreditCard,
         DebitCard,
-        GiftCard,
-        Other
+        GiftCard
     }
 }

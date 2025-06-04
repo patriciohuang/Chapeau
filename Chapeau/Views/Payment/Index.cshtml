@@ -1,0 +1,36 @@
+<!-- Tip Modal -->
+<div class="modal fade" id="tipModal" tabindex="-1" aria-labelledby="tipModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="tipModalLabel">Add Tip</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="tip-section">
+                    <div class="tip-input-group">
+                        <input type="number" id="tipInput" class="tip-input" step="0.01" min="0" value="0" onchange="calculateTip()">
+                        <span id="tipSymbol" class="tip-symbol">€</span>
+                        <button class="tip-toggle" onclick="toggleTipType()">Switch to %</button>
+                    </div>
+                    <div class="tip-summary">
+                        <span>Tip amount:</span>
+                        <span id="tipAmount">€0.00</span>
+                    </div>
+                    <div class="tip-summary">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">@Model.FormattedSubtotal</span>
+                    </div>
+                    <div class="tip-summary">
+                        <span>Total with tip:</span>
+                        <span id="grandTotal">@Model.FormattedTotal</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveTip()">Add Tip</button>
+            </div>
+        </div>
+    </div>
+</div> 

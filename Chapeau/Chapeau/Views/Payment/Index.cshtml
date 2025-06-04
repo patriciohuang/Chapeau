@@ -1,40 +1,203 @@
-﻿@model Chapeau.Models.Order;
+﻿@model Chapeau.ViewModels.PaymentDetailsViewModel
 
-
-@{
+@section Styles {
+    <link rel="stylesheet" href="~/css/payment.css" />
+    <link rel="stylesheet" href="~/css/split-payment.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Amount</th>
-            <th>VAT</th>
-        </tr>
-    </thead>
-    <tbody>
-        @{
-            foreach (OrderItem orderItem in Model.OrderItems)
-            {
-                <tr>
-                    <td>@orderItem.MenuItem.Name</td>
-                    <td>@orderItem.MenuItem.Price</td>
-                    <td>@orderItem.Count</td>
-                    <td>@orderItem.MenuItem.Price</td>
-                    <td>@orderItem.MenuItem.IsAlcoholic</td>
-                </tr>
-            }
-            
+<div class="mobile-container">
+    <div class="top-bar">
+        <a href="javascript:history.back()" class="back-button">← Back</a>
+        <h2>Table @Model.TableNr</h2>
+    </div>
 
-        }
-    </tbody>
-</table>
-<hr />
-<div class="d-flex flex-row justify-content-between m-4">
-    <h2>Total:</h2>
-    <h2></h2>
+    <!-- Hidden element to store model feedback -->
+    <div hidden data-model-feedback="@Model.Feedback"></div>
+
+    <div class="order-content">
+        <div class="order-header">
+            <span>Order summary:</span>
+            <div class="header-columns">
+                <span>VAT</span>
+                <span>Price</span>
+            </div>
+        </div>
+
+        <div class="order-items">
+            @foreach (var item in Model.Items)
+            {
+                <div class="order-row">
+                    <div class="item-left">
+                        <span class="quantity">@item.Quantity</span>
+                        <div class="item-info">
+                            <div class="item-name">@item.Name</div>
+                            @if (!string.IsNullOrEmpty(item.Comment))
+                            {
+                                <div class="item-comment">@item.Comment</div>
+                            }
+                        </div>
+                    </div>
+                    <div class="item-right">
+                        <span class="vat">@item.FormattedVAT</span>
+                        <span class="price">@item.FormattedPrice</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="summary-section">
+            <div class="summary-row">
+                <span>Total 9% VAT:</span>
+                <span>@Model.FormattedLowVAT</span>
+            </div>
+            <div class="summary-row">
+                <span>Total 21% VAT:</span>
+                <span>@Model.FormattedHighVAT</span>
+            </div>
+        </div>
+
+        <div class="tip-button" onclick="openTipModal()">
+            <span>Tip</span>
+            <span id="tipAmount">@Model.FormattedTip</span>
+        </div>
+
+        <div id="feedbackDisplay" class="feedback-display" style="display: none;">
+            <div class="feedback-content">
+                <span class="feedback-label">Feedback:</span>
+                <span id="feedbackText"></span>
+            </div>
+            <button class="feedback-edit-btn" onclick="openFeedbackModal()">
+                <i class="bi bi-pencil"></i>
+            </button>
+        </div>
+
+        <div class="total-section">
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="grandTotal">@Model.FormattedTotal</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <div class="button-row">
+            <button class="action-button yellow" onclick="location.href='@Url.Action("Edit", "Order")'">Edit</button>
+            <button class="action-button blue" onclick="openSplitModal()">Split pay</button>
+        </div>
+        <div class="button-row">
+            <button class="action-button blue" onclick="openFeedbackModal()">Feedback</button>
+            <button class="action-button blue" onclick="openPaymentMethodModal()">Pay all</button>
+        </div>
+    </div>
 </div>
-<hr />
+
+<!-- Payment Method Modal -->
+<div class="modal fade" id="paymentMethodModal" tabindex="-1" aria-labelledby="paymentMethodModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="paymentMethodModalLabel">Payment method</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center mb-4">Choose an option to pay:</p>
+                <div class="payment-methods">
+                    @foreach (var method in Model.AvailablePaymentMethods)
+                    {
+                        <button class="payment-method-btn" onclick="selectPaymentMethod('@method.Method')">
+                            <i class="bi @method.IconClass"></i>
+                            <span>@method.DisplayName</span>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Tip Modal -->
+<div class="modal fade" id="tipModal" tabindex="-1" aria-labelledby="tipModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title w-100 text-center" id="tipModalLabel">Tip</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <h4 class="mb-4">Enter the tip amount:</h4>
+                <div class="input-container mb-4">
+                    <div class="input-group">
+                        <span class="input-group-text fixed-symbol">€</span>
+                        <input type="text" class="form-control text-center tip-input" id="tipInput" value="0,00">
+                        <span class="input-group-text fixed-symbol percent-symbol" style="display: none">%</span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center gap-3 mb-5">
+                    <button class="btn btn-light btn-lg tip-type-btn" data-mode="percent">%</button>
+                    <button class="btn btn-light btn-lg tip-type-btn active" data-mode="euro">€</button>
+                </div>
+                <h4 class="mb-4">Or enter the total:</h4>
+                <div class="input-container mb-4">
+                    <div class="input-group">
+                        <span class="input-group-text fixed-symbol">€</span>
+                        <input type="text" class="form-control text-center total-input" id="totalInput" value="80,00">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-end bg-light">
+                <button type="button" class="btn btn-primary btn-lg px-5" onclick="saveTip()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title w-100 text-center" id="feedbackModalLabel">Feedback</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Payment" asp-action="SaveFeedback" method="post">
+                <input type="hidden" name="orderId" value="@ViewBag.OrderId" />
+                <div class="modal-body text-start">
+                    <div class="mb-3">
+                        <label for="feedbackNotes" class="form-label">Notes:</label>
+                        <textarea class="form-control feedback-input" id="feedbackNotes" name="feedback" rows="6">@Model.Feedback</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-end bg-light">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Split Payment Modal -->
+<div class="modal fade" id="splitModal" tabindex="-1" aria-labelledby="splitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="splitModalLabel">Split by</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="d-flex justify-content-center gap-4">
+                    <button class="btn btn-primary btn-lg split-option" onclick="splitByDish()">
+                        Dish
+                    </button>
+                    <button class="btn btn-primary btn-lg split-option" onclick="splitByAmount()">
+                        Amount
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/payment.js"></script>
+}
