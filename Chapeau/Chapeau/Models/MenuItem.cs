@@ -7,6 +7,7 @@ namespace Chapeau.Models
         //This class contains the items that are on the menu
 
         //fields and properties
+        public int MenuItemId { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
         public MenuCard MenuCard { get; set; }
@@ -23,8 +24,9 @@ namespace Chapeau.Models
         }
 
         //constructor with all properties filled
-        public MenuItem(string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, bool isAlcoholic)
+        public MenuItem(int menuItemId, string name, decimal price, MenuCard menuCard, CourseCategory courseCategory, int stock, bool isAlcoholic)
         {
+            MenuItemId = menuItemId;
             Name = name;
             Price = price;
             MenuCard = menuCard;

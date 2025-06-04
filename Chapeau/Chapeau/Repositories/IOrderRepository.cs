@@ -7,12 +7,14 @@ namespace Chapeau.Repositories
     {
         List<Order> GetOrders(Status? status);
 
-        Order GetOrder(int orderId);
+        Order GetOrderById(int orderId);
 
         int? CheckIfOrderExists(int tableNr);
 
         int CreateOrder(int tableNr, int employeeId);
 
         void AddItem(int orderId, int menuItemId);
+
+        void SendOrder(int orderId);
     }
 }

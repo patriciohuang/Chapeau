@@ -8,14 +8,12 @@ namespace Chapeau.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ITablesRepository _tableRepository;
-        private readonly IEmployeesRepository _employeeRepository;
         private readonly IMenuRepository _menuRepository;
 
-        public OrderService(IOrderRepository orderRepository, ITablesRepository tableRepository, IEmployeesRepository employeeRepository, IMenuRepository menuRepository)
+        public OrderService(IOrderRepository orderRepository, ITablesRepository tableRepository, IMenuRepository menuRepository)
         {
             _orderRepository = orderRepository;
             _tableRepository = tableRepository;
-            _employeeRepository = employeeRepository;
             _menuRepository = menuRepository;
         }
 
@@ -63,7 +61,7 @@ namespace Chapeau.Services
 
         public Order GetOrderById(int orderId)
         {
-            return _orderRepository.GetOrder(orderId);
+            return _orderRepository.GetOrderById(orderId);
         }
 
         public int? CheckIfOrderExists(int tableNr)
@@ -74,19 +72,33 @@ namespace Chapeau.Services
         // Get the tableId and employeeId, use them to create a new order and return its ID
         public int CreateOrder(int tableNr, Employee loggedInEmployee)
         {
-            int tableId = _tableRepository.GetTableId(tableNr);
-            int employeeId = _employeeRepository.GetEmployeeId(loggedInEmployee.EmployeeNr);
+            Table selectedTable= _tableRepository.GetTableByNumber(tableNr);
 
-            _tableRepository.UpdateTableAvailability(tableNr, false);
+            int orderId = _orderRepository.CreateOrder(selectedTable.TableId, loggedInEmployee.EmployeeId);
 
-            return _orderRepository.CreateOrder(tableId, employeeId);
+            _tableRepository.UpdateTableAvailability(selectedTable.TableNr, false);
+
+            return orderId;
         }
 
         public void AddItem(int orderId, MenuItem menuItem)
         {
-            int menuItemId = _menuRepository.GetMenuItemId(menuItem.Name);
+            if (menuItem.Stock <= 0)
+            {
+                throw new InvalidOperationException("Cannot add item to order: item is out of stock.");
+            }
+            else
+            {
+                _orderRepository.AddItem(orderId, menuItem.MenuItemId);
 
-            _orderRepository.AddItem(orderId, menuItemId);
+                // Update the stock
+                _menuRepository.UpdateStock(menuItem.MenuItemId);
+            }
+        }
+
+        public void SendOrder(int orderId)
+        {
+            _orderRepository.SendOrder(orderId);
         }
     }
 }

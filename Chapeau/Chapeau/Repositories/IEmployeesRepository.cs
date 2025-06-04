@@ -29,7 +29,5 @@
         // Used when managers need to delete employee accounts
         // Should handle cases where employee doesn't exist
         void Delete(int employeeNr);
-
-        int GetEmployeeId(int employeeNr);
     }
 }

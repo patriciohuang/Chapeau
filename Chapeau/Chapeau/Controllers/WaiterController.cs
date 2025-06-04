@@ -187,26 +187,6 @@ namespace Chapeau.Controllers
             }
         }
 
-        [HttpGet]
-        //This method is used to navigate to either the order overview (if there is no order yet) or create an order
-        public IActionResult OrderNavigator (int tableNr)
-        {
-            int? orderId = _orderService.CheckIfOrderExists(tableNr);
-
-            if (orderId.HasValue)
-            {
-                //Send to order 
-                return RedirectToAction("Index", "Menu", new { orderId }); //TEMPORARY, UNTIL ORDER OVERVIEW IS IMPLEMENTED
-            }
-            else
-            {
-                Employee loggedInEmployee = HttpContext.Session.GetObject<Employee>("LoggedInEmployee");
-                //Create a new order
-                orderId = _orderService.CreateOrder(tableNr, loggedInEmployee);
-                return RedirectToAction("Index", "Menu", new { orderId } );
-            }
-        }
-
 
 
         
