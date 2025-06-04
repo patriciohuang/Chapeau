@@ -46,7 +46,7 @@ namespace Chapeau.Services
         {
             try
             {
-                Order order = _orderRepository.GetOrder(orderId);
+                Order order = _orderRepository.GetOrderById(orderId);
                 
                 // Group items by name and VAT rate
                 var groupedItems = order.OrderItems
@@ -84,7 +84,7 @@ namespace Chapeau.Services
             try
             {
                 // Get the order
-                var order = _orderRepository.GetOrder(model.OrderId);
+                var order = _orderRepository.GetOrderById(model.OrderId);
                 if (order == null)
                 {
                     throw new Exception("Order not found");
@@ -118,7 +118,7 @@ namespace Chapeau.Services
         {
             try
             {
-                var order = _orderRepository.GetOrder(orderId);
+                var order = _orderRepository.GetOrderById(orderId);
                 if (order == null)
                 {
                     throw new Exception("Order not found");

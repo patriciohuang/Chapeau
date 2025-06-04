@@ -270,5 +270,61 @@ namespace Chapeau.Repositories
                 command.ExecuteNonQuery();
             }
         }
+
+        public void UpdateOrder(Order order)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string sql = @"UPDATE [order]
+                     SET status = @Status
+                     WHERE order_id = @OrderId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@OrderId", order.OrderId);
+                command.Parameters.AddWithValue("@Status", order.Status.ToString());
+
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected == 0)
+                {
+                    throw new Exception($"Order with ID {order.OrderId} not found or could not be updated");
+                }
+            }
+        }
+
+
+        public bool UpdateOrderStatus(int orderId, Status status)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to update the status of an order
+                string sql = "UPDATE [order] SET status = @status WHERE order_id = @orderId";
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@status", status.ToString());
+                command.Parameters.AddWithValue("@orderId", orderId);
+                connection.Open();
+                int affected = command.ExecuteNonQuery();
+                return affected > 0;
+            }
+        }
+
+        //THESE ARE ALL EMPTY AND NOT IMPLEMENTED. REMOVE LATER, WE ALREADY HAVE METHODS THAT DO THIS
+        public List<Order> GetAllOrders()
+        {
+            return GetOrders(null);
+        }
+
+        public void AddOrder(Order order)
+        {
+            throw new NotImplementedException("AddOrder method not implemented yet");
+        }
+
+        public void DeleteOrder(int orderId)
+        {
+            throw new NotImplementedException("DeleteOrder method not implemented yet");
+        }
+
     }
 }

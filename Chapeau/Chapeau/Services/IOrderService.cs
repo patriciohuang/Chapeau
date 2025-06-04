@@ -34,5 +34,8 @@ namespace Chapeau.Services
 
         // Gets ready orders for a specific table
         List<Order> GetReadyOrdersByTable(int tableNr);
+
+        void SendOrder(int orderId);
+
     }
 }

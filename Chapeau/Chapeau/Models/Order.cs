@@ -14,11 +14,31 @@ namespace Chapeau.Models
         public Table Table { get; set; }
         public Employee Employee { get; set; }
 
-        //Stuff for payment
-        
-
         // List of items in the order
         public List<OrderItem> OrderItems { get; set; }
+
+        //Stuff for payment
+        // Total cost of the order
+
+
+        public decimal TotalCost => OrderItems?.Sum(item => item.MenuItem.Price * item.Count) ?? 0;
+
+
+
+
+
+        // VAT calculationsAdd commentMore actions
+        public decimal TotalHighVAT => OrderItems?
+            .Where(item => item.MenuItem.IsAlcoholic)
+            .Sum(item => item.MenuItem.Price * item.Count * 0.21m) ?? 0;
+
+
+        public decimal TotalLowVAT => OrderItems?
+            .Where(item => !item.MenuItem.IsAlcoholic)
+            .Sum(item => item.MenuItem.Price * item.Count * 0.09m) ?? 0;
+
+        public decimal TotalVAT => TotalHighVAT + TotalLowVAT;
+
 
         // Elapsed time since order placed (in minutes)
         public int MinutesSinceOrdered => (int)(DateTime.Today.Add(TimeOnly.FromDateTime(DateTime.Now).ToTimeSpan()) - Date_ordered.ToDateTime(Time_ordered)).TotalMinutes;
