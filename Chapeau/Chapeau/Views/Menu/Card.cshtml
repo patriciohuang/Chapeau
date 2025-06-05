@@ -21,10 +21,10 @@
         <div class="menuCard" @(Model.MenuCard == MenuCard.Lunch ? "active" : "")>
             <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr" asp-route-card="Lunch">Lunch</a>
         </div>
-        <div class="menuCard" @(Model.MenuCard == MenuCard.Lunch ? "active" : "")>
+        <div class="menuCard" @(Model.MenuCard == MenuCard.Dinner ? "active" : "")>
             <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr" asp-route-card="Dinner">Dinner</a>
         </div>
-        <div class="menuCard" @(Model.MenuCard == MenuCard.Lunch ? "active" : "")>
+        <div class="menuCard" @(Model.MenuCard == MenuCard.Drinks ? "active" : "")>
             <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr" asp-route-card="Drinks">Drinks</a>
         </div>
     </div>
