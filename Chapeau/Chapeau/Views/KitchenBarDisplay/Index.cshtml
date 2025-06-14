@@ -10,7 +10,7 @@
     }
 }
 
-<div class="container py-4">
+<div class="container py-4" id="kitchen-bar-container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="mb-0">@ViewBag.Role Display</h1>
     </div>
@@ -18,20 +18,21 @@
     <!-- Tabs -->
     @await Html.PartialAsync("_OrderTabs")
 
-    <!-- Orders -->
-    <div class="row g-4" 
-    id="orders-container">
-        @if(Model.Count>0)
-        {
-            @await Html.PartialAsync("_OrdersPartial", Model)
-        }
-        else
-        {
-            <div>
-                <p>There are not any orders</p>
-            </div>
-        }
+    <div class=" d-flex flex-column" id="orders-container">
+        <div class="row g-4 flex-grow-1">
+            @if (Model.Count > 0)
+            {
+                @await Html.PartialAsync("_OrdersPartial", Model)
+            }
+            else
+            {
+                <div class="d-flex justify-content-center align-items-center text-center w-100 flex-grow-1">
+                    <p class="text-muted">No orders at the moment.</p>
+                </div>
+            }
+        </div>
     </div>
+
 </div>
 
 @section Scripts {
