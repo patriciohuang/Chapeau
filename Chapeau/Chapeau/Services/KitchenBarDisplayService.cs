@@ -7,16 +7,16 @@ namespace Chapeau.Services
     //pato
     public class KitchenBarDisplayService : IKitchenBarDisplayService
     {
-        private readonly IOrderRepository _kitchenBarDisplayRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public KitchenBarDisplayService(IOrderRepository kitchenBarDisplayRepository)
+        public KitchenBarDisplayService(IOrderRepository orderRepository)
         {
-            _kitchenBarDisplayRepository = kitchenBarDisplayRepository;
+            _orderRepository = orderRepository;
         }
 
         public List<Order> GetOrders(Status status)
         {
-            return _kitchenBarDisplayRepository.GetOrders(status);
+            return _orderRepository.GetOrders(status);
         }
         public List<Order> GetOrdersByStatus(List<Status> statuses)
         {
@@ -24,7 +24,7 @@ namespace Chapeau.Services
 
             foreach (Status status in statuses)
             {
-                orders.AddRange(_kitchenBarDisplayRepository.GetOrders(status));
+                orders.AddRange(_orderRepository.GetOrders(status));
             }
 
             return orders;
@@ -43,7 +43,28 @@ namespace Chapeau.Services
                 {
                     newStatus = StatusHelper.PreviousStatus(currentStatus);
                 }
-                return _kitchenBarDisplayRepository.UpdateOrderStatus(orderId, newStatus);
+                return _orderRepository.UpdateOrderStatus(orderId, newStatus);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e}");
+                return false;
+            }
+        }
+        public bool UpdateOrderItemStatus(int orderId, Status currentStatus)
+        {
+            try
+            {
+                Status newStatus;
+                if (currentStatus != Status.Ready)
+                {
+                    newStatus = StatusHelper.NextStatus(currentStatus);
+                }
+                else
+                {
+                    newStatus = StatusHelper.PreviousStatus(currentStatus);
+                }
+                return _orderRepository.UpdateOrderItemStatus(orderId, newStatus);
             }
             catch (Exception e)
             {

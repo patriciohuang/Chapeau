@@ -109,13 +109,12 @@ namespace Chapeau.Controllers
             }
 
             List<Order> orders = GetOrdersByStatus(status);
-
             // Pass the filtered orders to the view
             return View(orders);
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateStatus(int orderId, Status currentStatus)
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, Status currentStatus)
         {
             bool result = _kitchenBarDisplaySevice.UpdateOrderStatus(orderId, currentStatus);
             if (result)

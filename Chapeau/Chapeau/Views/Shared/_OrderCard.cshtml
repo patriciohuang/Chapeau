@@ -16,14 +16,22 @@
     <div class="mb-2">
         <div class="d-flex justify-content-between border-bottom">
             <strong>@group.Key</strong>
-            <span class="check-icon">✔</span>
         </div>
         <ul class="list-unstyled ms-2 mt-1">
             @foreach (var item in group)
             {
-                <li>@item.Count @item.MenuItem.Name</li>
+                <div class="d-flex justify-content-between">
+                    <li>@item.Count @item.MenuItem.Name</li>
+                    @* <button class="btn btn-sm"
+                            onclick="updateItemStatus(@item., '@Model.Status.ToString()')">
+                        <span class="check-icon">✔</span>
+                    </button> *@
+                </div>
             }
         </ul>
+        <button class="btn btn-sm"
+                onclick="updateCourseStatus(@group., '@Model.Status.ToString()')">
+        </button>
     </div>
 }
 
@@ -35,7 +43,7 @@
 </div>
 
 <button class="btn btn-sm bg-@GetStatusColor(Model.Status) bg-opacity-75 status-btn"
-        onclick="updateOrderStatus(@Model.OrderId, '@Model.Status.ToString()' )">
+        onclick="UpdateOrderStatus(@Model.OrderId, '@Model.Status.ToString()' )">
         @ChangeStatusName(Model.Status)
 </button>
 

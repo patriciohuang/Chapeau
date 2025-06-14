@@ -104,7 +104,7 @@ namespace Chapeau.Services
 
                 // Update order status
                 order.Status = Status.Completed;
-                _orderRepository.UpdateOrder(order);
+                _orderRepository.UpdateOrderStatus(order.OrderId, order.Status);
 
                 return true;
             }

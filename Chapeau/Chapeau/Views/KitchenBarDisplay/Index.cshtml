@@ -1,13 +1,13 @@
 ﻿@model List<Chapeau.Models.Order>
 @{
-	if (ViewBag.Role.ToLower() == "kitchen")
-	{
-		ViewData["Title"] = "Kitchen";
-	}
-	else
-	{
-		ViewData["Title"] = "Bar";
-	}
+    if (ViewBag.Role.ToLower() == "kitchen")
+    {
+        ViewData["Title"] = "Kitchen";
+    }
+    else
+    {
+        ViewData["Title"] = "Bar";
+    }
 }
 
 <div class="container py-4">
@@ -21,7 +21,16 @@
     <!-- Orders -->
     <div class="row g-4" 
     id="orders-container">
-		@await Html.PartialAsync("_OrdersPartial", Model)
+        @if(Model.Count>0)
+        {
+            @await Html.PartialAsync("_OrdersPartial", Model)
+        }
+        else
+        {
+            <div>
+                <p>There are not any orders</p>
+            </div>
+        }
     </div>
 </div>
 
@@ -47,13 +56,13 @@
                     document.getElementById("orders-container").innerHTML = html;
                 });
         });
-        function updateOrderStatus(orderId, currentStatus) {
+        function UpdateOrderStatus(orderId, currentStatus) {
 			// Prepare form data to send to the server
             const formData = new URLSearchParams();
             formData.append("orderId", orderId);
             formData.append("currentStatus", currentStatus);
 
-            fetch('/KitchenBarDisplay/UpdateStatus', {
+            fetch('/KitchenBarDisplay/UpdateOrderStatus', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'

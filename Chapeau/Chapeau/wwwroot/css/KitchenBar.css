@@ -50,11 +50,7 @@
     box-shadow: none !important;
 }
 
-
-
-
-
-.urgent-order {
+#card .urgent-order {
     border: 1px solid red;
     border-radius: 8px;
     box-shadow: 0 0 10px red;

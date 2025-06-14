@@ -19,7 +19,6 @@ namespace Chapeau.Repositories
         {
             // Read order details
             int orderId = (int)reader["order_id"];
-            Status status = Enum.Parse<Status>((string)reader["order_status"], true);
             DateOnly dateOrdered = DateOnly.FromDateTime((DateTime)reader["date_ordered"]);
             TimeOnly timeOrdered = TimeOnly.FromTimeSpan((TimeSpan)reader["time_ordered"]);
             bool isPaid = (bool)reader["is_paid"];
@@ -31,7 +30,7 @@ namespace Chapeau.Repositories
             // Read table
             Table table = ReadTable(reader);
 
-            return new Order(orderId, status, dateOrdered, timeOrdered, isPaid, table, employee);
+            return new Order(orderId, dateOrdered, timeOrdered, isPaid, table, employee);
         }
 
         private Employee ReadEmployee(SqlDataReader reader)
@@ -106,7 +105,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all orders for today (optionally filtered by status)
-                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
+                string sql = @"SELECT   o.order_id, o.date_ordered, o.time_ordered, o.is_paid,
                                         i.count, i.comment, i.status AS item_status,
                                         e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_id, t.table_nr, t.availability,
@@ -116,14 +115,14 @@ namespace Chapeau.Repositories
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
-                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status AND o.status != 'Unordered'
+                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE)
                             ORDER BY o.time_ordered";
 
                 //CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND            IN THE WHERE
 
-                SqlCommand command = new SqlCommand(sql, connection);
+                SqlCommand command = new SqlCommand(sql, connection);/*
                 command.Parameters.AddWithValue("@status", $"%{status.ToString()}%");
-
+*/
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
@@ -143,8 +142,15 @@ namespace Chapeau.Repositories
 
                 reader.Close();
             }
-            // return the list of orders
-            return orders.Values.ToList();
+            List<Order> result = orders.Values.ToList();
+
+            if (status.HasValue)
+            {
+                // Filter the orders by the specified status
+                result = result.Where(o => o.Status == status.Value).ToList();
+            }
+
+            return result;
         }
 
         public Order GetOrderById(int orderId)
@@ -154,7 +160,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all orders for today (optionally filtered by status)
-                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
+                string sql = @"SELECT   o.order_id, o.date_ordered, o.time_ordered, o.is_paid,
                                         i.count, i.comment, i.status AS item_status,
                                         e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_nr, t.table_id, t.availability,
@@ -271,35 +277,32 @@ namespace Chapeau.Repositories
             }
         }
 
-        public void UpdateOrder(Order order)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string sql = @"UPDATE [order]
-                     SET status = @Status
-                     WHERE order_id = @OrderId";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@OrderId", order.OrderId);
-                command.Parameters.AddWithValue("@Status", order.Status.ToString());
-
-                connection.Open();
-                int rowsAffected = command.ExecuteNonQuery();
-
-                if (rowsAffected == 0)
-                {
-                    throw new Exception($"Order with ID {order.OrderId} not found or could not be updated");
-                }
-            }
-        }
-
-
         public bool UpdateOrderStatus(int orderId, Status status)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
+                string sql = @"UPDATE [order_item]
+                     SET status = @Status
+                     WHERE order_id = @OrderId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@OrderId", orderId);
+                command.Parameters.AddWithValue("@Status", status.ToString());
+
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                return rowsAffected > 0;
+            }
+        }
+
+
+        public bool UpdateOrderItemStatus(int orderId, Status status)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
                 // SQL query to update the status of an order
-                string sql = "UPDATE [order] SET status = @status WHERE order_id = @orderId";
+                string sql = "UPDATE [order_item] SET status = @status WHERE order_id = @orderId";
                 SqlCommand command = new SqlCommand(sql, connection);
 
                 command.Parameters.AddWithValue("@status", status.ToString());

@@ -2,10 +2,10 @@
 
 @foreach (Order order in Model)
 {
-    @if (order.Status.ToString().ToLower() == "ordered" || order.Status.ToString().ToLower() == "preparing" || order.Status.ToString().ToLower() == "ready")
+    @if (order.OrderItems.Any(item => item.Status.ToString() == "Ordered") || order.OrderItems.Any(item => item.Status.ToString() == "Preparing") || order.OrderItems.Any(item => item.Status.ToString() == "Ready"))
     {
-        string urgentClass = order.MinutesSinceOrdered > 20 && order.Status.ToString().ToLower() == "preparing" ? "urgent-order" : "";
-        <div class="col-md-4">
+        string urgentClass = (order.MinutesSinceOrdered > 20 && order.Status.ToString() == "Preparing") ? "urgent-order" : "";
+        <div class="col-md-4" id="card">
             <div class="card-body d-flex flex-column order-card @urgentClass">
                 @await Html.PartialAsync("_OrderCard", order)
             </div>
