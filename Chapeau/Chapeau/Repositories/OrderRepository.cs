@@ -146,7 +146,7 @@ namespace Chapeau.Repositories
 
             if (status.HasValue)
             {
-                // Filter the orders by the specified status
+                // After creating the order, the status is calculated based on the items in the order, so now we filter the orders by status
                 result = result.Where(o => o.Status == status.Value).ToList();
             }
 
@@ -297,16 +297,17 @@ namespace Chapeau.Repositories
         }
 
 
-        public bool UpdateOrderItemStatus(int orderId, Status status)
+        public bool UpdateOrderItemStatus(int orderId, int orderItemId, Status status)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to update the status of an order
-                string sql = "UPDATE [order_item] SET status = @status WHERE order_id = @orderId";
+                string sql = "UPDATE [order_item] SET status = @status WHERE order_id = @orderId AND menu_item_id = @orderItemId";
                 SqlCommand command = new SqlCommand(sql, connection);
 
                 command.Parameters.AddWithValue("@status", status.ToString());
                 command.Parameters.AddWithValue("@orderId", orderId);
+                command.Parameters.AddWithValue("@orderItemId", orderItemId);
                 connection.Open();
                 int affected = command.ExecuteNonQuery();
                 return affected > 0;

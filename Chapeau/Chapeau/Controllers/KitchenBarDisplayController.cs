@@ -127,6 +127,20 @@ namespace Chapeau.Controllers
                 return Problem();
             }
         }
+        [HttpPatch]
+        public async Task<IActionResult> UpdateOrderItemStatus(int orderId, int orderItemId, Status currentStatus)
+        {
+            bool result = _kitchenBarDisplaySevice.UpdateOrderItemStatus(orderId, orderItemId, currentStatus);
+            if (result)
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveOrders");
+                return Ok();
+            }
+            else
+            {
+                return Problem();
+            }
+        }
         public IActionResult OrdersPartial(string status)
         {
             List<Order> orders = GetOrdersByStatus(status);

@@ -21,11 +21,22 @@
             @foreach (var item in group)
             {
                 <div class="d-flex justify-content-between">
-                    <li>@item.Count @item.MenuItem.Name</li>
-                    @* <button class="btn btn-sm"
-                            onclick="updateItemStatus(@item., '@Model.Status.ToString()')">
-                        <span class="check-icon">✔</span>
-                    </button> *@
+                    @if (item.Status.ToString() == "Preparing")
+                    {
+                        <li>@item.Count @item.MenuItem.Name</li>
+                        <button class="btn btn-sm"
+                        onclick="UpdateOrderItemStatus(@Model.OrderId, @item.MenuItem.MenuItemId, '@Model.Status.ToString()')">
+                            <span class="check-icon">✔</span>
+                        </button>
+                    }
+                    else if (item.Status.ToString() == "Ready")
+                    {
+                        <li class="text-decoration-line-through">@item.Count @item.MenuItem.Name</li>
+                    }
+                    else
+                    {
+                        <li>@item.Count @item.MenuItem.Name</li>
+                    }
                 </div>
             }
         </ul>

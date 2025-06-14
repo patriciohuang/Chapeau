@@ -74,6 +74,25 @@
             })
             .catch(err => console.error(err));
         }
+         function UpdateOrderItemStatus(orderId, orderItemId, currentStatus) {
+            // Prepare form data to send to the server
+            const formData = new URLSearchParams();
+            formData.append("orderId", orderId);
+            formData.append("orderItemId", orderItemId);
+            formData.append("currentStatus", currentStatus);
+
+            fetch('/KitchenBarDisplay/UpdateOrderItemStatus', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update status');
+            })
+            .catch(err => console.error(err));
+        }
     </script>
 
 }

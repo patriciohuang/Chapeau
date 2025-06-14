@@ -20,7 +20,7 @@ namespace Chapeau.Repositories
         bool UpdateOrderStatus(int orderId, Status status);
 
 
-        bool UpdateOrderItemStatus(int orderId, Status status);
+        bool UpdateOrderItemStatus(int orderId, int orderItemId, Status status);
 
         //THESE ARE ALL EMPTY AND NOT IMPLEMENTED. REMOVE LATER, WE ALREADY HAVE METHODS THAT DO THIS
         List<Order> GetAllOrders();
