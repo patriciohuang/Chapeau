@@ -8,6 +8,7 @@ namespace Chapeau.Services
         List<Order> GetOrders(Status status);
         List<Order> GetOrdersByStatus(List<Status> statuses);
         bool UpdateOrderItemStatus(int orderId, int orderItemId, Status currentStatus);
+        bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status currentStatus);
         bool UpdateOrderStatus(int orderId, Status currentStatus);
     }
 }

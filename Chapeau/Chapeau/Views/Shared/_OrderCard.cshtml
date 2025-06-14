@@ -16,6 +16,13 @@
     <div class="mb-2">
         <div class="d-flex justify-content-between border-bottom">
             <strong>@group.Key</strong>
+            @if(Model.Status.ToString() == "Preparing")
+            {
+                <button class="btn btn-sm"
+                        onclick="UpdateOrderCategoryStatus(@Model.OrderId, '@group.Key.ToString()', '@Model.Status.ToString()')">
+                    <span class="check-icon">✔</span>
+                </button>
+            }
         </div>
         <ul class="list-unstyled ms-2 mt-1">
             @foreach (var item in group)

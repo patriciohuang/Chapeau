@@ -19,6 +19,7 @@ namespace Chapeau.Repositories
 
         bool UpdateOrderStatus(int orderId, Status status);
 
+        bool UpdateOrderCategoryStatus(int orderId, CourseCategory courseCategory, Status status);
 
         bool UpdateOrderItemStatus(int orderId, int orderItemId, Status status);
 

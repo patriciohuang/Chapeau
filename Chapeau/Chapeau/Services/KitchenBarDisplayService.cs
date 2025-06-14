@@ -51,6 +51,29 @@ namespace Chapeau.Services
                 return false;
             }
         }
+        public bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status currentStatus)
+        {
+            try
+            {
+                Status newStatus;
+                if (currentStatus != Status.Ready)
+                {
+                    newStatus = StatusHelper.NextStatus(currentStatus);
+                }
+                else
+                {
+                    newStatus = StatusHelper.PreviousStatus(currentStatus);
+                }
+                return _orderRepository.UpdateOrderCategoryStatus(orderId, category, newStatus);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e}");
+                return false;
+            }
+        }
+
+
         public bool UpdateOrderItemStatus(int orderId, int orderItemId, Status currentStatus)
         {
             try

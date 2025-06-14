@@ -128,6 +128,21 @@ namespace Chapeau.Controllers
             }
         }
         [HttpPatch]
+        public async Task<IActionResult> UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status currentStatus)
+        {
+            bool result = _kitchenBarDisplaySevice.UpdateOrderCategoryStatus(orderId, category, currentStatus);
+            if (result)
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveOrders");
+                return Ok();
+            }
+            else
+            {
+                return Problem();
+            }
+        }
+
+        [HttpPatch]
         public async Task<IActionResult> UpdateOrderItemStatus(int orderId, int orderItemId, Status currentStatus)
         {
             bool result = _kitchenBarDisplaySevice.UpdateOrderItemStatus(orderId, orderItemId, currentStatus);

@@ -296,6 +296,29 @@ namespace Chapeau.Repositories
             }
         }
 
+        public bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status status)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string sql = @"UPDATE oi
+                    SET status = @Status
+                    FROM [Order_item] AS oi
+                        INNER JOIN menu_item AS mi ON
+                            mi.menu_item_id = oi.menu_item_id
+		                    WHERE mi.course_category = @Category AND oi.order_id = @OrderId;";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@OrderId", orderId);
+                command.Parameters.AddWithValue("@Status", status.ToString());
+                command.Parameters.AddWithValue("@Category", category.ToString());
+
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                return rowsAffected > 0;
+            }
+        }
+
 
         public bool UpdateOrderItemStatus(int orderId, int orderItemId, Status status)
         {
