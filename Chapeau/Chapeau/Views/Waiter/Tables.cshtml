@@ -20,13 +20,15 @@
             <i class="bi bi-arrow-clockwise"></i>
         </a>
     </div>
-    <!--Want to know what hell feels like? ˇˇ take a look-->
+    <!--Want to know what hell feels like? ˇˇ take a look (updated hell xd)-->
     <div class="tables-grid">
         @foreach (var table in Model)
         {
             string statusClass = table.Available ? "available" : "occupied";
-            <a class="table-link" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@table.TableNr">
-                <div class="table-item @statusClass" data-available="@table.Available.ToString().ToLower()">
+            <form asp-action="TableActions" method="get" class="table-form">
+                <input type="hidden" name="tableNr" value="@table.TableNr" />
+                <input type="hidden" name="available" value="@table.Available" />
+                <button type="submit" class="table-item @statusClass">
                     <div class="chair top"></div>
                     <div class="chair left"></div>
                     <div class="table-surface">
@@ -34,8 +36,8 @@
                     </div>
                     <div class="chair right"></div>
                     <div class="chair bottom"></div>
-                </div>
-            </a>
+                </button>
+            </form>
         }
     </div>
 </div>

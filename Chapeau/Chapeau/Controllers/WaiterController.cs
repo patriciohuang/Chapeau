@@ -5,6 +5,7 @@ using Chapeau.Repositories;
 using System.Collections.Generic;
 using Chapeau.Models.Enums;
 using Chapeau.Services;
+using Chapeau.ViewModels;
 
 namespace Chapeau.Controllers
 {
@@ -43,46 +44,6 @@ namespace Chapeau.Controllers
             }
         }
 
-        // GET: /Waiter/Index
-        // Shows the waiter dashboard with table statistics and navigation options
-        // -- This is completely irrelevant now
-        // Since we literally got rid of Waiter/Index and replaced it with Waiter/Tables -- I wanna take it out just was too lazy
-        // Lol
-        public IActionResult Index()
-        {
-
-            try
-            {
-                // Get all tables to calculate statistics
-                var tables = _tableService.GetAllTables();
-
-                // Count free tables (available = true)
-                ViewBag.FreeTablesCount = tables.Count(t => t.Available);
-
-                // Count occupied tables (available = false)
-                ViewBag.OccupiedTablesCount = tables.Count(t => !t.Available);
-
-                // TODO: These will be implemented when order system is added
-                ViewBag.PendingOrdersCount = 0;   // Placeholder for pending orders
-                ViewBag.CompletedOrdersCount = 0; // Placeholder for completed orders
-
-                return View();
-            }
-            catch (Exception ex)
-            {
-                // If error loading dashboard data, show error and set default values
-                TempData["ErrorMessage"] = "Failed to load dashboard: " + ex.Message;
-
-                // Set default values so the view doesn't break
-                ViewBag.FreeTablesCount = 0;
-                ViewBag.OccupiedTablesCount = 0;
-                ViewBag.PendingOrdersCount = 0;
-                ViewBag.CompletedOrdersCount = 0;
-
-                return View();
-            }
-        }
-
         // GET: /Waiter/Tables
         // Shows visual layout of all restaurant tables with their current status
         // The main page for waiters rn, and it will stay like that
@@ -91,7 +52,7 @@ namespace Chapeau.Controllers
             try
             {
                 // Get all tables from the database with their current availability status
-                IEnumerable<Table> tables = _tableService.GetAllTables();
+                var tables = _tableService.GetAllTables();
 
                 // Pass tables to view for visual display
                 return View(tables);
@@ -104,28 +65,11 @@ namespace Chapeau.Controllers
             }
         }
 
-        // POST: /Waiter/UpdateTableAvailability
-        // Updates the availability status of a specific table
-        // This doesn't work yet, since the update table availability method in the repository is not implemented :3
-        [HttpPost]
-        public IActionResult UpdateTableAvailability(int tableNr, bool available)
+        // Helper method to create the view model for table actions
+        public IActionResult TableActions(int tableNr, bool available)
         {
-            try
-            {
-                // Update the table availability in the database
-                _tableService.UpdateTableAvailability(tableNr, available);
-
-                // Success - set success message
-                TempData["SuccessMessage"] = $"Table {tableNr} updated successfully";
-            }
-            catch (Exception ex)
-            {
-                // If error updating table, set error message
-                TempData["ErrorMessage"] = "Failed to update table: " + ex.Message;
-            }
-
-            // Always redirect back to tables view (whether success or error)
-            return RedirectToAction("Tables");
+            var viewModel = CreateTableActionsViewModel(tableNr, available);
+            return View(viewModel);
         }
 
         // GET: /Waiter/Orders
@@ -187,10 +131,92 @@ namespace Chapeau.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult UpdateTableAvailability(int tableNr, bool available)
+        {
+            try
+            {
+                ValidateTableStatusChange(tableNr, available);
+                _tableService.UpdateTableAvailability(tableNr, available);
+                TempData["SuccessMessage"] = $"Table {tableNr} updated successfully to {(available ? "available" : "unavailable")}.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to update table status: " + ex.Message;
+            }
 
+            return RedirectToAction("Tables");
+        }
 
-        
+        [HttpPost]
+        public IActionResult MarkOrderAsServed(int orderId)
+        {
+            try
+            {
+                _orderService.MarkOrderAsServed(orderId);
+                TempData["SuccessMessage"] = "Order marked as served successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to update order status: " + ex.Message;
+            }
 
+            return RedirectToAction("Orders");
+        }
 
+        [HttpPost]
+        public IActionResult MarkOrderItemAsServed(int orderId, int orderItemId)
+        {
+            try
+            {
+                _orderService.MarkOrderItemAsServed(orderId, orderItemId);
+                TempData["SuccessMessage"] = "Order item marked as served successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to update order item status: " + ex.Message;
+            }
+
+            return RedirectToAction("Orders");
+        }
+
+        private List<Order> GetFilteredOrders(string filter, int? tableNr)
+        {
+            return tableNr.HasValue
+                ? _orderService.GetOrdersByTableAndFilter(tableNr.Value, filter)
+                : _orderService.GetOrdersByFilter(filter);
+        }
+
+        private void SetOrderViewData(string filter, int? tableNr, List<Order> orders)
+        {
+            ViewBag.CurrentFilter = filter;
+            ViewBag.FilteredByTable = tableNr;
+            ViewBag.AvailableTableNumbers = GetAvailableTableNumbers(orders);
+        }
+
+        private void ValidateTableStatusChange(int tableNr, bool available)
+        {
+            if (available && HasActiveOrders(tableNr))
+            {
+                throw new InvalidOperationException(
+                    $"Cannot mark Table {tableNr} as available. Active orders must be completed first.");
+            }
+        }
+
+        private bool HasActiveOrders(int tableNr)
+        {
+            var activeOrders = _orderService.GetActiveOrdersByTable(tableNr);
+            return activeOrders.Any();
+        }
+
+        private List<int> GetAvailableTableNumbers(List<Order> orders)
+        {
+            return orders.Select(o => o.Table.TableNr).Distinct().OrderBy(t => t).ToList();
+        }
+
+        private TableActionsViewModel CreateTableActionsViewModel(int tableNr, bool available)
+        {
+            return new TableActionsViewModel(tableNr, available);
+        }
     }
 }

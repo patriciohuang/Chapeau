@@ -35,28 +35,46 @@ namespace Chapeau.Services
             return allOrders.Where(o => o.Table.TableNr == tableNr).ToList();
         }
 
+        public List<Order> GetOrdersByFilter(string filter)
+        {
+            return filter.ToLower() switch
+            {
+                "active" => _orderRepository.GetActiveOrders(),
+                "ready" => _orderRepository.GetReadyOrders(),
+                "all" => _orderRepository.GetTodaysOrders(),
+                _ => _orderRepository.GetTodaysOrders()
+            };
+        }
+
+        public List<Order> GetOrdersByTableAndFilter(int tableNr, string filter)
+        {
+            return filter.ToLower() switch
+            {
+                "active" => _orderRepository.GetActiveOrdersByTable(tableNr),
+                "ready" => _orderRepository.GetReadyOrdersByTable(tableNr),
+                "all" => _orderRepository.GetOrdersByTable(tableNr),
+                _ => _orderRepository.GetOrdersByTable(tableNr)
+            };
+        }
+
         public List<Order> GetActiveOrders()
         {
-            List<Order> allOrders = _orderRepository.GetOrders(null);
-            return allOrders.Where(o => o.Status != Status.Completed && o.Status != Status.Cancelled).ToList();
+            return _orderRepository.GetActiveOrders();
         }
 
         public List<Order> GetReadyOrders()
         {
-            List<Order> allOrders = _orderRepository.GetOrders(null);
-            return allOrders.Where(o => o.OrderItems.Any(oi => oi.Status == Status.Ready)).ToList();
+            return _orderRepository.GetReadyOrders();
         }
 
         public List<Order> GetActiveOrdersByTable(int tableNr)
         {
-            List<Order> allOrders = _orderRepository.GetOrders(null);
-            return allOrders.Where(o => o.Table.TableNr == tableNr && o.Status != Status.Completed && o.Status != Status.Cancelled).ToList();
+            return _orderRepository.GetActiveOrdersByTable(tableNr);
         }
 
         public List<Order> GetReadyOrdersByTable(int tableNr)
         {
-            List<Order> allOrders = _orderRepository.GetOrders(null);
-            return allOrders.Where(o => o.Table.TableNr == tableNr && o.OrderItems.Any(oi => oi.Status == Status.Ready)).ToList();
+            return _orderRepository.GetReadyOrdersByTable(tableNr);
         }
 
         public Order GetOrderById(int orderId)
@@ -99,6 +117,89 @@ namespace Chapeau.Services
         public void SendOrder(int orderId)
         {
             _orderRepository.SendOrder(orderId);
+        }
+
+        public void MarkOrderItemAsServed(int orderId, int orderItemId)
+        {
+            _orderRepository.UpdateOrderItemStatus(orderItemId, Status.Served);
+            RecalculateOrderStatus(orderId);
+        }
+
+        public void MarkOrderAsServed(int orderId)
+        {
+            _orderRepository.UpdateAllReadyItemsToServed(orderId);
+            RecalculateOrderStatus(orderId);
+        }
+
+        public void RecalculateOrderStatus(int orderId)
+        {
+            var order = GetOrderById(orderId);
+            var calculatedStatus = CalculateOrderStatusFromItems(order);
+
+            if (order.Status != calculatedStatus)
+            {
+                _orderRepository.UpdateOrderStatus(orderId, calculatedStatus);
+            }
+        }
+
+        private Status CalculateOrderStatusFromItems(Order order)
+        {
+            if (!order.OrderItems.Any())
+            {
+                return Status.Unordered;
+            }
+
+            var statusPriority = GetStatusPriorityOrder();
+            var itemStatuses = order.OrderItems.Select(item => item.Status).Distinct();
+
+            return GetEarliestStatus(itemStatuses, statusPriority);
+        }
+
+        private List<Status> GetStatusPriorityOrder()
+        {
+            return new List<Status>
+            {
+                Status.Unordered,
+                Status.Ordered,
+                Status.Preparing,
+                Status.Ready,
+                Status.Served,
+                Status.Completed,
+                Status.Cancelled
+            };
+        }
+
+        private Status GetEarliestStatus(IEnumerable<Status> statuses, List<Status> priorityOrder)
+        {
+            foreach (var status in priorityOrder)
+            {
+                if (statuses.Contains(status))
+                {
+                    return status;
+                }
+            }
+
+            return Status.Unordered;
+        }
+
+        private Table GetTableByNumber(int tableNr)
+        {
+            return _tableRepository.GetTableByNumber(tableNr);
+        }
+
+        private int CreateNewOrder(int tableId, int employeeId)
+        {
+            return _orderRepository.CreateOrder(tableId, employeeId);
+        }
+
+        private void MarkTableAsOccupied(int tableNr)
+        {
+            _tableRepository.UpdateTableAvailability(tableNr, false);
+        }
+
+        private OrderItem GetOrderItemById(Order order, int orderItemId)
+        {
+            return order.OrderItems.FirstOrDefault(item => item.OrderItemId == orderItemId);
         }
     }
 }

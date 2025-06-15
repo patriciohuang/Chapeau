@@ -293,22 +293,191 @@ namespace Chapeau.Repositories
             }
         }
 
-
         public bool UpdateOrderStatus(int orderId, Status status)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                // SQL query to update the status of an order
-                string sql = "UPDATE [order] SET status = @status WHERE order_id = @orderId";
-                SqlCommand command = new SqlCommand(sql, connection);
+            using var connection = new SqlConnection(_connectionString);
+            var sql = GetUpdateOrderStatusQuery();
+            var command = CreateCommand(connection, sql);
+            command.Parameters.AddWithValue("@status", status.ToString());
+            command.Parameters.AddWithValue("@orderId", orderId);
 
-                command.Parameters.AddWithValue("@status", status.ToString());
-                command.Parameters.AddWithValue("@orderId", orderId);
-                connection.Open();
-                int affected = command.ExecuteNonQuery();
-                return affected > 0;
+            connection.Open();
+            return command.ExecuteNonQuery() > 0;
+        }
+
+        public void UpdateOrderItemStatus(int orderItemId, Status status)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var sql = GetUpdateOrderItemStatusQuery();
+            var command = CreateCommand(connection, sql);
+            command.Parameters.AddWithValue("@orderItemId", orderItemId);
+            command.Parameters.AddWithValue("@status", status.ToString());
+
+            connection.Open();
+            var rowsAffected = command.ExecuteNonQuery();
+            ValidateOrderItemUpdateResult(rowsAffected, orderItemId);
+        }
+
+        public void UpdateAllReadyItemsToServed(int orderId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var sql = GetUpdateAllReadyItemsQuery();
+            var command = CreateCommand(connection, sql);
+            command.Parameters.AddWithValue("@orderId", orderId);
+            command.Parameters.AddWithValue("@fromStatus", Status.Ready.ToString());
+            command.Parameters.AddWithValue("@toStatus", Status.Served.ToString());
+
+            connection.Open();
+            command.ExecuteNonQuery();
+        }
+
+        private List<Order> ExecuteOrderQuery(string sql, string statusFilter)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var command = CreateCommand(connection, sql);
+            command.Parameters.AddWithValue("@status", $"%{statusFilter}%");
+
+            connection.Open();
+            return ProcessOrderResults(command.ExecuteReader());
+        }
+
+        private List<Order> ExecuteOrderQueryWithTable(string sql, string statusFilter, int tableNr)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var command = CreateCommand(connection, sql);
+            command.Parameters.AddWithValue("@status", $"%{statusFilter}%");
+            command.Parameters.AddWithValue("@tableNr", tableNr);
+
+            connection.Open();
+            return ProcessOrderResults(command.ExecuteReader());
+        }
+
+        private List<Order> ExecuteOrderQueryWithId(string sql, int orderId)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var command = CreateCommand(connection, sql);
+            command.Parameters.AddWithValue("@orderId", orderId);
+
+            connection.Open();
+            return ProcessOrderResults(command.ExecuteReader());
+        }
+
+        private SqlCommand CreateCommand(SqlConnection connection, string sql)
+        {
+            return new SqlCommand(sql, connection);
+        }
+        private List<Order> ProcessOrderResults(SqlDataReader reader)
+        {
+            var orders = new Dictionary<int, Order>();
+
+            while (reader.Read())
+            {
+                var orderId = (int)reader["order_id"];
+                ProcessOrderRow(orders, orderId, reader);
+            }
+
+            reader.Close();
+            return orders.Values.ToList();
+        }
+
+        private void ProcessOrderRow(Dictionary<int, Order> orders, int orderId, SqlDataReader reader)
+        {
+            if (!orders.ContainsKey(orderId))
+            {
+                orders.Add(orderId, ReadOrder(reader));
+            }
+
+            AddOrderItemToOrder(orders[orderId], ReadOrderItem(reader));
+        }
+
+        private void ValidateOrderItemUpdateResult(int rowsAffected, int orderItemId)
+        {
+            if (rowsAffected == 0)
+            {
+                throw new Exception($"Order item with ID {orderItemId} not found or could not be updated");
             }
         }
+
+
+        public List<Order> GetTodaysOrders()
+        {
+            return ExecuteOrderQuery(GetBaseOrderQuery() + GetTodayFilter(), "%");
+        }
+
+        public List<Order> GetActiveOrders()
+        {
+            var sql = GetBaseOrderQuery() + GetTodayFilter() + GetActiveOrderFilter();
+            return ExecuteOrderQuery(sql, "%");
+        }
+
+        public List<Order> GetReadyOrders()
+        {
+            var sql = GetBaseOrderQuery() + GetTodayFilter() + GetReadyItemsFilter();
+            return ExecuteOrderQuery(sql, "%");
+        }
+
+        public List<Order> GetOrdersByTable(int tableNr)
+        {
+            var sql = GetBaseOrderQuery() + GetTodayFilter() + GetTableFilter();
+            return ExecuteOrderQueryWithTable(sql, "%", tableNr);
+        }
+
+        public List<Order> GetActiveOrdersByTable(int tableNr)
+        {
+            var sql = GetBaseOrderQuery() + GetTodayFilter() + GetActiveOrderFilter() + GetTableFilter();
+            return ExecuteOrderQueryWithTable(sql, "%", tableNr);
+        }
+
+        public List<Order> GetReadyOrdersByTable(int tableNr)
+        {
+            var sql = GetBaseOrderQuery() + GetTodayFilter() + GetReadyItemsFilter() + GetTableFilter();
+            return ExecuteOrderQueryWithTable(sql, "%", tableNr);
+        }
+
+        private string GetBaseOrderQuery()
+        {
+            return @"SELECT o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
+                            i.order_item_id, i.count, i.comment, i.status AS item_status,
+                            e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
+                            t.table_id, t.table_nr, t.availability,
+                            m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic
+                     FROM [order] o
+                     JOIN order_item i ON o.order_id = i.order_id
+                     JOIN menu_item m ON i.menu_item_id = m.menu_item_id
+                     JOIN employee e ON o.employee_id = e.employee_id
+                     JOIN [table] t ON t.table_id = o.table_id ";
+        }
+
+        private string GetTodayAndStatusFilter()
+        {
+            return "WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status AND o.status != 'Unordered' ORDER BY o.time_ordered";
+        }
+
+        private string GetTodayFilter()
+        {
+            return "WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status != 'Unordered' ";
+        }
+
+        private string GetActiveOrderFilter()
+        {
+            return "AND o.status NOT IN ('Completed', 'Cancelled') ";
+        }
+
+        private string GetReadyItemsFilter()
+        {
+            return "AND o.order_id IN (SELECT DISTINCT order_id FROM order_item WHERE status = 'Ready') ";
+        }
+
+        private string GetTableFilter()
+        {
+            return "AND t.table_nr = @tableNr ";
+        }
+
+        // SQL Query Methods
+        private string GetUpdateOrderStatusQuery() => @"UPDATE [order] SET status = @status WHERE order_id = @orderId";
+        private string GetUpdateOrderItemStatusQuery() => @"UPDATE order_item SET status = @status WHERE order_item_id = @orderItemId";
+        private string GetUpdateAllReadyItemsQuery() => @"UPDATE order_item SET status = @toStatus WHERE order_id = @orderId AND status = @fromStatus";
+
 
         //THESE ARE ALL EMPTY AND NOT IMPLEMENTED. REMOVE LATER, WE ALREADY HAVE METHODS THAT DO THIS
         public List<Order> GetAllOrders()

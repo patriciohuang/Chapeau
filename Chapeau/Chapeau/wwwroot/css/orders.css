@@ -383,3 +383,243 @@
 .nav-tabs .nav-link {
     position: relative;
 }
+
+/* Mobile View Item Styling */
+.course-category-header {
+    color: #374151;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.course-items {
+    padding-left: 1rem;
+    border-left: 3px solid #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+    .order-item-row:last-child {
+        border-bottom: none;
+    }
+
+.item-info {
+    flex: 1;
+    margin-right: 0.75rem;
+}
+
+.item-name {
+    font-weight: 500;
+    color: #374151;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.item-comment {
+    margin-top: 0.25rem;
+}
+
+.item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.item-status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+}
+
+.serve-item-form {
+    display: contents;
+}
+
+.serve-item-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+    .serve-item-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    .serve-item-btn:active {
+        transform: scale(0.95);
+    }
+
+.order-footer-info {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* Desktop View Item Styling */
+.item-row {
+    padding: 0.25rem 0;
+    border-bottom: 1px solid #f8f9fa;
+    margin-bottom: 0.25rem;
+}
+
+    .item-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-xs {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    border-radius: 0.375rem;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Status-specific styling */
+.bg-success.item-status-badge {
+    background-color: #10b981 !important;
+}
+
+.bg-warning.item-status-badge {
+    background-color: #f59e0b !important;
+}
+
+.bg-info.item-status-badge {
+    background-color: #06b6d4 !important;
+}
+
+.bg-secondary.item-status-badge {
+    background-color: #6b7280 !important;
+}
+
+/* Form styling for individual items */
+.serve-item-form button[type="submit"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+    .serve-item-form button[type="submit"]:disabled:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .order-item-row {
+        padding: 0.75rem 0;
+    }
+
+    .serve-item-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .item-status-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .course-items {
+        padding-left: 0.75rem;
+        border-left-width: 2px;
+    }
+}
+
+/* Focus states for accessibility */
+.serve-item-btn:focus {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+}
+
+/* Loading state for individual item buttons */
+.serve-item-btn .spinner-border-sm {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-width: 0.125rem;
+}
+
+/* Hover effects for better UX */
+.order-item-row:hover {
+    background-color: rgba(59, 130, 246, 0.02);
+    border-radius: 0.375rem;
+    margin: 0 -0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+    .order-item-row:hover .item-name {
+        color: #2563eb;
+    }
+
+/* Animation for status changes */
+@keyframes statusChange {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.item-status-badge.status-changing {
+    animation: statusChange 0.3s ease;
+}
+
+/* Course grouping improvements */
+.course-items:empty {
+    display: none;
+}
+
+.course-category-header:not(:first-child) {
+    margin-top: 1rem;
+}
+
+/* Better visual hierarchy */
+.order-card-body .mb-3:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Action button group styling */
+.order-card-footer .btn {
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+    .order-card-footer .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }

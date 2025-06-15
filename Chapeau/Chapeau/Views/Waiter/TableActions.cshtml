@@ -1,0 +1,68 @@
+﻿@model Chapeau.ViewModels.TableActionsViewModel
+@{
+    ViewData["Title"] = $"Table {Model.TableNr} Actions";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card table-actions-card">
+                <div class="card-header table-actions-header">
+                    <h4 class="mb-0">Table @Model.TableNr</h4>
+                    <span class="badge table-status-badge @(Model.Available ? "available" : "occupied")">
+                        @(Model.Available ? "Available" : "Occupied")
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <!-- Menu Action -->
+                        <a asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr"
+                           class="btn btn-primary btn-lg action-button">
+                            <i class="bi bi-card-list me-2"></i>
+                            View Menu & Take Order
+                        </a>
+
+                        <!-- Status Change Section -->
+                        <hr>
+                        <div class="status-change-section">
+                            @if (Model.Available)
+                            {
+                                <form asp-action="UpdateTableAvailability" method="post">
+                                    <input type="hidden" name="tableNr" value="@Model.TableNr" />
+                                    <input type="hidden" name="available" value="false" />
+                                    <button type="submit" class="btn btn-warning btn-lg w-100 action-button">
+                                        <i class="bi bi-lock me-2"></i>
+                                        Mark as Occupied
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form asp-action="UpdateTableAvailability" method="post">
+                                    <input type="hidden" name="tableNr" value="@Model.TableNr" />
+                                    <input type="hidden" name="available" value="true" />
+                                    <button type="submit" class="btn btn-success btn-lg w-100 action-button">
+                                        <i class="bi bi-unlock me-2"></i>
+                                        Mark as Available
+                                    </button>
+                                </form>
+                                <small class="text-muted mt-2 d-block">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Note: Table can only be marked as available if there are no active orders
+                                </small>
+                            }
+                        </div>
+
+                        <!-- Back Button -->
+                        <hr>
+                        <a asp-action="Tables" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Back to Tables
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

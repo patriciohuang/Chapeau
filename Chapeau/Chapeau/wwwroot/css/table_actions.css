@@ -1,0 +1,165 @@
+/* Table Actions Page Styles */
+.table-actions-card {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-actions-header {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-bottom: none;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-status-badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-weight: 500;
+}
+
+    .table-status-badge.available {
+        background-color: #10b981;
+        color: white;
+    }
+
+    .table-status-badge.occupied {
+        background-color: #ef4444;
+        color: white;
+    }
+
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+    .action-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-button i {
+        font-size: 1.1rem;
+    }
+
+.status-change-section {
+    text-align: center;
+}
+
+    .status-change-section .text-muted {
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+
+        .status-change-section .text-muted i {
+            color: #6b7280;
+        }
+
+/* Table Form Styles */
+.table-form {
+    display: contents;
+}
+
+    .table-form .table-item {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .table-form .table-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-form .table-item:active {
+            transform: translateY(0);
+        }
+
+        .table-form .table-item:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+/* Order Form Styles */
+.serve-order-form {
+    display: contents;
+}
+
+.dropdown-form {
+    margin: 0;
+    padding: 0;
+}
+
+    .dropdown-form .dropdown-item {
+        background: none;
+        border: none;
+        color: inherit;
+        text-align: left;
+        width: 100%;
+        padding: 0.375rem 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+        .dropdown-form .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-form .dropdown-item:focus {
+            background-color: #e9ecef;
+            outline: none;
+        }
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .table-actions-header {
+        padding: 1.25rem;
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+
+    .action-button {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Focus states for accessibility */
+.action-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+}
+
+.btn-warning:focus {
+    box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.25);
+}
+
+.btn-success:focus {
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+}
+
+/* Loading states for form submissions */
+.serve-order-form button[type="submit"]:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+    .serve-order-form button[type="submit"]:disabled:hover {
+        transform: none;
+        box-shadow: none;
+    }
