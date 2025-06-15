@@ -27,7 +27,6 @@
             string statusClass = table.Available ? "available" : "occupied";
             <form asp-action="TableActions" method="get" class="table-form">
                 <input type="hidden" name="tableNr" value="@table.TableNr" />
-                <input type="hidden" name="available" value="@table.Available" />
                 <button type="submit" class="table-item @statusClass">
                     <div class="chair top"></div>
                     <div class="chair left"></div>

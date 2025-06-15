@@ -181,25 +181,5 @@ namespace Chapeau.Services
 
             return Status.Unordered;
         }
-
-        private Table GetTableByNumber(int tableNr)
-        {
-            return _tableRepository.GetTableByNumber(tableNr);
-        }
-
-        private int CreateNewOrder(int tableId, int employeeId)
-        {
-            return _orderRepository.CreateOrder(tableId, employeeId);
-        }
-
-        private void MarkTableAsOccupied(int tableNr)
-        {
-            _tableRepository.UpdateTableAvailability(tableNr, false);
-        }
-
-        private OrderItem GetOrderItemById(Order order, int orderItemId)
-        {
-            return order.OrderItems.FirstOrDefault(item => item.OrderItemId == orderItemId);
-        }
     }
 }

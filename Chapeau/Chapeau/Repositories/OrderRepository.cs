@@ -477,23 +477,5 @@ namespace Chapeau.Repositories
         private string GetUpdateOrderStatusQuery() => @"UPDATE [order] SET status = @status WHERE order_id = @orderId";
         private string GetUpdateOrderItemStatusQuery() => @"UPDATE order_item SET status = @status WHERE order_item_id = @orderItemId";
         private string GetUpdateAllReadyItemsQuery() => @"UPDATE order_item SET status = @toStatus WHERE order_id = @orderId AND status = @fromStatus";
-
-
-        //THESE ARE ALL EMPTY AND NOT IMPLEMENTED. REMOVE LATER, WE ALREADY HAVE METHODS THAT DO THIS
-        public List<Order> GetAllOrders()
-        {
-            return GetOrders(null);
-        }
-
-        public void AddOrder(Order order)
-        {
-            throw new NotImplementedException("AddOrder method not implemented yet");
-        }
-
-        public void DeleteOrder(int orderId)
-        {
-            throw new NotImplementedException("DeleteOrder method not implemented yet");
-        }
-
     }
 }

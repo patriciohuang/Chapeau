@@ -28,12 +28,5 @@ namespace Chapeau.Repositories
         bool UpdateOrderStatus(int orderId, Status status);
         void UpdateOrderItemStatus(int orderItemId, Status status);
         void UpdateAllReadyItemsToServed(int orderId);
-
-        //THESE ARE ALL EMPTY AND NOT IMPLEMENTED. REMOVE LATER, WE ALREADY HAVE METHODS THAT DO THIS
-        List<Order> GetAllOrders();
-
-        void AddOrder(Order order);
-
-        void DeleteOrder(int orderId);
     }
 }

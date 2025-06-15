@@ -66,10 +66,28 @@ namespace Chapeau.Controllers
         }
 
         // Helper method to create the view model for table actions
-        public IActionResult TableActions(int tableNr, bool available)
+        public IActionResult TableActions(int tableNr)
         {
-            var viewModel = CreateTableActionsViewModel(tableNr, available);
-            return View(viewModel);
+            try
+            {
+                // Get the current table status from the database
+                // This ensures we always have the most up-to-date information
+                var table = _tableService.GetTableByNumber(tableNr);
+
+                if (table == null)
+                {
+                    TempData["ErrorMessage"] = $"Table {tableNr} not found.";
+                    return RedirectToAction("Tables");
+                }
+
+                var viewModel = CreateTableActionsViewModel(tableNr, table.Available);
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to load table information: " + ex.Message;
+                return RedirectToAction("Tables");
+            }
         }
 
         // GET: /Waiter/Orders
