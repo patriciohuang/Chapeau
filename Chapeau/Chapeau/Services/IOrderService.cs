@@ -11,17 +11,10 @@ namespace Chapeau.Services
         // Get orders by status
         List<Order> GetOrdersByStatus(Status status);
 
-        // Get orders for a specific table
         List<Order> GetOrdersByTable(int tableNr);
 
-        // Get a specific order with all details
-        Order GetOrderById(int orderId);
-
-        int? CheckIfOrderExists(int tableNr);
-
-        int CreateOrder(int tableNr, Employee loggedInEmployee);
-
-        void AddItem(int orderId, MenuItem menuItem);
+        List<Order> GetOrdersByFilter(string filter);
+        List<Order> GetOrdersByTableAndFilter(int tableNr, string filter);
 
         // Gets all active orders (orders that are not completed or cancelled)
         List<Order> GetActiveOrders();
@@ -35,7 +28,17 @@ namespace Chapeau.Services
         // Gets ready orders for a specific table
         List<Order> GetReadyOrdersByTable(int tableNr);
 
-        void SendOrder(int orderId);
+        Order GetOrderById(int orderId);
 
+        int? CheckIfOrderExists(int tableNr);
+
+        int CreateOrder(int tableNr, Employee loggedInEmployee);
+
+        void AddItem(int orderId, MenuItem menuItem);
+
+        void SendOrder(int orderId);
+        void MarkOrderAsServed(int orderId);
+        void MarkOrderItemAsServed(int orderId, int orderItemId);
+        void RecalculateOrderStatus(int orderId);
     }
 }

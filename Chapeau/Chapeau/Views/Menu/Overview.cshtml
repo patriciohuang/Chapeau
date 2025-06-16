@@ -1,4 +1,7 @@
 ﻿@model Chapeau.Models.Order;
+@using Chapeau.Models.Enums;
+@using Chapeau.Models;
+
 
 @{
     ViewData["Title"] = $"Table {@Model.Table.TableNr} order overview";
@@ -7,52 +10,112 @@
 <partial name="_ErrorMessage" />
 <partial name="_ConfirmMessage" />
 
-<div class="d-flex justify-content-between mb-2">
-    <div>
-        <p class="h2">Table @Model.Table.TableNr</p>
+<div class="Menu">
+    <!-- Simple Navigation -->
+    <div class="overview-nav">
+        <a asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.Table.TableNr">
+            Back to menu
+        </a>
     </div>
-    <div class="text-end">
-        <p>@Model.Time_ordered.ToString("HH:mm")</p>
-        <p>Waiter: @Model.Employee.FirstName</p>
-    </div>
-</div>
 
-@foreach (var group in Model.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
-{
-    <div class="mb-2">
-        <div class="d-flex justify-content-between border-bottom">
-            <strong>@group.Key</strong>
-            <span class="check-icon">✔</span>
+    <!-- Main Order Items Card -->
+    <div class="order-items-container">
+        <div class="order-items-header">
+            <div class="header-left">
+                <h1>Table @Model.Table.TableNr</h1>
+                <div class="order-meta">
+                    <span class="order-time">@Model.Time_ordered.ToString("HH:mm")</span>
+                    <span class="waiter-name">@Model.Employee.FirstName</span>
+                    <span class="time-elapsed">@Model.MinutesSinceOrdered min ago</span>
+                </div>
+            </div>
+            <div class="items-count">@Model.OrderItems.Sum(i => i.Count) items</div>
         </div>
-        <ul class="list-unstyled ms-2 mt-1">
-            @foreach (var item in group)
-            {
-                <li>@item.Count @item.MenuItem.Name</li>
-            }
-        </ul>
-    </div>
-}
 
-<div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
-    <div class="text-muted small">
-        <p>@Model.OrderId</p>
+        @foreach (var group in Model.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
+        {
+                    <div class="course-group">
+                        <div class="course-header">
+                            <h3>@group.Key</h3>
+                            <div class="course-status">
+                                @{
+                                    var groupStatus = GetGroupStatus(group);
+                                    var statusClass = GetStatusClass(groupStatus);
+                                    var statusText = groupStatus.ToString();
+                                }
+                                <span class="status-indicator @statusClass"></span>
+                                <span class="status-text @statusClass">@statusText</span>
+                            </div>
+                        </div>
+                        <div class="course-items">
+                            @foreach (var item in group)
+                            {
+                                <div class="order-item">
+                                    <div class="item-quantity">@item.Count</div>
+                                    <div class="item-details">
+                                        <div class="item-name">@item.MenuItem.Name</div>
+                                        @if (!string.IsNullOrEmpty(item.Comment))
+                                        {
+                                            <div class="item-comment">@item.Comment</div>
+                                        }
+                                    </div>
+                                    <div class="item-status">
+                                        <span class="status-badge @GetStatusClass(item.Status)">@item.Status</span>
+                                    </div>
+                                    <div class="item-price">€@((item.MenuItem.Price * item.Count).ToString("F2"))</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+        }
     </div>
-    <div class="text-end">
-        <p>@Model.MinutesSinceOrdered min</p>
+
+    <!-- Action Buttons -->
+    <div class="order-actions">
+        <form action="/Menu/SendOrder" method="post">
+            <input type="hidden" name="tableNr" value="@Model.Table.TableNr" />
+            <input type="hidden" name="orderId" value="@Model.OrderId" />
+            <button type="submit" class="action-btn success">
+                Send to Kitchen
+            </button>
+        </form>
+
+        <a class="action-btn primary" asp-controller="Payment" asp-action="Index" asp-route-orderId="@Model.OrderId">
+            Go to Payment
+        </a>
+
+        <a class="action-btn secondary" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.Table.TableNr">
+            Add More Items
+        </a>
     </div>
 </div>
 
-<a class="table-link" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.Table.TableNr">Add another item to order </a>
+@functions {
+    string GetStatusClass(Status status)
+    {
+        return status switch
+        {
+            Status.Unordered => "unordered",
+            Status.Ordered => "ordered",
+            Status.Preparing => "preparing",
+            Status.Ready => "ready",
+            Status.Served => "served",
+            Status.Completed => "completed",
+            Status.Cancelled => "cancelled",
+            _ => "unknown"
+        };
+    }
 
-<a class="btn btn-primary btn-sm" asp-controller="Payment" asp-action="Index" asp-route-orderId="@Model.OrderId">
-    <i class="bi bi-credit-card"></i> To payment
-</a>
+    Status GetGroupStatus(IEnumerable<OrderItem> items)
+    {
+        var statuses = items.Select(x => x.Status).Distinct().ToList();
 
-<form action="/Menu/SendOrder" method="post">
-    <input type="hidden" name="tableNr" value="@Model.Table.TableNr" />
-    <input type="hidden" name="orderId" value="@Model.OrderId" />
+        // If all items have the same status, return that status
+        if (statuses.Count == 1)
+            return statuses.First();
 
-    <button type="submit" class="btn btn-primary shadow-button">
-        <i class="fas fa-plus-circle me-2"></i> Send order
-    </button>
-</form>
+        // Otherwise, return the most advanced status
+        var statusOrder = new[] { Status.Unordered, Status.Ordered, Status.Preparing, Status.Ready, Status.Served, Status.Completed };
+        return statuses.Where(s => statusOrder.Contains(s)).OrderBy(s => Array.IndexOf(statusOrder, s)).LastOrDefault();
+    }
+}

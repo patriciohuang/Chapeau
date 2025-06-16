@@ -1,0 +1,133 @@
+﻿@model Chapeau.ViewModels.TableActionsViewModel
+@{
+    ViewData["Title"] = $"Table {Model.TableNr}";
+}
+
+<!-- Main Actions Card -->
+<div class="container">
+    <div class="table-actions-card">
+        <div class="card-header">
+            <h4>
+                <span>Table Actions</span>
+                <i class="bi bi-gear"></i>
+            </h4>
+        </div>
+
+        <div class="table-actions-card" style="margin-top: 15px;">
+            <div class="card-body" style="padding: 20px;">
+                <h6 style="margin: 0 0 15px 0; color: var(--color-heading); font-weight: 600;">Quick Info</h6>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f3f4;">
+                    <span style="color: var(--color-text-muted); font-size: 14px;">Table Number:</span>
+                    <span style="font-weight: 600;">@Model.TableNr</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+                    <span style="color: var(--color-text-muted); font-size: 14px;">Current Status:</span>
+                    <span class="table-status-badge @(Model.Available ? "available" : "unavailable")" style="padding: 4px 8px; font-size: 11px;">
+                        @(Model.Available ? "Available" : "Unavailable")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="actions-grid">
+                <!-- Primary Action - Menu Access -->
+                <a asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr"
+                   class="action-btn primary">
+                    <i class="bi bi-card-list action-icon"></i>
+                    <span>View Menu & Take Order</span>
+                </a>
+
+                <!-- Divider -->
+                <hr class="section-divider">
+
+                <!-- Status Change Section -->
+                <div class="status-change-section">
+                    @if (Model.Available)
+                    {
+                        <!-- Mark as Unavailable -->
+                        <form asp-action="UpdateTableAvailability" method="post">
+                            <input type="hidden" name="tableNr" value="@Model.TableNr" />
+                            <input type="hidden" name="available" value="false" />
+                            <button type="submit" class="action-btn warning">
+                                <i class="bi bi-lock action-icon"></i>
+                                <span>Mark as Unavailable</span>
+                            </button>
+                        </form>
+
+                        <div class="status-info">
+                            <i class="bi bi-info-circle info-icon"></i>
+                            <p class="info-text">
+								Mark this table as unavailable if customers have sat down and you are taking their order.
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Mark as Available -->
+                        <form asp-action="UpdateTableAvailability" method="post">
+                            <input type="hidden" name="tableNr" value="@Model.TableNr" />
+                            <input type="hidden" name="available" value="true" />
+                            <button type="submit" class="action-btn success">
+                                <i class="bi bi-unlock action-icon"></i>
+                                <span>Mark as Available</span>
+                            </button>
+                        </form>
+
+                        <div class="status-info">
+                            <i class="bi bi-info-circle info-icon"></i>
+                            <p class="info-text">
+                                Table can only be marked as available if there are no active orders.
+                            </p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Back Button Section -->
+                <div class="back-button-section">
+                    <a asp-action="Tables" class="action-btn secondary">
+                        <i class="bi bi-arrow-left action-icon"></i>
+                        <span>Back to Tables</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add success/error animations to buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form[asp-action="UpdateTableAvailability"]');
+
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const button = this.querySelector('.action-btn');
+                    if (button) {
+                        button.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            button.style.transform = '';
+                        }, 150);
+                    }
+                });
+            });
+
+            // Add touch feedback for mobile
+            const actionBtns = document.querySelectorAll('.action-btn');
+            actionBtns.forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                });
+
+                btn.addEventListener('touchend', function() {
+                    this.style.transform = '';
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/table-actions-mobile.css" />
+}
