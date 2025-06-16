@@ -2,7 +2,7 @@
 
 namespace Chapeau.ViewModels
 {
-    public class MenuCardCategory
+    public class MenuCardCategoryViewModel
     {
         // Fields and properties
         public int TableNr { get; set; }
@@ -11,7 +11,7 @@ namespace Chapeau.ViewModels
 
 
         //constructors
-        public MenuCardCategory(int tableNr, List<CourseCategory> courseCategory, MenuCard menuCard)
+        public MenuCardCategoryViewModel(int tableNr, List<CourseCategory> courseCategory, MenuCard menuCard)
         {
             TableNr = tableNr;
             CourseCategory = courseCategory;

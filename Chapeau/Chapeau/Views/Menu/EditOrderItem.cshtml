@@ -1,0 +1,34 @@
+﻿@model Chapeau.ViewModels.OrderItemEditViewModel
+
+<div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title w-100 text-center" id="editOrderItemLabel">Edit @Model.OrderItem.MenuItem.Name </h5>
+            <a class="btn-close" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr"></a>
+        </div>
+        <div class="modal-body text-center">
+            <div class="d-flex justify-content-center gap-4">
+                <form action="/Menu/EditOrderItem" method="post">
+                    <input type="hidden" name="OrderItemId" value="@Model?.OrderItem.OrderItemId" />
+                    <input type="hidden" name="TableNr" value="@Model?.TableNr" />
+
+                    <div class="mb-3">
+                        <label for="Count" class="form-label">Count</label>
+                        <input type="number" min="0" id="Count" name="Count" class="form-control" required value="@Model?.OrderItem.Count" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Comment" class="form-label">Notes</label>
+                        <input type="text" id="Comment" name="Comment" class="form-control" required value="@Model?.OrderItem.Comment" />
+                    </div>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-primary shadow-button">
+                            <i class="fas fa-save me-2"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

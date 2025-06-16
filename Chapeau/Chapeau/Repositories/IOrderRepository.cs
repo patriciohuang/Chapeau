@@ -15,10 +15,17 @@ namespace Chapeau.Repositories
 
         void AddItem(int orderId, int menuItemId);
 
+        public OrderItem GetOrderItem(int orderItemId);
+
+        public void EditOrderItem(OrderItem item);
+
+        public void DeleteOrderItem(int orderItemId);
+
+        public int DeleteUnsentOrderItems(int orderId);
+
         void SendOrder(int orderId);
 
         void UpdateOrder(Order order);
-
 
         bool UpdateOrderStatus(int orderId, Status status);
 

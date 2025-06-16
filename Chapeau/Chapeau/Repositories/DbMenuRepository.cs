@@ -43,6 +43,7 @@ namespace Chapeau.Repositories
             }
             return menuCourses;
         }
+
         public List<MenuItem> GetAllMenuItems(MenuCard menuCard)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
@@ -96,18 +97,19 @@ namespace Chapeau.Repositories
             return menuItems;
         }
 
-        public void UpdateStock(int menuItemId)
+        public void UpdateStock(int menuItemId, int count)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query =  "UPDATE menu_item " +
-                                "SET stock = stock - 1 " +
+                                "SET stock = stock + @count " +
                                 "WHERE menu_item_id = @menuItemId;";
                 
                 SqlCommand command = new SqlCommand(query, connection);
 
-                // Use parameter to prevent SQL injection
+                // Use parameters to prevent SQL injection
                 command.Parameters.AddWithValue("@menuItemId", menuItemId);
+                command.Parameters.AddWithValue("@count", count);
 
                 command.Connection.Open();
 

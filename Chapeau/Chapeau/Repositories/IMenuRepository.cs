@@ -15,7 +15,7 @@ namespace Chapeau.Repositories
 
         List<MenuItem> GetMenuItemsByCourse(CourseCategory courseCategory, MenuCard menuCard);
 
-        void UpdateStock(int menuItemId);
+        void UpdateStock(int menuItemId, int count);
 
     }
 }
