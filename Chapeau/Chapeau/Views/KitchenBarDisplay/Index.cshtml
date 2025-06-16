@@ -1,27 +1,33 @@
 ﻿@model List<Chapeau.Models.Order>
 @{
-	if (ViewBag.Role.ToLower() == "kitchen")
-	{
-		ViewData["Title"] = "Kitchen";
-	}
-	else
-	{
-		ViewData["Title"] = "Bar";
-	}
+    if (ViewBag.Role.ToLower() == "kitchen")
+    {
+        ViewData["Title"] = "Kitchen";
+    }
+    else
+    {
+        ViewData["Title"] = "Bar";
+    }
 }
 
-<div class="container py-4">
+<div class="container py-4" id="kitchen-bar-container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="mb-0">@ViewBag.Role Display</h1>
     </div>
 
     <!-- Tabs -->
     @await Html.PartialAsync("_OrderTabs")
-
-    <!-- Orders -->
-    <div class="row g-4" 
-    id="orders-container">
-		@await Html.PartialAsync("_OrdersPartial", Model)
+    <div class="row g-4 flex-grow-1" id="orders-container">
+        @if (Model.Count > 0)
+        {
+            @await Html.PartialAsync("_OrdersPartial", Model)
+        }
+        else
+        {
+            <div class="d-flex justify-content-center align-items-center text-center w-100 flex-grow-1">
+                <p class="text-muted">No orders at the moment.</p>
+            </div>
+        }
     </div>
 </div>
 
@@ -47,13 +53,51 @@
                     document.getElementById("orders-container").innerHTML = html;
                 });
         });
-        function updateOrderStatus(orderId, currentStatus) {
+        function UpdateOrderStatus(orderId, currentStatus) {
 			// Prepare form data to send to the server
             const formData = new URLSearchParams();
             formData.append("orderId", orderId);
             formData.append("currentStatus", currentStatus);
 
-            fetch('/KitchenBarDisplay/UpdateStatus', {
+            fetch('/KitchenBarDisplay/UpdateOrderStatus', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update status');
+            })
+            .catch(err => console.error(err));
+        }
+        function UpdateOrderCategoryStatus(orderId, category, currentStatus) {
+            // Prepare form data to send to the server
+            const formData = new URLSearchParams();
+            formData.append("orderId", orderId);
+            formData.append("category", category);
+            formData.append("currentStatus", currentStatus);
+
+            fetch('/KitchenBarDisplay/UpdateOrderCategoryStatus', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to update status');
+            })
+            .catch(err => console.error(err));
+        }
+         function UpdateOrderItemStatus(orderId, orderItemId, currentStatus) {
+            // Prepare form data to send to the server
+            const formData = new URLSearchParams();
+            formData.append("orderId", orderId);
+            formData.append("orderItemId", orderItemId);
+            formData.append("currentStatus", currentStatus);
+
+            fetch('/KitchenBarDisplay/UpdateOrderItemStatus', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'

@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-
-namespace Chapeau.Models.Enums
+﻿namespace Chapeau.Models.Enums
 {
     public enum CourseCategory
     {

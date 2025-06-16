@@ -106,7 +106,7 @@ namespace Chapeau.Services
 
                 order.IsPaid = true;
                 order.Status = Status.Completed;
-                _orderRepository.UpdateOrder(order);
+                _orderRepository.UpdateOrderStatus(order.OrderId, order.Status);
 
                 _tableRepository.UpdateTableAvailability(order.Table.TableNr, true);
 

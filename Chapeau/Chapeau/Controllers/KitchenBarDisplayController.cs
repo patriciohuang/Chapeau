@@ -109,15 +109,43 @@ namespace Chapeau.Controllers
             }
 
             List<Order> orders = GetOrdersByStatus(status);
-
             // Pass the filtered orders to the view
             return View(orders);
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateStatus(int orderId, Status currentStatus)
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, Status currentStatus)
         {
             bool result = _kitchenBarDisplaySevice.UpdateOrderStatus(orderId, currentStatus);
+            if (result)
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveOrders");
+                return Ok();
+            }
+            else
+            {
+                return Problem();
+            }
+        }
+        [HttpPatch]
+        public async Task<IActionResult> UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status currentStatus)
+        {
+            bool result = _kitchenBarDisplaySevice.UpdateOrderCategoryStatus(orderId, category, currentStatus);
+            if (result)
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveOrders");
+                return Ok();
+            }
+            else
+            {
+                return Problem();
+            }
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateOrderItemStatus(int orderId, int orderItemId, Status currentStatus)
+        {
+            bool result = _kitchenBarDisplaySevice.UpdateOrderItemStatus(orderId, orderItemId, currentStatus);
             if (result)
             {
                 await _hubContext.Clients.All.SendAsync("ReceiveOrders");
