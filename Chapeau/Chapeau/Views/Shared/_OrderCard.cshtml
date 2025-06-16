@@ -32,7 +32,9 @@
                     {
                         <li>@item.Count @item.MenuItem.Name</li>
                         <button class="btn btn-sm"
-                        onclick="UpdateOrderItemStatus(@Model.OrderId, @item.MenuItem.MenuItemId, '@Model.Status.ToString()')">
+                        onclick="
+                        
+                        (@item.OrderItemId, '@Model.Status.ToString()')">
                             <span class="check-icon">✔</span>
                         </button>
                     }

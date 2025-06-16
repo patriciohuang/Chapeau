@@ -90,10 +90,9 @@
             })
             .catch(err => console.error(err));
         }
-         function UpdateOrderItemStatus(orderId, orderItemId, currentStatus) {
+         function UpdateOrderItemStatus(orderItemId, currentStatus) {
             // Prepare form data to send to the server
             const formData = new URLSearchParams();
-            formData.append("orderId", orderId);
             formData.append("orderItemId", orderItemId);
             formData.append("currentStatus", currentStatus);
 

@@ -143,9 +143,10 @@ namespace Chapeau.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateOrderItemStatus(int orderId, int orderItemId, Status currentStatus)
+        public async Task<IActionResult> UpdateOrderItemStatus(int orderItemId, Status currentStatus)
         {
-            bool result = _kitchenBarDisplaySevice.UpdateOrderItemStatus(orderId, orderItemId, currentStatus);
+            bool result = _kitchenBarDisplaySevice.UpdateOrderItemStatus(orderItemId, currentStatus);
+
             if (result)
             {
                 await _hubContext.Clients.All.SendAsync("ReceiveOrders");

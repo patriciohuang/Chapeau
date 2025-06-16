@@ -74,7 +74,7 @@ namespace Chapeau.Services
         }
 
 
-        public bool UpdateOrderItemStatus(int orderId, int orderItemId, Status currentStatus)
+        public bool UpdateOrderItemStatus(int orderItemId, Status currentStatus)
         {
             try
             {
@@ -87,7 +87,9 @@ namespace Chapeau.Services
                 {
                     newStatus = StatusHelper.PreviousStatus(currentStatus);
                 }
-                return _orderRepository.UpdateOrderItemStatus(orderId, orderItemId, newStatus);
+                _orderRepository.UpdateOrderItemStatus(orderItemId, newStatus);
+
+                return true;
             }
             catch (Exception e)
             {

@@ -19,7 +19,6 @@ namespace Chapeau.Repositories
         {
             // Read order details
             int orderId = (int)reader["order_id"];
-            Status status = Enum.Parse<Status>((string)reader["order_status"], true);
             DateOnly dateOrdered = DateOnly.FromDateTime((DateTime)reader["date_ordered"]);
             TimeOnly timeOrdered = TimeOnly.FromTimeSpan((TimeSpan)reader["time_ordered"]);
             bool isPaid = (bool)reader["is_paid"];
@@ -31,7 +30,7 @@ namespace Chapeau.Repositories
             // Read table
             Table table = ReadTable(reader);
 
-            return new Order(orderId, status, dateOrdered, timeOrdered, isPaid, table, employee);
+            return new Order(orderId, dateOrdered, timeOrdered, isPaid, table, employee);
         }
 
         private Employee ReadEmployee(SqlDataReader reader)
@@ -107,7 +106,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all orders for today (optionally filtered by status)
-                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
+                string sql = @"SELECT   o.order_id, o.date_ordered, o.time_ordered, o.is_paid,
                                         i.order_item_id, i.count, i.comment, i.status AS item_status,
                                         e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_id, t.table_nr, t.availability,
@@ -148,6 +147,29 @@ namespace Chapeau.Repositories
             return orders.Values.ToList();
         }
 
+        public bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status status)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string sql = @"UPDATE oi
+                    SET status = @Status
+                    FROM [Order_item] AS oi
+                        INNER JOIN menu_item AS mi ON
+                            mi.menu_item_id = oi.menu_item_id
+		                    WHERE mi.course_category = @Category AND oi.order_id = @OrderId;";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@OrderId", orderId);
+                command.Parameters.AddWithValue("@Status", status.ToString());
+                command.Parameters.AddWithValue("@Category", category.ToString());
+
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                return rowsAffected > 0;
+            }
+        }
+
         public Order GetOrderById(int orderId)
         {
             Order? order = null;
@@ -155,7 +177,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to get all orders for today (optionally filtered by status)
-                string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
+                string sql = @"SELECT   o.order_id, o.date_ordered, o.time_ordered, o.is_paid,
                                         i.order_item_id, i.count, i.comment, i.status AS item_status,
                                         e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_nr, t.table_id, t.availability,
@@ -557,7 +579,7 @@ namespace Chapeau.Repositories
         }
 
         // SQL Query Methods
-        private string GetUpdateOrderStatusQuery() => @"UPDATE [order] SET status = @status WHERE order_id = @orderId";
+        private string GetUpdateOrderStatusQuery() => @"UPDATE [order_item] SET status = @status WHERE order_id = @orderId";
         private string GetUpdateOrderItemStatusQuery() => @"UPDATE order_item SET status = @status WHERE order_item_id = @orderItemId";
         private string GetUpdateAllReadyItemsQuery() => @"UPDATE order_item SET status = @toStatus WHERE order_id = @orderId AND status = @fromStatus";
     }
