@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 }
 
+
+
 <div class="mobile-container">
     <div class="top-bar">
         <a href="javascript:history.back()" class="back-button">← Back</a>
@@ -39,7 +41,7 @@
                         </div>
                     </div>
                     <div class="item-right">
-                        <span class="vat">@item.FormattedVAT</span>
+                        <span class="vat" id="totalVatValue">@item.FormattedVAT</span>
                         <span class="price">@item.FormattedPrice</span>
                     </div>
                 </div>
@@ -55,13 +57,11 @@
                 <span>Total 21% VAT:</span>
                 <span>@Model.FormattedHighVAT</span>
             </div>
+            <div class="summary-row">
+                <span>Total VAT:</span>
+                <span id="totalVatDisplay">@Model.FormattedTotalVAT</span>
+            </div>
         </div>
-
-        <div class="tip-button" onclick="openTipModal()">
-            <span>Tip</span>
-            <span id="tipAmount">@Model.FormattedTip</span>
-        </div>
-
         <div id="feedbackDisplay" class="feedback-display" style="display: none;">
             <div class="feedback-content">
                 <span class="feedback-label">Feedback:</span>
@@ -85,9 +85,8 @@
             <button class="action-button yellow" onclick="location.href='@Url.Action("Edit", "Order")'">Edit</button>
             <button class="action-button blue" onclick="openSplitModal()">Split pay</button>
         </div>
-        <div class="button-row">
-            <button class="action-button blue" onclick="openFeedbackModal()">Feedback</button>
-            <button class="action-button blue" onclick="openPaymentMethodModal()">Pay all</button>
+        <div class="full-width-row">
+            <button class="action-button blue full-width" onclick="openPaymentMethodModal()">Pay all</button>
         </div>
     </div>
 </div>
@@ -105,73 +104,13 @@
                 <div class="payment-methods">
                     @foreach (var method in Model.AvailablePaymentMethods)
                     {
-                        <button class="payment-method-btn" onclick="selectPaymentMethod('@method.Method')">
+                        <button class="payment-method-btn" data-method="@method.Method" onclick="selectPaymentMethod(event)">
                             <i class="bi @method.IconClass"></i>
                             <span>@method.DisplayName</span>
                         </button>
                     }
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Tip Modal -->
-<div class="modal fade" id="tipModal" tabindex="-1" aria-labelledby="tipModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title w-100 text-center" id="tipModalLabel">Tip</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <h4 class="mb-4">Enter the tip amount:</h4>
-                <div class="input-container mb-4">
-                    <div class="input-group">
-                        <span class="input-group-text fixed-symbol">€</span>
-                        <input type="text" class="form-control text-center tip-input" id="tipInput" value="0,00">
-                        <span class="input-group-text fixed-symbol percent-symbol" style="display: none">%</span>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center gap-3 mb-5">
-                    <button class="btn btn-light btn-lg tip-type-btn" data-mode="percent">%</button>
-                    <button class="btn btn-light btn-lg tip-type-btn active" data-mode="euro">€</button>
-                </div>
-                <h4 class="mb-4">Or enter the total:</h4>
-                <div class="input-container mb-4">
-                    <div class="input-group">
-                        <span class="input-group-text fixed-symbol">€</span>
-                        <input type="text" class="form-control text-center total-input" id="totalInput" value="80,00">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer justify-content-end bg-light">
-                <button type="button" class="btn btn-primary btn-lg px-5" onclick="saveTip()">Add</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Feedback Modal -->
-<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title w-100 text-center" id="feedbackModalLabel">Feedback</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form asp-controller="Payment" asp-action="SaveFeedback" method="post">
-                <input type="hidden" name="orderId" value="@ViewBag.OrderId" />
-                <div class="modal-body text-start">
-                    <div class="mb-3">
-                        <label for="feedbackNotes" class="form-label">Notes:</label>
-                        <textarea class="form-control feedback-input" id="feedbackNotes" name="feedback" rows="6">@Model.Feedback</textarea>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-end bg-light">
-                    <button type="submit" class="btn btn-primary btn-lg px-5">Add</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -186,10 +125,10 @@
             </div>
             <div class="modal-body text-center">
                 <div class="d-flex justify-content-center gap-4">
-                    <button class="btn btn-primary btn-lg split-option" onclick="splitByDish()">
+                    <button class="btn btn-primary btn-lg split-option" onclick="openSplitByDishModal()">
                         Dish
                     </button>
-                    <button class="btn btn-primary btn-lg split-option" onclick="splitByAmount()">
+                    <button class="btn btn-primary btn-lg split-option" onclick="openSplitByAmountModal()">
                         Amount
                     </button>
                 </div>
@@ -197,7 +136,20 @@
         </div>
     </div>
 </div>
-
+@await Html.PartialAsync("_PaymentModal", Model)
+@await Html.PartialAsync("_SplitByAmountModal")
+@await Html.PartialAsync("_SplitByDishModal", Model)
 @section Scripts {
     <script src="~/js/payment.js"></script>
+    <script src="~/js/tipSection.js"></script>
+    <script>
+        function openSplitByAmountModal() {
+            var modal = new bootstrap.Modal(document.getElementById('splitByAmountModal'));
+            modal.show();
+        }
+        function openSplitByDishModal() {
+            var modal = new bootstrap.Modal(document.getElementById('splitByDishModal'));
+            modal.show();
+        }
+    </script>
 }

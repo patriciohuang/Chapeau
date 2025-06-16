@@ -1,0 +1,59 @@
+@* Split Payment by Amount Modal *@
+<div class="modal fade" id="splitByAmountModal" tabindex="-1" aria-labelledby="splitByAmountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="splitByAmountModalLabel">Split payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <label class="form-label">Amount of people</label>
+                    <select class="form-select w-75 mx-auto" id="splitPeopleSelect">
+                        <option selected disabled>Select a number</option>
+                        @for (int i = 2; i <= 10; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2 text-start w-75 mx-auto">
+                    <div class="d-flex justify-content-between">
+                        <span>Total:</span>
+                        <span id="splitTotal">€105,50</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>To pay:</span>
+                        <span id="splitToPay">105.50</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted">
+                        <span>Paid:</span>
+                        <span id="splitPaid">€00,00</span>
+                    </div>
+                </div>
+                <div class="row mt-4 g-3">
+                    <div class="col-6">
+                        <button class="btn btn-light w-100 py-3 border" id="splitCreditCardBtn">
+                            <i class="bi bi-credit-card"></i> Credit Card
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-light w-100 py-3 border" id="splitCashBtn">
+                            <i class="bi bi-cash"></i> Cash
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-light w-100 py-3 border" id="splitGiftCardBtn">
+                            <i class="bi bi-gift"></i> Gift Card
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-light w-100 py-3 border" id="splitDebitCardBtn">
+                            <i class="bi bi-credit-card"></i> Debit Card
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

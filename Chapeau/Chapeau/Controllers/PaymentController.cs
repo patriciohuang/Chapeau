@@ -4,6 +4,8 @@ using Chapeau.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Chapeau.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
+using System.Text.Json;
 
 namespace Chapeau.Controllers
 {
@@ -56,33 +58,30 @@ namespace Chapeau.Controllers
             }
         }
 
-        public IActionResult CashPayment(int orderId)
-        {
-            try
-            {
-                var viewModel = _paymentService.GetOrderForPayment(orderId);
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                // Log the error
-                return RedirectToAction("Error", "Home");
-            }
-        }
-
         [HttpPost]
         public IActionResult ProcessPayment([FromBody] PaymentProcessViewModel model)
         {
             try
             {
                 bool success = _paymentService.ProcessPayment(model);
-                return Json(new { success = success });
+                if (success)
+                {
+                    // Redirect to PaymentSuccess page
+                    return Json(new { success = true, redirectUrl = Url.Action("PaymentSuccess", "Payment") });
+                }
+                return Json(new { success = false });
             }
             catch (Exception ex)
             {
                 // Log the error
+                Console.WriteLine($"Payment processing error: {ex.Message}");
                 return Json(new { success = false, error = ex.Message });
             }
+        }
+
+        public IActionResult PaymentSuccess()
+        {
+            return View();
         }
 
         public IActionResult SplitPay()

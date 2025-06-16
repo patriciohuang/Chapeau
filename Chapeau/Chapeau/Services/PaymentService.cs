@@ -10,11 +10,13 @@ namespace Chapeau.Services
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly ITablesRepository _tableRepository;
 
-        public PaymentService(IPaymentRepository paymentRepository, IOrderRepository orderRepository)
+        public PaymentService(IPaymentRepository paymentRepository, IOrderRepository orderRepository, ITablesRepository tableRepository)
         {
             _paymentRepository = paymentRepository;
             _orderRepository = orderRepository;
+            _tableRepository = tableRepository;
         }
 
         public PaymentDetailsViewModel GetPaymentDetails(int orderId)
@@ -51,7 +53,7 @@ namespace Chapeau.Services
                 // Group items by name and VAT rate
                 var groupedItems = order.OrderItems
                     .GroupBy(item => new { item.MenuItem.Name, item.MenuItem.IsAlcoholic })
-                    .Select(group => new PaymentDetailsViewModel.OrderItemViewModel
+                    .Select(group => new OrderItemViewModel
                     {
                         Name = group.Key.Name,
                         Price = group.First().MenuItem.Price,
@@ -92,9 +94,9 @@ namespace Chapeau.Services
 
                 // Create payment record
                 var payment = new Payment(
-                    totalAmount: order.TotalCost + order.TotalVAT + model.TipAmount,
+                    totalAmount: model.TotalAmount,
                     tip: model.TipAmount,
-                    vatValue: (int)((order.TotalVAT / order.TotalCost) * 100), // Calculate VAT percentage
+                    vatValue: model.VatValues, // Calculate VAT percentage
                     paymentMethod: model.PaymentMethod,
                     feedBack: model.Feedback ?? string.Empty // Handle null feedback
                 );
@@ -102,9 +104,11 @@ namespace Chapeau.Services
                 // Save payment
                 _paymentRepository.SavePayment(payment, model.OrderId);
 
-                // Update order status
+                order.IsPaid = true;
                 order.Status = Status.Completed;
                 _orderRepository.UpdateOrder(order);
+
+                _tableRepository.UpdateTableAvailability(order.Table.TableNr, true);
 
                 return true;
             }
@@ -124,7 +128,7 @@ namespace Chapeau.Services
                     throw new Exception("Order not found");
                 }
 
-                decimal baseAmount = order.TotalCost + order.TotalVAT;
+                decimal baseAmount = order.TotalCost;
                 decimal tipAmount;
 
                 if (isPercentage)

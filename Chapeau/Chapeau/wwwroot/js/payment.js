@@ -1,168 +1,61 @@
 // Initialize state variables
 let initialTotal = 0;
-let currentTip = 0;
 let currentMode = 'amount'; // 'amount' or 'percent'
 let feedback = '';
 let selectedPaymentMethod = null;
+let selectedPaymentType = null;
 
 // Initialize modal references
 const paymentMethodModal = new bootstrap.Modal(document.getElementById('paymentMethodModal'));
-const tipModal = new bootstrap.Modal(document.getElementById('tipModal'));
-const feedbackModal = new bootstrap.Modal(document.getElementById('feedbackModal'));
 const splitModal = new bootstrap.Modal(document.getElementById('splitModal'));
+const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+
+// Section references
+const cashSection = document.getElementById('cashSection');
+const cardSection = document.getElementById('cardSection');
+const giftCardSection = document.getElementById('giftCardSection');
 
 // Initialize when document is ready
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('initializing')
     // Set initial values
     initialTotal = parseFloat(document.getElementById('grandTotal').textContent.replace('€', '').replace(',', '.'));
-    
-    // Initialize input handlers
-    document.getElementById('tipInput').addEventListener('input', handleTipInput);
-    document.getElementById('totalInput').addEventListener('input', handleTotalInput);
-    
+
+    document.getElementById('cashAmount')?.addEventListener('input', handleCashAmountInput);
+    document.getElementById('giftCardNumber')?.addEventListener('input', handleGiftCardInput);
+
     // Initialize tip type buttons
     document.querySelectorAll('.tip-type-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             setTipMode(e.target.dataset.mode, e);
         });
     });
-    
+
     // Set initial total value
-    document.getElementById('totalInput').value = initialTotal.toFixed(2).replace('.', ',');
-    
+    const totalInput = document.getElementById('totalInput');
+    if (totalInput) {
+        totalInput.value = initialTotal.toFixed(2).replace('.', ',');
+    }
+
     // Set initial mode to amount
     const amountButton = document.querySelector('[data-mode="amount"]');
     if (amountButton) {
         setTipMode('amount', { currentTarget: amountButton });
     }
-    
-    // Initialize tip display
-    updateAmounts();
 
     // Show feedback display if there's feedback
     const feedbackDisplay = document.getElementById('feedbackDisplay');
     const feedbackText = document.getElementById('feedbackText');
     const modelFeedback = document.querySelector('[data-model-feedback]')?.dataset.modelFeedback;
-    
+
     if (modelFeedback && modelFeedback.trim()) {
         feedbackText.textContent = modelFeedback;
         feedbackDisplay.style.display = 'flex';
     }
+
+    // Initialize finish button for the combined modal
+    document.getElementById('finishPaymentButton')?.addEventListener('click', () => processPayment(selectedPaymentType));
 });
-
-// Tip handling functions
-function openTipModal() {
-    document.getElementById('tipInput').value = currentTip.toFixed(2).replace('.', ',');
-    document.getElementById('totalInput').value = initialTotal.toFixed(2).replace('.', ',');
-    tipModal.show();
-}
-
-function setTipMode(mode, e) {
-    currentMode = mode;
-    const buttons = document.querySelectorAll('.tip-type-btn');
-    buttons.forEach(btn => btn.classList.remove('active'));
-    e.currentTarget.classList.add('active');
-    
-    const tipInput = document.getElementById('tipInput');
-    const percentSymbol = document.querySelector('.percent-symbol');
-    const euroSymbol = document.querySelector('.fixed-symbol:not(.percent-symbol)');
-    
-    if (mode === 'percent') {
-        percentSymbol.style.display = 'flex';
-        euroSymbol.style.display = 'none';
-        if (currentTip > 0) {
-            const orderId = getOrderIdFromUrl();
-            const baseAmount = parseFloat(document.getElementById('totalInput').value.replace(',', '.')) - currentTip;
-            const percentage = ((currentTip / baseAmount) * 100).toFixed(0);
-            tipInput.value = percentage;
-        } else {
-            tipInput.value = '0';
-        }
-    } else {
-        percentSymbol.style.display = 'none';
-        euroSymbol.style.display = 'flex';
-        tipInput.value = currentTip.toFixed(2).replace('.', ',');
-    }
-    
-    // Trigger tip recalculation
-    handleTipInput({ target: tipInput });
-}
-
-function handleTipInput(event) {
-    let value = event.target.value;
-    if (value === '') {
-        value = '0';
-    }
-    
-    value = Math.max(0, parseFloat(value) || 0);
-    
-    const orderId = getOrderIdFromUrl();
-    
-    // Call the server to calculate tip
-    fetch('/Payment/CalculateTip', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            orderId: orderId,
-            value: value,
-            isPercentage: currentMode === 'percent'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            currentTip = data.tipAmount;
-            
-            // Update displayed values
-            document.getElementById('tipAmount').textContent = data.formattedTip;
-            document.getElementById('grandTotal').textContent = data.formattedTotal;
-            
-            // Format the input value
-            if (currentMode === 'percent') {
-                event.target.value = value.toString();
-            } else {
-                event.target.value = currentTip.toFixed(2).replace('.', ',');
-            }
-        } else {
-            console.error('Error calculating tip:', data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-function handleTotalInput(event) {
-    let value = event.target.value.replace(',', '.');
-    value = Math.max(initialTotal, parseFloat(value) || initialTotal); // Ensure total is not less than initial
-    
-    currentTip = value - initialTotal;
-    
-    // Update tip input based on mode
-    const tipInput = document.getElementById('tipInput');
-    if (currentMode === 'percent') {
-        const percentage = ((currentTip / initialTotal) * 100).toFixed(0);
-        tipInput.value = percentage;
-    } else {
-        tipInput.value = currentTip.toFixed(0).replace('.', ',');
-    }
-    
-    // Update the total input to show the valid value
-    event.target.value = value.toFixed(2).replace('.', ',');
-}
-
-function updateAmounts() {
-    document.getElementById('tipAmount').textContent = `€${currentTip.toFixed(2)}`.replace('.', ',');
-    const newTotal = initialTotal + currentTip;
-    document.getElementById('grandTotal').textContent = `€${newTotal.toFixed(2)}`.replace('.', ',');
-}
-
-function saveTip() {
-    updateAmounts();
-    tipModal.hide();
-}
 
 // Feedback handling functions
 function openFeedbackModal() {
@@ -179,7 +72,7 @@ function saveFeedback() {
 function updateFeedbackDisplay() {
     const feedbackDisplay = document.getElementById('feedbackDisplay');
     const feedbackText = document.getElementById('feedbackText');
-    
+
     if (feedback.trim()) {
         feedbackText.textContent = feedback;
         feedbackDisplay.style.display = 'flex';
@@ -193,53 +86,117 @@ function openPaymentMethodModal() {
     paymentMethodModal.show();
 }
 
-function selectPaymentMethod(method, e) {
-    selectedPaymentMethod = method;
+function selectPaymentMethod(e) {
+    selectedPaymentMethod = e.currentTarget.dataset.method;
+    selectedPaymentType = selectedPaymentMethod.toLowerCase();
     const buttons = document.querySelectorAll('.payment-method-btn');
     buttons.forEach(btn => btn.classList.remove('selected'));
     e.currentTarget.classList.add('selected');
 
-    // If cash payment is selected, redirect to cash payment page
-    if (method.toLowerCase() === 'cash') {
-        const orderId = getOrderIdFromUrl();
-        paymentMethodModal.hide();
-        window.location.href = `/Payment/CashPayment?orderId=${orderId}`;
-        return;
-    }
+    // Hide all sections first
+    cashSection.classList.add('d-none');
+    cardSection.classList.add('d-none');
+    giftCardSection.classList.add('d-none');
 
-    // Process other payment methods
-    processPayment();
+    // Show the appropriate section
+    switch (selectedPaymentType) {
+        case 'cash':
+            cashSection.classList.remove('d-none');
+            break;
+        case 'debitcard':
+        case 'creditcard':
+            cardSection.classList.remove('d-none');
+            break;
+        case 'giftcard':
+            giftCardSection.classList.remove('d-none');
+            break;
+    }
+    paymentMethodModal.hide();
+    paymentModal.show();
 }
 
-function processPayment() {
-    if (!selectedPaymentMethod) {
-        alert('Please select a payment method');
-        return;
+function handleCashAmountInput(e) {
+    const input = e.target.value.replace(/[^0-9,]/g, '');
+    const amount = parseFloat(input.replace(',', '.'));
+    const total = initialTotal;
+    const change = amount - total;
+    document.getElementById('changeAmount').textContent = `Change: €${change.toFixed(2).replace('.', ',')}`;
+}
+
+function handleGiftCardInput(e) {
+    // Add any gift card validation logic here
+    const input = e.target.value.replace(/[^0-9]/g, '');
+    e.target.value = input;
+}
+
+function processPayment(method) {
+    console.log(document.getElementById('tipDisplay'))
+    const orderId = getOrderIdFromUrl();
+    const tipAmount = parseFloat(document.getElementById('tipDisplay')?.textContent.replace('€', '').replace(',', '.') || '0');
+    const feedback = document.getElementById('feedbackNotes')?.value || '';
+    const vat = parseFloat(document.getElementById('totalVatDisplay')?.textContent.replace('€', '').replace(',', '.') || '0');
+
+    // Map the method string to the corresponding enum value
+    let paymentMethodEnum;
+    switch (method) {
+        case 'cash':
+            paymentMethodEnum = 'Cash';
+            break;
+        case 'card':
+        case 'debitcard':
+        case 'creditcard':
+            paymentMethodEnum = 'CreditCard';
+            break;
+        case 'giftcard':
+            paymentMethodEnum = 'GiftCard';
+            break;
+        default:
+            paymentMethodEnum = 'Cash';
     }
 
-    const orderId = getOrderIdFromUrl();
-    const tipAmount = parseFloat(document.getElementById('tipAmount').textContent.replace('€', '').replace(',', '.'));
-    const feedback = document.getElementById('feedbackNotes')?.value || '';
-
-    const paymentData = {
+    let paymentData = {
         orderId: orderId,
         tipAmount: tipAmount,
-        paymentMethod: selectedPaymentMethod,
-        feedback: feedback
+        paymentMethod: paymentMethodEnum,
+        feedback: feedback,
+        totalAmount: initialTotal + tipAmount,
+        vatValues: vat
     };
+    console.log(paymentData)
+
+    // Add method-specific data
+    if (method === 'cash') {
+        const cashAmount = parseFloat(document.getElementById('cashAmount').value.replace('€', '').replace(',', '.'));
+        paymentData.cashAmount = cashAmount;
+    } else if (method === 'giftcard') {
+        const giftCardNumber = document.getElementById('giftCardNumber').value;
+        paymentData.giftCardNumber = giftCardNumber;
+    }
+
+    console.log('Payment data being sent:', paymentData);
+    console.log('JSON string being sent:', JSON.stringify(paymentData));
 
     fetch('/Payment/ProcessPayment', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json'
         },
         body: JSON.stringify(paymentData)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
         if (data.success) {
-            paymentMethodModal.hide();
-            window.location.href = '/Waiter/Orders';
+            paymentModal.hide();
+            if (data.redirectUrl) {
+                window.location.href = data.redirectUrl;
+            } else {
+                window.location.href = '/Waiter/Orders';
+            }
         } else {
             alert('Payment failed: ' + (data.error || 'Unknown error'));
         }
@@ -254,7 +211,6 @@ function getOrderIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return parseInt(urlParams.get('orderId'));
 }
-
 // Split payment functions
 function openSplitModal() {
     splitModal.show();
@@ -270,4 +226,4 @@ function splitByAmount() {
     splitModal.hide();
     const orderId = getOrderIdFromUrl();
     window.location.href = `/Payment/SplitByAmount?orderId=${orderId}`;
-} 
+}

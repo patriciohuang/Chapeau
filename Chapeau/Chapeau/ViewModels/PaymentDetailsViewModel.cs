@@ -1,6 +1,7 @@
 using Chapeau.Models;
 using Chapeau.Models.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace Chapeau.ViewModels
 {
@@ -14,7 +15,7 @@ namespace Chapeau.ViewModels
         public List<OrderItemViewModel> Items { get; set; } = new List<OrderItemViewModel>();
         public decimal TotalLowVAT { get; set; }
         public decimal TotalHighVAT { get; set; }
-        
+
         public decimal Subtotal
         {
             get => _subtotal;
@@ -40,7 +41,7 @@ namespace Chapeau.ViewModels
 
         private List<PaymentMethodViewModel> GetAvailablePaymentMethods()
         {
-            return Enum.GetValues<PaymentMethod>()
+            return System.Enum.GetValues<PaymentMethod>()
                 .Select(method => new PaymentMethodViewModel 
                 { 
                     Method = method,
@@ -72,38 +73,12 @@ namespace Chapeau.ViewModels
         {
             Subtotal = Items.Sum(i => i.Price * i.Quantity);
             TotalVAT = TotalLowVAT + TotalHighVAT;
-            GrandTotal = Subtotal + TotalVAT + TipAmount;
-        }
-
-        public class OrderItemViewModel
-        {
-            private decimal _amount;
-
-            public string Name { get; set; } = string.Empty;
-            public string Comment { get; set; } = string.Empty;
-            public decimal Price { get; set; }
-            public int Quantity { get; set; }
-            public int VATRate { get; set; }
-
-            public decimal Amount
-            {
-                get => Price * Quantity;
-                set => _amount = value;
-            }
-
-            public string FormattedVAT => $"{VATRate}%";
-            public string FormattedPrice => $"€{Price:0.00}";
-        }
-
-        public class PaymentMethodViewModel
-        {
-            public PaymentMethod Method { get; set; }
-            public string DisplayName { get; set; } = string.Empty;
-            public string IconClass { get; set; } = string.Empty;
+            GrandTotal = Subtotal + TipAmount;
         }
 
         public string FormattedLowVAT => $"€{TotalLowVAT:0.00}";
         public string FormattedHighVAT => $"€{TotalHighVAT:0.00}";
+        public string FormattedTotalVAT => $"€{TotalVAT:0.00}";
         public string FormattedTip => $"€{TipAmount:0.00}";
         public string FormattedTotal => $"€{GrandTotal:0.00}";
         public string FormattedSubtotal => $"€{Subtotal:0.00}";

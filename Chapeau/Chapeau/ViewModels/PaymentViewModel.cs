@@ -8,6 +8,7 @@ namespace Chapeau.ViewModels
         public bool IsAlcoholic { get; set; }
         public decimal Price { get; set; }
         public int Count { get; set; }
+        public int TableNr { get; set; }
 
         public PaymentViewModel(bool isAlcoholic, decimal price, int count)
         {

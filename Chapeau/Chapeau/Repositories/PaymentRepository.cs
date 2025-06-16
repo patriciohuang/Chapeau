@@ -71,7 +71,7 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-                    INSERT INTO payment (order_id, total_amount, tip_amount, vat_value, payment_method, feedback)
+                    INSERT INTO payment (order_id, total_amount, tip, vat_value, payment_method, feedback)
                     VALUES (@OrderId, @TotalAmount, @TipAmount, @VatValue, @PaymentMethod, @Feedback)";
 
                 SqlCommand command = new SqlCommand(query, connection);

@@ -1,0 +1,16 @@
+@model Chapeau.ViewModels.PaymentDetailsViewModel
+
+<div class="feedback-section mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Feedback</h5>
+                <div class="mb-3">
+                    <textarea class="form-control" 
+                              id="feedbackNotes" 
+                              name="feedback" 
+                              rows="3" 
+                              placeholder="Enter your feedback here...">@Model.Feedback</textarea>
+                </div>
+        </div>
+    </div>
+</div> 
