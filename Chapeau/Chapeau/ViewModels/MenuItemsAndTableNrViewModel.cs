@@ -3,7 +3,7 @@ using Chapeau.Models.Enums;
 
 namespace Chapeau.ViewModels
 {
-    public class MenuItemsAndTableNr
+    public class MenuItemsAndTableNrViewModel
     {
         // Fields and properties
         public int TableNr { get; set; }
@@ -12,7 +12,7 @@ namespace Chapeau.ViewModels
 
 
         //constructors
-        public MenuItemsAndTableNr(int tableNr, MenuCard menuCard, List<MenuItem> menuItems)
+        public MenuItemsAndTableNrViewModel(int tableNr, MenuCard menuCard, List<MenuItem> menuItems)
         {
             TableNr = tableNr;
             MenuCard = menuCard;

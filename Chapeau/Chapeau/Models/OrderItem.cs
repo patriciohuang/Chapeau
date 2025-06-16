@@ -6,7 +6,6 @@ namespace Chapeau.Models
     public class OrderItem
     {
         //This class contains items that have been ordered from the menu (it contains a menu item class)
-
         public int OrderItemId { get; set; }
         public int Count { get; set; } // Number of items ordered
         public string Comment { get; set; } = string.Empty; // Comment for the order item
@@ -29,17 +28,6 @@ namespace Chapeau.Models
 
         public decimal TotalLowVAT { get; set; }
 
-        public OrderItem(int count, string comment, Status status, MenuItem menuItem)
-        {
-            Count = count;
-            Comment = comment;
-            Status = status;
-            MenuItem = menuItem;
-        }
-
-        public OrderItem() { }
-
-        // Specifically to change statuses of order items
         public OrderItem(int orderItemId, int count, string comment, Status status, MenuItem menuItem)
         {
             OrderItemId = orderItemId;
@@ -48,5 +36,7 @@ namespace Chapeau.Models
             Status = status;
             MenuItem = menuItem;
         }
+
+        public OrderItem() { }
     }
 }

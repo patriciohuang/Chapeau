@@ -101,17 +101,46 @@ namespace Chapeau.Services
 
         public void AddItem(int orderId, MenuItem menuItem)
         {
-            if (menuItem.Stock <= 0)
+            if (menuItem.Stock < menuItem.Stock)
             {
-                throw new InvalidOperationException("Cannot add item to order: item is out of stock.");
+                throw new InvalidOperationException($"Cannot add {menuItem.Name} to order: item is out of stock.");
             }
             else
             {
                 _orderRepository.AddItem(orderId, menuItem.MenuItemId);
 
                 // Update the stock
-                _menuRepository.UpdateStock(menuItem.MenuItemId);
+                _menuRepository.UpdateStock(menuItem.MenuItemId, -1);
             }
+        }
+
+        public OrderItem GetOrderItem(int orderItemId)
+        {
+            return _orderRepository.GetOrderItem(orderItemId);
+        }
+
+        public void EditOrderItem(OrderItem item)
+        {
+            _orderRepository.EditOrderItem(item);
+        }
+
+        public void DeleteOrderItem(int orderItemId)
+        {
+            OrderItem orderItem = GetOrderItem(orderItemId);
+
+            if(orderItem.Status == Status.Ready || orderItem.Status == Status.Served)
+            {
+                throw new InvalidOperationException("Cannot delete an order item that is already ready or served.");
+            }
+
+            _orderRepository.DeleteOrderItem(orderItemId);
+
+            _menuRepository.UpdateStock(orderItem.MenuItem.MenuItemId, orderItem.Count);
+        }
+
+        public void DeleteUnsentOrderItems(int orderId)
+        {
+            _orderRepository.DeleteUnsentOrderItems(orderId);
         }
 
         public void SendOrder(int orderId)

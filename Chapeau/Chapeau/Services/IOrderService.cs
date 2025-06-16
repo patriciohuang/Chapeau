@@ -16,6 +16,15 @@ namespace Chapeau.Services
         List<Order> GetOrdersByFilter(string filter);
         List<Order> GetOrdersByTableAndFilter(int tableNr, string filter);
 
+        public OrderItem GetOrderItem(int orderItemId);
+
+        public void EditOrderItem(OrderItem item);
+
+        public void DeleteOrderItem(int orderItemId);
+
+        public void DeleteUnsentOrderItems(int orderId);
+
+
         // Gets all active orders (orders that are not completed or cancelled)
         List<Order> GetActiveOrders();
 

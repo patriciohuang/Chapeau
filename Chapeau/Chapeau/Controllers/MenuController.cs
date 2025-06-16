@@ -64,6 +64,78 @@ namespace Chapeau.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult EditOrderItem(int orderItemId, int tableNr)
+        {
+            try
+            {
+                OrderItem order = _orderService.GetOrderItem(orderItemId);
+
+                OrderItemEditViewModel orderItemEditViewModel = new OrderItemEditViewModel (_orderService.GetOrderItem(orderItemId), tableNr);
+            
+                return View(orderItemEditViewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+
+                return RedirectToAction("Overview", "Menu", new { tableNr });
+            }
+
+        }
+
+
+        [HttpPost]
+        public IActionResult EditOrderItem(OrderItem orderItem, int tableNr)
+        {
+            try
+            {
+                _orderService.EditOrderItem(orderItem);
+
+                TempData["Success"] = $"{orderItem.MenuItem.Name} edited successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+            }
+
+            return RedirectToAction("Overview", "Menu", new { tableNr });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteOrderItem(int orderItemId, int tableNr)
+        {
+            try
+            {   
+                _orderService.DeleteOrderItem(orderItemId);
+
+                TempData["Success"] = "Item deleted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+            }
+
+            return RedirectToAction("Overview", "Menu", new { tableNr });
+        }
+
+        [HttpPost]
+        public IActionResult DeleteUnsentOrderItems(int orderId, int tableNr)
+        {
+            try
+            {
+                _orderService.DeleteUnsentOrderItems(orderId);
+
+                TempData["Success"] = "New order cancelled successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error: {ex.Message}";
+            }
+
+            return RedirectToAction("Overview", "Menu", new { tableNr });
+        }
+
         //Should I do this with just the tableNr, it's an extra database query to get the orderId, but it makes it impossible to enter your own orderId in the form
         [HttpPost]
         public IActionResult SendOrder (int orderId, int tableNr)
@@ -82,9 +154,10 @@ namespace Chapeau.Controllers
             }
 
             return RedirectToAction("Overview", "Menu", new { tableNr });
-            }
-            //
-            [HttpGet]
+        }
+
+        //
+        [HttpGet]
         public IActionResult Card(string? card, int tableNr)
         {
             // Fill the menu card enum (this is used to filter by card) and get a list of all course categories in the current menu card, then send that to the view
@@ -96,7 +169,7 @@ namespace Chapeau.Controllers
 
                 List<CourseCategory> menuCourses = _menuService.GetAllCourses(menuCard);
 
-                MenuCardCategory Menu = new MenuCardCategory(tableNr, menuCourses, menuCard);
+                MenuCardCategoryViewModel Menu = new MenuCardCategoryViewModel(tableNr, menuCourses, menuCard);
 
                 return View(Menu);
             }
@@ -119,7 +192,7 @@ namespace Chapeau.Controllers
 
                 List<MenuItem> menuItems = _menuService.GetMenuItems(courseCategory, menuCard);
 
-                MenuItemsAndTableNr menuItemsAndOrder = new MenuItemsAndTableNr(tableNr, menuCard, menuItems);
+                MenuItemsAndTableNrViewModel menuItemsAndOrder = new MenuItemsAndTableNrViewModel(tableNr, menuCard, menuItems);
 
                 return View(menuItemsAndOrder);
             }
@@ -159,7 +232,7 @@ namespace Chapeau.Controllers
             {
                 TempData["Error"] = $"Error: {ex.Message}";
 
-                return RedirectToAction("Tables", "Waiter");
+                return RedirectToAction("Course", new { tableNr, card, course = menuItem.CourseCategory.ToString() });
             }
         }
 

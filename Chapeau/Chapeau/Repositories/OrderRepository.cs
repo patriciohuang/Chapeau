@@ -58,13 +58,14 @@ namespace Chapeau.Repositories
         /// Read order item from the database
         private OrderItem ReadOrderItem(SqlDataReader reader)
         {
+            int orderItemId = (int)reader["order_item_id"];
             int count = (int)reader["count"];
             string comment = reader["comment"] as string ?? string.Empty;
             Status itemStatus = Enum.Parse<Status>((string)reader["item_status"], true);
 
             MenuItem menuItem = ReadMenuItem(reader);
 
-            return new OrderItem(count, comment, itemStatus, menuItem);
+            return new OrderItem(orderItemId, count, comment, itemStatus, menuItem);
         }
 
         private MenuItem ReadMenuItem(SqlDataReader reader)
@@ -107,7 +108,7 @@ namespace Chapeau.Repositories
             {
                 // SQL query to get all orders for today (optionally filtered by status)
                 string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
-                                        i.count, i.comment, i.status AS item_status,
+                                        i.order_item_id, i.count, i.comment, i.status AS item_status,
                                         e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_id, t.table_nr, t.availability,
                                         m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic
@@ -155,7 +156,7 @@ namespace Chapeau.Repositories
             {
                 // SQL query to get all orders for today (optionally filtered by status)
                 string sql = @"SELECT   o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
-                                        i.count, i.comment, i.status AS item_status,
+                                        i.order_item_id, i.count, i.comment, i.status AS item_status,
                                         e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                                         t.table_nr, t.table_id, t.availability,
                                         m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic
@@ -164,7 +165,8 @@ namespace Chapeau.Repositories
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
-                            WHERE o.order_id = @orderId";
+                            WHERE o.order_id = @orderId
+                            ORDER BY m.name";
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@orderId", orderId);
@@ -252,6 +254,87 @@ namespace Chapeau.Repositories
             }
         }
 
+        public OrderItem GetOrderItem(int orderItemId)
+        {
+            OrderItem item = new OrderItem();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to insert a new order item
+                const string sql = @"SELECT i.order_item_id, i.count, i.comment, i.status AS item_status,
+                                            m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic 
+                                    FROM order_item AS i
+                                    JOIN menu_item AS m ON i.menu_item_id = m.menu_item_id
+                                    WHERE order_item_id = @orderItemId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@orderItemId", orderItemId);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    item = ReadOrderItem(reader);
+                }
+                reader.Close();
+            }
+            return item;
+        }
+
+        public void EditOrderItem(OrderItem item)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to update an order item
+                string sql = @"UPDATE order_item
+                               SET count = @count, 
+                                   comment = @comment
+                               WHERE order_item_id = @orderItemId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@orderItemId", item.OrderItemId);
+                command.Parameters.AddWithValue("@count", item.Count);
+                command.Parameters.AddWithValue("@comment", item.Comment);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public void DeleteOrderItem(int orderItemId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to delete an order item
+                string sql = @"DELETE FROM order_item 
+                               WHERE order_item_id = @orderItemId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@orderItemId", orderItemId);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public int DeleteUnsentOrderItems(int orderId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to delete all order items with status 'Unordered' for a specific order
+                string sql = @"DELETE FROM order_item
+                               WHERE order_id = @orderId AND status = 'Unordered'";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@orderId", orderId);
+
+                connection.Open();
+                return command.ExecuteNonQuery(); // Returns the number of rows affected
+            }
+        }
+
         public void SendOrder(int orderId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -264,7 +347,7 @@ namespace Chapeau.Repositories
                 SqlCommand command = new SqlCommand(sql, connection);
 
                 command.Parameters.AddWithValue("@orderId", orderId);
-                command.Parameters.AddWithValue("@status", Status.Ordered.ToString());
+                command.Parameters.AddWithValue("@status", Status.Ready.ToString());
 
                 connection.Open();
                 command.ExecuteNonQuery();
