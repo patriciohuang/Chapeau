@@ -92,54 +92,12 @@ namespace Chapeau.Controllers
 
         // GET: /Waiter/Orders
         // Shows all orders for the waiter to manage
-        // Jeroen's note: Psycho code, don't use Viewbag
         public IActionResult Orders(string filter = "active", int? tableNr = null)
         {
             try
             {
-                List<Order> orders;
-
-                // Filter by table if specified
-                if (tableNr.HasValue)
-                {
-                    orders = _orderService.GetOrdersByTable(tableNr.Value);
-                    ViewBag.FilteredByTable = tableNr.Value;
-                }
-                else
-                {
-                    // Get all today's orders first
-                    orders = _orderService.GetTodaysOrders();
-                }
-
-                // Apply the main filter
-                switch (filter.ToLower())
-                {
-                    case "active":
-                        // Active orders: orders that are not completed or cancelled
-                        orders = orders.Where(o => o.Status != Status.Completed && o.Status != Status.Cancelled).ToList();
-                        ViewBag.CurrentFilter = "active";
-                        break;
-
-                    case "ready":
-                        // Ready orders: orders that have at least one order item with status "Ready"
-                        orders = orders.Where(o => o.OrderItems.Any(item => item.Status == Status.Ready)).ToList();
-                        ViewBag.CurrentFilter = "ready";
-                        break;
-
-                    case "all":
-                    default:
-                        // All orders from today (no additional filtering needed)
-                        ViewBag.CurrentFilter = "all";
-                        break;
-                }
-
-                // Get available table numbers for the current filter (for table filter buttons)
-                var availableTableNumbers = orders.Select(o => o.Table.TableNr).Distinct().OrderBy(t => t).ToList();
-                ViewBag.AvailableTableNumbers = availableTableNumbers;
-
-                // Sort orders by time (most recent first)
-                orders = orders.OrderByDescending(o => o.Time_ordered).ToList();
-
+                var orders = GetFilteredOrders(filter, tableNr);
+                SetOrderViewData(filter, tableNr, orders);
                 return View(orders);
             }
             catch (Exception ex)
@@ -147,6 +105,24 @@ namespace Chapeau.Controllers
                 TempData["ErrorMessage"] = "Failed to load orders: " + ex.Message;
                 return View(new List<Order>());
             }
+        }
+        private List<Order> GetFilteredOrders(string filter, int? tableNr)
+        {
+            // Get base orders
+            // This works for some mysterious reason
+            var orders = tableNr.HasValue
+                ? _orderService.GetOrdersByTable(tableNr.Value)
+                : _orderService.GetTodaysOrders();
+
+            // Apply filter and sort
+            var filteredOrders = filter.ToLower() switch
+            {
+                "active" => orders.Where(o => o.Status != Status.Completed && o.Status != Status.Cancelled),
+                "ready" => orders.Where(o => o.OrderItems.Any(item => item.Status == Status.Ready)),
+                _ => orders
+            };
+
+            return filteredOrders.OrderByDescending(o => o.Time_ordered).ToList();
         }
 
         [HttpPost]
@@ -196,13 +172,6 @@ namespace Chapeau.Controllers
             }
 
             return RedirectToAction("Orders");
-        }
-
-        private List<Order> GetFilteredOrders(string filter, int? tableNr)
-        {
-            return tableNr.HasValue
-                ? _orderService.GetOrdersByTableAndFilter(tableNr.Value, filter)
-                : _orderService.GetOrdersByFilter(filter);
         }
 
         private void SetOrderViewData(string filter, int? tableNr, List<Order> orders)

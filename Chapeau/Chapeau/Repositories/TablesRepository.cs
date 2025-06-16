@@ -52,11 +52,6 @@ namespace Chapeau.Repositories
                             // Get availability status (true = available, false = occupied)
                             Available = reader.GetBoolean(reader.GetOrdinal("availability"))
                         };
-
-                        // Calculate grid position for UI display
-                        // This determines where the table appears on the visual layout
-                        CalculateGridPosition(table);
-
                         tables.Add(table);
                     }
                 }
@@ -94,9 +89,6 @@ namespace Chapeau.Repositories
                             TableNr = reader.GetInt32(reader.GetOrdinal("table_nr")),
                             Available = reader.GetBoolean(reader.GetOrdinal("availability"))
                         };
-
-                        // Calculate grid position for UI display
-                        CalculateGridPosition(table);
                     }
                 }
             }
@@ -126,22 +118,6 @@ namespace Chapeau.Repositories
                 command.ExecuteNonQuery();
             }
             
-        }
-
-        // Private helper method: Calculates the grid position for tables in the UI
-        // This determines where each table appears in the visual restaurant layout
-        private void CalculateGridPosition(Table table)
-        {
-            // For a 2-column grid layout (like shown in the UI)
-            // Tables are arranged in rows of 2
-
-            // Calculate which row this table should be in
-            // Table 1 & 2 = Row 0, Table 3 & 4 = Row 1, etc.
-            table.Row = (table.TableNr - 1) / 2;
-
-            // Calculate which column this table should be in  
-            // Table 1, 3, 5 = Column 0 (left), Table 2, 4, 6 = Column 1 (right)
-            table.Column = (table.TableNr - 1) % 2;
         }
 
         public int GetTableId(int tableNr){
