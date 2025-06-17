@@ -39,8 +39,6 @@ namespace Chapeau.Repositories
 
         void SendOrder(int orderId);
 
-        void UpdateOrder(Order order);
-
         bool UpdateOrderStatus(int orderId, Status status, UserRole role);
         bool UpdateOrderItemStatus(int orderItemId, Status status, UserRole role);
         void UpdateAllReadyItemsToServed(int orderId);

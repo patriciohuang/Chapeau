@@ -426,28 +426,6 @@ namespace Chapeau.Repositories
             }
         }
 
-        public void UpdateOrder(Order order)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string sql = @"UPDATE [order]
-                     SET status = @Status
-                     WHERE order_id = @OrderId";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@OrderId", order.OrderId);
-                command.Parameters.AddWithValue("@Status", order.Status.ToString());
-
-                connection.Open();
-                int rowsAffected = command.ExecuteNonQuery();
-
-                if (rowsAffected == 0)
-                {
-                    throw new Exception($"Order with ID {order.OrderId} not found or could not be updated");
-                }
-            }
-        }
-
         public bool UpdateOrderStatus(int orderId, Status status, UserRole role)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -467,14 +445,12 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string sql = @"UPDATE [order]
-             SET status = @Status,
-             is_paid = @IsPaid 
+             SET is_paid = @IsPaid 
              WHERE order_id = @OrderId";
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@OrderId", order.OrderId);
                 command.Parameters.AddWithValue("@IsPaid", order.IsPaid);
-                command.Parameters.AddWithValue("@Status", order.Status.ToString());
 
                 connection.Open();
                 int rowsAffected = command.ExecuteNonQuery();
@@ -639,7 +615,7 @@ namespace Chapeau.Repositories
 
         private string GetBaseOrderQuery()
         {
-            return @"SELECT o.order_id, o.status AS order_status, o.date_ordered, o.time_ordered, o.is_paid,
+            return @"SELECT o.order_id, o.date_ordered, o.time_ordered, o.is_paid,
                             i.order_item_id, i.count, i.comment, i.status AS item_status,
                             e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
                             t.table_id, t.table_nr, t.availability,
@@ -653,17 +629,17 @@ namespace Chapeau.Repositories
 
         private string GetTodayAndStatusFilter()
         {
-            return "WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status AND o.status != 'Unordered' ORDER BY o.time_ordered";
+            return "WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND i.status LIKE @status AND i.status != 'Unordered' ORDER BY o.time_ordered";
         }
 
         private string GetTodayFilter()
         {
-            return "WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status != 'Unordered' ";
+            return "WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND i.status != 'Unordered' ";
         }
 
         private string GetActiveOrderFilter()
         {
-            return "AND o.status NOT IN ('Completed', 'Cancelled') ";
+            return "AND i.status NOT IN ('Completed', 'Cancelled') ";
         }
 
         private string GetReadyItemsFilter()
