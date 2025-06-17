@@ -7,7 +7,21 @@ namespace Chapeau.Models
     {
         // Basic order info  
         public int OrderId { get; set; }
-        public Status Status => StatusHelper.AggregateStatus(OrderItems);
+        public Status Status
+        {
+            get
+            {
+                var calculatedStatus = StatusHelper.AggregateStatus(OrderItems);
+
+                // If order is paid and all items are served, mark as completed
+                if (IsPaid && calculatedStatus == Status.Served)
+                {
+                    return Status.Completed;
+                }
+
+                return calculatedStatus;
+            }
+        }
         public DateOnly Date_ordered { get; set; }
         public TimeOnly Time_ordered { get; set; }
         public bool IsPaid { get; set; }

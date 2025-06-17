@@ -39,7 +39,7 @@ namespace Chapeau.Models
             if (filteredOrders.Any(i => i.Status == Status.Unordered)) return Status.Unordered;
             if (filteredOrders.Any(i => i.Status == Status.Ordered)) return Status.Ordered;
             if (filteredOrders.Any(i => i.Status == Status.Preparing)) return Status.Preparing;
-            if (filteredOrders.All(i => i.Status == Status.Ready)) return Status.Ready;
+            if (filteredOrders.Any(i => i.Status == Status.Ready)) return Status.Ready;
             if (filteredOrders.All(i => i.Status == Status.Served)) return Status.Served;
             if (filteredOrders.All(i => i.Status == Status.Completed)) return Status.Completed;
 

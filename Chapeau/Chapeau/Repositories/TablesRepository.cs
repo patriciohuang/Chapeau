@@ -100,13 +100,9 @@ namespace Chapeau.Repositories
 
 
         // Updates the availability status of a specific table
-        // Called when waiters mark tables as occupied or available
+        // Called when waiters mark tables as unavailable or available
         public void UpdateTableAvailability(int tableNr, bool available)
-        {
-            // TODO: This method needs to be implemented
-            // It should execute an UPDATE SQL statement to change the availability
-            // Example implementation:
-            
+        {   
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = "UPDATE [table] SET availability = @available WHERE table_nr = @tableNr";
@@ -117,7 +113,6 @@ namespace Chapeau.Repositories
                 connection.Open();
                 command.ExecuteNonQuery();
             }
-            
         }
 
         public int GetTableId(int tableNr){

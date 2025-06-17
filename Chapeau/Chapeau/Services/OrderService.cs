@@ -211,7 +211,6 @@ namespace Chapeau.Services
                 _tableRepository.UpdateTableAvailability(tableNr, true);
             }
         }
-
         public void SendOrder(int orderId)
         {
             _orderRepository.SendOrder(orderId);
@@ -249,8 +248,15 @@ namespace Chapeau.Services
 
             var statusPriority = GetStatusPriorityOrder();
             var itemStatuses = order.OrderItems.Select(item => item.Status).Distinct();
+            var calculatedStatus = GetEarliestStatus(itemStatuses, statusPriority);
 
-            return GetEarliestStatus(itemStatuses, statusPriority);
+            // If the order is paid and the status is Served, we consider it Completed
+            if (order.IsPaid && calculatedStatus == Status.Served)
+            {
+                return Status.Completed;
+            }
+
+            return calculatedStatus;
         }
 
         private List<Status> GetStatusPriorityOrder()

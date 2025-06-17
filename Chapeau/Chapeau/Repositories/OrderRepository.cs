@@ -639,7 +639,7 @@ namespace Chapeau.Repositories
 
         private string GetActiveOrderFilter()
         {
-            return "AND i.status NOT IN ('Completed', 'Cancelled') ";
+            return "AND o.is_paid = 0 ";
         }
 
         private string GetReadyItemsFilter()
@@ -688,9 +688,17 @@ namespace Chapeau.Repositories
                             (@role NOT IN ('Bar', 'Kitchen')))";
         }
          private string GetUpdateOrderItemStatusQuery(UserRole role)
-        {
+         {
+            // Waiters can mark any item as served, screw you Kyle
+            if (role == UserRole.Waiter)
+            {
+                return @"UPDATE order_item 
+                SET [status] = @status
+                WHERE order_item_id = @orderItemId";
+            }
+
             return @"UPDATE oi 
-                    SET status = @Status
+                    SET [status] = @status
                     FROM [Order_item] AS oi
                         INNER JOIN menu_item AS mi ON
                             mi.menu_item_id = oi.menu_item_id
@@ -702,7 +710,7 @@ namespace Chapeau.Repositories
         private string GetUpdateOrderCategoryStatusQuery(UserRole role)
         {
             return @"UPDATE oi
-                    SET status = @Status
+                    SET [status] = @Status
                     FROM [Order_item] AS oi
                         INNER JOIN menu_item AS mi ON
                             mi.menu_item_id = oi.menu_item_id
