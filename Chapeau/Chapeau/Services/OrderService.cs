@@ -77,15 +77,15 @@ namespace Chapeau.Services
             return _orderRepository.GetReadyOrdersByTable(tableNr);
         }
 
+        // This retrieves a single FULL order from the database by its ID
         public Order GetOrderById(int orderId)
         {
             return _orderRepository.GetOrderById(orderId);
         }
 
+        //This is used to check if an order already exists, it is used to check if an order needs to be created/an error message needs to be shown (empty orders aren't allowed to exist according to the ERD)
         public int? CheckIfOrderExists(int tableNr)
         {
-
-
             return _orderRepository.CheckIfOrderExists(tableNr);
         }
 
@@ -101,6 +101,8 @@ namespace Chapeau.Services
             return orderId;
         }
 
+        //This checks if the order item already exists (same orderId, menuItemId, comment and status)
+        //adds it to the order if it doesn't, or updates the count if it does
         public void AddItem(int orderId, MenuItem menuItem, string? comment)
         {
             if (menuItem.Stock < 1)
@@ -134,11 +136,13 @@ namespace Chapeau.Services
 
         }
 
+        //This retrieves a single order item from the database by its ID
         public OrderItem GetOrderItem(int orderItemId)
         {
             return _orderRepository.GetOrderItem(orderItemId);
         }
 
+        // This is to change the count and notes of an existing order item
         public void EditOrderItem(OrderItem newOrderItem)
         {
             if (newOrderItem.Count < 1 || newOrderItem.Count > 100)
@@ -148,6 +152,7 @@ namespace Chapeau.Services
 
             OrderItem existingOrderItem = _orderRepository.GetOrderItem(newOrderItem.OrderItemId);
 
+            //Calculate how much needs to be added or removed from the stock
             int differenceInStock = existingOrderItem.Count - newOrderItem.Count;
 
             if (-differenceInStock > existingOrderItem.MenuItem.Stock)
@@ -160,6 +165,7 @@ namespace Chapeau.Services
             _menuRepository.UpdateStock(existingOrderItem.MenuItem.MenuItemId, differenceInStock);
         }
 
+        // This is to delete a single order item, deletes multiple if it has a count greater than 1, then adds them back to the stock
         public void DeleteOrderItem(int orderItemId, int tableNr, int orderId)
         {
             //Get a list of all order items to check if you'll end up with an empty order
@@ -189,6 +195,7 @@ namespace Chapeau.Services
             }
         }
 
+        // This is to delete all order items that have not been sent yet, and updates the stock accordingly
         public void CancelUnsentOrder(int orderId, int tableNr)
         {
             //Get a list of all order items to check if you'll end up with an empty order
@@ -216,6 +223,8 @@ namespace Chapeau.Services
                 _tableRepository.UpdateTableAvailability(tableNr, true);
             }
         }
+
+        // This is to send the order to the kitchen, updates the status of all items to Ordered
         public void SendOrder(int orderId)
         {
             _orderRepository.SendOrder(orderId);

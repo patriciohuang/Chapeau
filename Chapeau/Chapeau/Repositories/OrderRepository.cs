@@ -177,7 +177,7 @@ namespace Chapeau.Repositories
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // SQL query to get all orders for today (optionally filtered by status)
+                // SQL query to get ALL the data required for ONE order using its orderId
                 string sql = @"SELECT   o.order_id, o.date_ordered, o.time_ordered, o.is_paid,
                                         i.order_item_id, i.count, i.comment, i.status AS item_status,
                                         e.employee_id, e.employee_nr, e.first_name, e.last_name, e.role, e.password,
@@ -224,11 +224,11 @@ namespace Chapeau.Repositories
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to check if an order exists for the given table number
-                string sql = @"Select MAX([order_id]) AS order_id
+                string sql = @"Select order_id
                                 FROM [order] AS ord
                                 JOIN [table] AS tab ON ord.table_id = tab.table_id
                                 WHERE table_nr = @tableNr AND [is_paid] = 0";
-                //TODO see if MAX order_id can become a regular order_id
+                
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@tableNr", tableNr);
@@ -298,6 +298,7 @@ namespace Chapeau.Repositories
             }
         }
 
+        //Adds a new item to an order with default comment (can be changed later) and as Unordered (not sent to kitchen/bar yet)
         public void AddItem(int orderId, int menuItemId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -318,12 +319,13 @@ namespace Chapeau.Repositories
             }
         }
 
+        // Gets a single order item by its ID, used for editing the order or adding to the amount ordered
         public OrderItem GetOrderItem(int orderItemId)
         {
             OrderItem item = new OrderItem();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // SQL query to insert a new order item
+                // SQL query to retreive a single order item by its ID
                 const string sql = @"SELECT i.order_item_id, i.count, i.comment, i.status AS item_status,
                                             m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic 
                                     FROM order_item AS i
@@ -346,6 +348,7 @@ namespace Chapeau.Repositories
             return item;
         }
 
+        //Gets all order items for a specific order, less database intensive than getting the full order
         public List<OrderItem> GetOrderItems(int orderId)
         {
             List<OrderItem> item = new List<OrderItem>();
@@ -374,6 +377,7 @@ namespace Chapeau.Repositories
             return item;
         }
 
+        // Edits an existing order item, used for changing the amount ordered or adding a comment (or both)
         public void EditOrderItem(OrderItem item)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -401,6 +405,7 @@ namespace Chapeau.Repositories
             }
         }
 
+        // Deletes an order item by its ID, used for removing a full orderItem from an order
         public void DeleteOrderItem(int orderItemId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -417,6 +422,7 @@ namespace Chapeau.Repositories
             }
         }
 
+        // Deletes all order items with status 'Unordered' for a specific order, used for cancelling an order before it is sent to the kitchen/bar
         public int DeleteUnsentOrderItems(int orderId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -433,6 +439,7 @@ namespace Chapeau.Repositories
             }
         }
 
+        //Sends an order to the kitchen/bar by updating its status to 'Ordered', this makes it so that the kitchen/bar can see the order
         public void SendOrder(int orderId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))

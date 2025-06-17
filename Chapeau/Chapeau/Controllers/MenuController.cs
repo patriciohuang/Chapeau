@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace Chapeau.Controllers
 {
 
-    //TODO: SHOULD I RENAME THIS CONTROLLER TO ORDERCONTROLLER?
+    //SHOULD I RENAME THIS CONTROLLER TO ORDERCONTROLLER?
     public class MenuController : BaseController
     {
         private readonly IMenuService _menuService;
