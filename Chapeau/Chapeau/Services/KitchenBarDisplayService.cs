@@ -30,7 +30,7 @@ namespace Chapeau.Services
             return orders;
         }
 
-        public bool UpdateOrderStatus(int orderId, Status currentStatus)
+        public bool UpdateOrderStatus(int orderId, Status currentStatus, UserRole role)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace Chapeau.Services
                 {
                     newStatus = StatusHelper.PreviousStatus(currentStatus);
                 }
-                return _orderRepository.UpdateOrderStatus(orderId, newStatus);
+                return _orderRepository.UpdateOrderStatus(orderId, newStatus, role);
             }
             catch (Exception e)
             {
@@ -51,7 +51,7 @@ namespace Chapeau.Services
                 return false;
             }
         }
-        public bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status currentStatus)
+        public bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status currentStatus, UserRole role)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace Chapeau.Services
                 {
                     newStatus = StatusHelper.PreviousStatus(currentStatus);
                 }
-                return _orderRepository.UpdateOrderCategoryStatus(orderId, category, newStatus);
+                return _orderRepository.UpdateOrderCategoryStatus(orderId, category, newStatus, role);
             }
             catch (Exception e)
             {
@@ -74,7 +74,7 @@ namespace Chapeau.Services
         }
 
 
-        public bool UpdateOrderItemStatus(int orderItemId, Status currentStatus)
+        public bool UpdateOrderItemStatus(int orderItemId, Status currentStatus, UserRole role)
         {
             try
             {
@@ -87,9 +87,7 @@ namespace Chapeau.Services
                 {
                     newStatus = StatusHelper.PreviousStatus(currentStatus);
                 }
-                _orderRepository.UpdateOrderItemStatus(orderItemId, newStatus);
-
-                return true;
+                return _orderRepository.UpdateOrderItemStatus(orderItemId, newStatus, role);
             }
             catch (Exception e)
             {

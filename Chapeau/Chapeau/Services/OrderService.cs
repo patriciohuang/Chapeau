@@ -150,7 +150,7 @@ namespace Chapeau.Services
 
         public void MarkOrderItemAsServed(int orderId, int orderItemId)
         {
-            _orderRepository.UpdateOrderItemStatus(orderItemId, Status.Served);
+            _orderRepository.UpdateOrderItemStatus(orderItemId, Status.Served, UserRole.Waiter);
             RecalculateOrderStatus(orderId);
         }
 
@@ -167,7 +167,7 @@ namespace Chapeau.Services
 
             if (order.Status != calculatedStatus)
             {
-                _orderRepository.UpdateOrderStatus(orderId, calculatedStatus);
+                _orderRepository.UpdateOrderStatus(orderId, calculatedStatus, UserRole.Waiter);
             }
         }
 
