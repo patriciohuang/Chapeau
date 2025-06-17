@@ -51,7 +51,6 @@ namespace Chapeau.Models
 
         public Status GetStatusForRole(UserRole role)
         {
-            Console.WriteLine(role);
             return StatusHelper.AggregateStatus(OrderItems, role);
         }
     }
