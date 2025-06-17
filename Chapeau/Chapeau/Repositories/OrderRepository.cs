@@ -118,9 +118,13 @@ namespace Chapeau.Repositories
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
                             WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE)
-                            ORDER BY o.time_ordered";
+                            ";
+                if (role == UserRole.Bar || role == UserRole.Kitchen)
+                {
+                    sql += " AND oi.status != 'Served'";
+                }
 
-                //CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND            IN THE WHERE
+                sql += " ORDER BY o.time_ordered";
 
                 SqlCommand command = new SqlCommand(sql, connection);
 
@@ -678,16 +682,28 @@ namespace Chapeau.Repositories
         // SQL Query Methods
         private string GetUpdateOrderStatusQuery(UserRole role)
         {
-            return @"UPDATE oi SET status = @status
-                     FROM [Order_item] AS oi
-                        INNER JOIN menu_item AS mi ON
-                            mi.menu_item_id = oi.menu_item_id
-                            WHERE oi.order_id = @orderId AND 
-                            ((@role = 'Bar' AND mi.menu_card = 'Drinks') OR
-                            (@role = 'Kitchen' AND mi.menu_card IN ('Lunch', 'Dinner', 'LunchAndDinner')) OR
-                            (@role NOT IN ('Bar', 'Kitchen')))";
+            string baseQuery = @"
+                UPDATE oi
+                SET status = @status
+                FROM [Order_item] AS oi
+                INNER JOIN menu_item AS mi ON mi.menu_item_id = oi.menu_item_id
+                WHERE oi.order_id = @orderId
+                AND (
+                    (@role = 'Bar' AND mi.menu_card = 'Drinks') OR
+                    (@role = 'Kitchen' AND mi.menu_card IN ('Lunch', 'Dinner', 'LunchAndDinner')) OR
+                    (@role NOT IN ('Bar', 'Kitchen'))
+                )";
+
+            // Add extra condition if role is Bar or Kitchen
+            if (role == UserRole.Bar || role == UserRole.Kitchen)
+            {
+                baseQuery += " AND oi.status != 'Served'";
+            }
+
+            return baseQuery;
         }
-         private string GetUpdateOrderItemStatusQuery(UserRole role)
+
+        private string GetUpdateOrderItemStatusQuery(UserRole role)
         {
             return @"UPDATE oi 
                     SET status = @Status
