@@ -1,5 +1,17 @@
 @model Chapeau.ViewModels.PaymentDetailsViewModel
 
+@{
+    // Flatten the items list: for each item, repeat it by its quantity
+    var flatItems = new List<Chapeau.ViewModels.OrderItemViewModel>();
+    foreach (var item in Model.Items)
+    {
+        for (int q = 0; q < item.Quantity; q++)
+        {
+            flatItems.Add(item);
+        }
+    }
+}
+
 <div class="modal fade" id="splitByDishModal" tabindex="-1" aria-labelledby="splitByDishModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -16,17 +28,16 @@
                         <span class="fw-bold">Order summary:</span>
                         <span class="fw-bold">Price</span>
                     </div>
-                    @for (int i = 0; i < Model.Items.Count; i++)
+                    @for (int i = 0; i < flatItems.Count; i++)
                     {
-                        var item = Model.Items[i];
+                        var item = flatItems[i];
                         <div class="d-flex align-items-center justify-content-between px-3 py-1 border-bottom">
                             <div class="d-flex align-items-center gap-2">
-                                <span>@item.Quantity</span>
                                 <span>@item.Name</span>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span>@item.FormattedPrice</span>
-                                <button type="button" class="btn btn-link p-0 dish-select-btn" data-index="@i" data-price="@item.Price" data-quantity="@item.Quantity" onclick="toggleDishSelection(this)">
+                                <button type="button" class="btn btn-link p-0 dish-select-btn" data-index="@i" data-price="@item.Price" data-quantity="1" onclick="toggleDishSelection(this)">
                                     <i class="bi bi-check-circle" style="font-size: 1.2rem;"></i>
                                 </button>
                             </div>
@@ -35,30 +46,34 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top border-bottom mb-3">
                     <span class="fw-bold">Total:</span>
-                    <span id="splitDishTotal">@Model.FormattedTotal</span>
+                    <span id="splitDishTotal">@Model.FormattedLeftToPay</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top border-bottom mb-3">
+                    <span>Paid:</span>
+                    <span id="splitPaid">@Model.FormattedPaidAmount</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center px-3 pb-2 mb-3">
                     <span class="fw-bold">To pay:</span>
-                    <span id="splitDishToPay">€0,00</span>
+                    <span id="splitDishToPay">@Model.FormattedLeftToPay</span>
                 </div>
                 <div class="row g-2 mt-3">
                     <div class="col-6">
-                        <button class="btn btn-primary w-100 py-2" id="splitDishCreditCardBtn">
+                        <button class="btn btn-primary w-100 py-2" id="splitDishCreditCardBtn" onclick="openCardPaymentModalFromSplit('card')">
                             <i class="bi bi-credit-card"></i> Credit card
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-primary w-100 py-2" id="splitDishCashBtn">
+                        <button class="btn btn-primary w-100 py-2" id="splitDishCashBtn" onclick="openCardPaymentModalFromSplit('cash')">
                             <i class="bi bi-cash"></i> Cash
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-primary w-100 py-2" id="splitDishGiftCardBtn">
+                        <button class="btn btn-primary w-100 py-2" id="splitDishGiftCardBtn" onclick="openCardPaymentModalFromSplit('giftcard')">
                             <i class="bi bi-gift"></i> Gift card
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-primary w-100 py-2" id="splitDishDebitCardBtn">
+                        <button class="btn btn-primary w-100 py-2" id="splitDishDebitCardBtn" onclick="openCardPaymentModalFromSplit('debitcard')">
                             <i class="bi bi-credit-card"></i> Debit card
                         </button>
                     </div>
@@ -68,20 +83,4 @@
     </div>
 </div>
 <script>
-function toggleDishSelection(btn) {
-    btn.querySelector('i').classList.toggle('text-success');
-    updateSplitDishToPay();
-}
-
-function updateSplitDishToPay() {
-    let total = 0;
-    document.querySelectorAll('.dish-select-btn').forEach(function(btn) {
-        if (btn.querySelector('i').classList.contains('text-success')) {
-            const price = parseFloat(btn.getAttribute('data-price'));
-            const quantity = parseInt(btn.getAttribute('data-quantity'));
-            total += price * quantity;
-        }
-    });
-    document.getElementById('splitDishToPay').textContent = '€' + total.toFixed(2).replace('.', ',');
-}
 </script> 

@@ -47,7 +47,6 @@ namespace Chapeau.Repositories
 
         bool UpdateOrderCategoryStatus(int orderId, CourseCategory courseCategory, Status status, UserRole role);
 
-
-
+        void UpdateOrderPaid(Order order);
     }
 }

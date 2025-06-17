@@ -1,0 +1,17 @@
+body { text-align: center; padding-top: 40px; font-family: Arial, sans-serif; }
+.checkmark {
+    width: 150px;
+    height: 150px;
+    display: inline-block;
+    margin-top: 60px;
+}
+.checkmark-circle {
+    stroke: #4BB543;
+    stroke-width: 6;
+    fill: #4BB543;
+}
+.checkmark-check {
+    stroke: #fff;
+    stroke-width: 6;
+    fill: none;
+} 

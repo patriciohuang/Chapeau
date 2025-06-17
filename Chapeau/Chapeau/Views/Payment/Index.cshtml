@@ -48,7 +48,8 @@
             }
         </div>
 
-        <div class="summary-section">
+		<div class="summary-section">
+            
             <div class="summary-row">
                 <span>Total 9% VAT:</span>
                 <span>@Model.FormattedLowVAT</span>
@@ -61,29 +62,35 @@
                 <span>Total VAT:</span>
                 <span id="totalVatDisplay">@Model.FormattedTotalVAT</span>
             </div>
+            
         </div>
         <div id="feedbackDisplay" class="feedback-display" style="display: none;">
             <div class="feedback-content">
                 <span class="feedback-label">Feedback:</span>
                 <span id="feedbackText"></span>
             </div>
-            <button class="feedback-edit-btn" onclick="openFeedbackModal()">
-                <i class="bi bi-pencil"></i>
-            </button>
         </div>
-
+        
         <div class="total-section">
             <div class="total-row">
                 <span>Total:</span>
                 <span id="grandTotal">@Model.FormattedTotal</span>
             </div>
+
+            <div class="total-row">
+                <span>Paid Amount:</span>
+                <span id="paidAmountDisplay">@Model.FormattedPaidAmount</span>
+            </div>
+            <div class="total-row">
+                <span>Left to Pay:</span>
+                <span id="leftAmountDisplay">@Model.FormattedLeftToPay</span>
+            </div>
         </div>
     </div>
 
     <div class="action-buttons">
-        <div class="button-row">
-            <button class="action-button yellow" onclick="location.href='@Url.Action("Edit", "Order")'">Edit</button>
-            <button class="action-button blue" onclick="openSplitModal()">Split pay</button>
+        <div class="full-width-row">
+            <button class="action-button blue full-width" onclick="openSplitModal()">Split pay</button>
         </div>
         <div class="full-width-row">
             <button class="action-button blue full-width" onclick="openPaymentMethodModal()">Pay all</button>
@@ -143,13 +150,5 @@
     <script src="~/js/payment.js"></script>
     <script src="~/js/tipSection.js"></script>
     <script>
-        function openSplitByAmountModal() {
-            var modal = new bootstrap.Modal(document.getElementById('splitByAmountModal'));
-            modal.show();
-        }
-        function openSplitByDishModal() {
-            var modal = new bootstrap.Modal(document.getElementById('splitByDishModal'));
-            modal.show();
-        }
     </script>
 }

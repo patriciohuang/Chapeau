@@ -10,7 +10,7 @@
                 <div class="mb-3">
                     <label class="form-label">Amount of people</label>
                     <select class="form-select w-75 mx-auto" id="splitPeopleSelect">
-                        <option selected disabled>Select a number</option>
+                        <option selected disabled>1</option>
                         @for (int i = 2; i <= 10; i++)
                         {
                             <option value="@i">@i</option>
@@ -20,35 +20,35 @@
                 <div class="mb-2 text-start w-75 mx-auto">
                     <div class="d-flex justify-content-between">
                         <span>Total:</span>
-                        <span id="splitTotal">€105,50</span>
+                        <span id="splitTotal">@Model.FormattedLeftToPay</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span>To pay:</span>
-                        <span id="splitToPay">105.50</span>
+                        <span id="splitToPay">0.00</span>
                     </div>
                     <div class="d-flex justify-content-between text-muted">
                         <span>Paid:</span>
-                        <span id="splitPaid">€00,00</span>
+                        <span id="splitPaid">@Model.FormattedPaidAmount</span>
                     </div>
                 </div>
                 <div class="row mt-4 g-3">
                     <div class="col-6">
-                        <button class="btn btn-light w-100 py-3 border" id="splitCreditCardBtn">
+                        <button class="btn btn-light w-100 py-3 border" id="splitCreditCardBtn" onclick="openCardPaymentModalFromSplit('card')">
                             <i class="bi bi-credit-card"></i> Credit Card
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-light w-100 py-3 border" id="splitCashBtn">
+                        <button class="btn btn-light w-100 py-3 border" id="splitCashBtn" onclick="openCardPaymentModalFromSplit('cash')">
                             <i class="bi bi-cash"></i> Cash
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-light w-100 py-3 border" id="splitGiftCardBtn">
+                        <button class="btn btn-light w-100 py-3 border" id="splitGiftCardBtn" onclick="openCardPaymentModalFromSplit('giftcard')">
                             <i class="bi bi-gift"></i> Gift Card
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-light w-100 py-3 border" id="splitDebitCardBtn">
+                        <button class="btn btn-light w-100 py-3 border" id="splitDebitCardBtn" onclick="openCardPaymentModalFromSplit('debitcard')">
                             <i class="bi bi-credit-card"></i> Debit Card
                         </button>
                     </div>
@@ -56,4 +56,7 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<script>
+</script> 

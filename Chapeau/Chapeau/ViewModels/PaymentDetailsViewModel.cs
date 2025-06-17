@@ -13,6 +13,7 @@ namespace Chapeau.ViewModels
 
         public int TableNr { get; set; }
         public List<OrderItemViewModel> Items { get; set; } = new List<OrderItemViewModel>();
+        public decimal PaidAmount { get; set; }
         public decimal TotalLowVAT { get; set; }
         public decimal TotalHighVAT { get; set; }
 
@@ -32,6 +33,13 @@ namespace Chapeau.ViewModels
         {
             get => _tipAmount;
             set => _tipAmount = value;
+        }
+
+        public decimal LeftToPay
+        {
+            get {
+                return Subtotal - PaidAmount;
+            }
         }
 
         public decimal GrandTotal { get; set; }
@@ -82,5 +90,7 @@ namespace Chapeau.ViewModels
         public string FormattedTip => $"€{TipAmount:0.00}";
         public string FormattedTotal => $"€{GrandTotal:0.00}";
         public string FormattedSubtotal => $"€{Subtotal:0.00}";
+        public string FormattedPaidAmount => $"€{PaidAmount:0.00}";
+        public string FormattedLeftToPay => $"€{LeftToPay:0.00}";
     }
 } 
