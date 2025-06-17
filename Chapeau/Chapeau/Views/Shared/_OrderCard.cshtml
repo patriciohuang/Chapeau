@@ -19,7 +19,7 @@
             <strong>@group.Key</strong>
             @if(group.Any(i => i.Status == Status.Preparing))
             {
-                <button class="btn btn-sm"
+                <button class="btn btn-sm btn-outline-light"
                         onclick="UpdateOrderCategoryStatus(@Model.OrderId, '@group.Key.ToString()', '@Model.Status.ToString()')">
                     <span class="check-icon">✔</span>
                 </button>
@@ -28,25 +28,37 @@
         <ul class="list-unstyled ms-2 mt-1">
             @foreach (var item in group)
             {
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div>
+                        @if (item.Status > Status.Preparing)
+                        {
+                            <span class="text-decoration-line-through">@item.Count @item.MenuItem.Name</span>
+                        }
+                        else
+                        {
+                            <span>@item.Count @item.MenuItem.Name</span>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(item.Comment))
+                        {
+                            <div class="small mt-1">
+                                <span class="badge bg-warning text-dark">
+                                    - @item.Comment
+                                </span>
+                            </div>
+                        }
+                    </div>
+
                     @if (item.Status == Status.Preparing)
                     {
-                        <li>@item.Count @item.MenuItem.Name</li>
-                        <button class="btn btn-sm"
-                        onclick="UpdateOrderItemStatus(@item.OrderItemId, '@Model.Status.ToString()')">
+                        <button class="btn btn-sm btn-outline-light"
+                                onclick="UpdateOrderItemStatus(@item.OrderItemId, '@Model.Status.ToString()')">
                             <span class="check-icon">✔</span>
                         </button>
                     }
-                    else if (item.Status > Status.Preparing)
-                    {
-                        <li class="text-decoration-line-through">@item.Count @item.MenuItem.Name</li>
-                    }
-                    else
-                    {
-                        <li>@item.Count @item.MenuItem.Name</li>
-                    }
                 </div>
             }
+
         </ul>
         <button class="btn btn-sm"
                 onclick="updateCourseStatus(@group., '@Model.Status.ToString()')">
