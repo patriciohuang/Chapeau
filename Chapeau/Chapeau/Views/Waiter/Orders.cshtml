@@ -121,7 +121,7 @@
                         @foreach (var group in order.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
                         {
                             <div class="mb-3">
-                                <strong class="course-category-header">@group.Key:</strong>
+                                <strong class="course-category-header">@group.Key.ToString().Replace("_", "/"):</strong>
                                 <div class="course-items">
                                     @foreach (var item in group)
                                     {

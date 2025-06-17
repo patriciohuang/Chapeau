@@ -65,7 +65,7 @@ namespace Chapeau.Controllers
             }
         }
 
-        // Helper method to create the view model for table actions
+        // Table Actions thing
         public IActionResult TableActions(int tableNr)
         {
             try
@@ -80,7 +80,7 @@ namespace Chapeau.Controllers
                     return RedirectToAction("Tables");
                 }
 
-                var viewModel = CreateTableActionsViewModel(tableNr, table.Available);
+                var viewModel = CreateTableActionsViewModel(tableNr, table.Available); // Create view model for table actions
                 return View(viewModel);
             }
             catch (Exception ex)
@@ -130,6 +130,7 @@ namespace Chapeau.Controllers
         {
             try
             {
+                // Validates that table can be changed
                 ValidateTableStatusChange(tableNr, available);
                 _tableService.UpdateTableAvailability(tableNr, available);
                 TempData["SuccessMessage"] = $"Table {tableNr} updated successfully to {(available ? "available" : "unavailable")}.";
@@ -142,6 +143,7 @@ namespace Chapeau.Controllers
             return RedirectToAction("Tables");
         }
 
+        // Technically, TECHNICALLY right, you could just mark all orderitems as served, but just in case, i added this
         [HttpPost]
         public IActionResult MarkOrderAsServed(int orderId)
         {
@@ -158,6 +160,7 @@ namespace Chapeau.Controllers
             return RedirectToAction("Orders");
         }
 
+        // use this. click the checkmark
         [HttpPost]
         public IActionResult MarkOrderItemAsServed(int orderId, int orderItemId)
         {
@@ -174,12 +177,14 @@ namespace Chapeau.Controllers
             return RedirectToAction("Orders");
         }
 
+        // well we need to get data somewhere, right?
         private void SetOrderViewData(string filter, int? tableNr, List<Order> orders)
         {
             ViewBag.CurrentFilter = filter;
             ViewBag.FilteredByTable = tableNr;
             ViewBag.AvailableTableNumbers = GetAvailableTableNumbers(orders);
         }
+
 
         private void ValidateTableStatusChange(int tableNr, bool available)
         {
@@ -201,6 +206,7 @@ namespace Chapeau.Controllers
             return orders.Select(o => o.Table.TableNr).Distinct().OrderBy(t => t).ToList();
         }
 
+        // thought i would dip my toes in the view of models
         private TableActionsViewModel CreateTableActionsViewModel(int tableNr, bool available)
         {
             return new TableActionsViewModel(tableNr, available);
