@@ -20,18 +20,18 @@ namespace Chapeau.Services
         public List<Order> GetTodaysOrders()
         {
             // Get all orders for today (no status filter)
-            return _orderRepository.GetOrders(null);
+            return _orderRepository.GetOrders(null, null);
         }
 
         public List<Order> GetOrdersByStatus(Status status)
         {
-            return _orderRepository.GetOrders(status);
+            return _orderRepository.GetOrders(status, null);
         }
 
         public List<Order> GetOrdersByTable(int tableNr)
         {
             // Get all orders and filter by table
-            List<Order> allOrders = _orderRepository.GetOrders(null);
+            List<Order> allOrders = _orderRepository.GetOrders(null, null);
             return allOrders.Where(o => o.Table.TableNr == tableNr).ToList();
         }
 
@@ -219,7 +219,7 @@ namespace Chapeau.Services
 
         public void MarkOrderItemAsServed(int orderId, int orderItemId)
         {
-            _orderRepository.UpdateOrderItemStatus(orderItemId, Status.Served);
+            _orderRepository.UpdateOrderItemStatus(orderItemId, Status.Served, UserRole.Waiter);
             RecalculateOrderStatus(orderId);
         }
 
@@ -236,7 +236,7 @@ namespace Chapeau.Services
 
             if (order.Status != calculatedStatus)
             {
-                _orderRepository.UpdateOrderStatus(orderId, calculatedStatus);
+                _orderRepository.UpdateOrderStatus(orderId, calculatedStatus, UserRole.Waiter);
             }
         }
 

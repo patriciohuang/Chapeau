@@ -7,46 +7,10 @@ namespace Chapeau.Models
     {
         // Basic order info  
         public int OrderId { get; set; }
-
-
-        public Status Status
-        {
-            get
-            {
-                if (OrderItems.Any(item => item.Status == Status.Unordered))
-                {
-                    return Status.Unordered;
-                }
-                if (OrderItems.Any(item => item.Status == Status.Ordered))
-                {
-                    return Status.Ordered;
-                }
-                if (OrderItems.Any(item => item.Status == Status.Preparing))
-                {
-                    return Status.Preparing;
-                }
-                if (OrderItems.Any(item => item.Status == Status.Ready))
-                {
-                    return Status.Ready;
-                }
-                if (OrderItems.Any(item => item.Status == Status.Served))
-                {
-                    return Status.Served;
-                }
-                if (OrderItems.Any(item => item.Status == Status.Completed))
-                {
-                    return Status.Completed;
-                }
-                return Status.Cancelled;
-            }
-            set
-            {
-                Status = value;
-            }
-        }
-
-        public DateOnly Date_ordered { get; set; } // Date when the order was placed  
-        public TimeOnly Time_ordered { get; set; } // Time when the order was placed  
+        public Status StoredStatus { get; set; }
+        public Status Status => StatusHelper.AggregateStatus(OrderItems);
+        public DateOnly Date_ordered { get; set; }
+        public TimeOnly Time_ordered { get; set; }
         public bool IsPaid { get; set; }
         public Table Table { get; set; }
         public Employee Employee { get; set; }
@@ -83,6 +47,11 @@ namespace Chapeau.Models
             Table = table;
             Employee = employee;
             OrderItems = new List<OrderItem>();
+        }
+
+        public Status GetStatusForRole(UserRole role)
+        {
+            return StatusHelper.AggregateStatus(OrderItems, role);
         }
     }
 }

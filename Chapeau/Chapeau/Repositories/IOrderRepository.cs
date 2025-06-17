@@ -5,7 +5,7 @@ namespace Chapeau.Repositories
     //pato
     public interface IOrderRepository
     {
-        List<Order> GetOrders(Status? status);
+        List<Order> GetOrders(Status? status, UserRole? role);
         List<Order> GetTodaysOrders();
         List<Order> GetActiveOrders();
         List<Order> GetReadyOrders();
@@ -41,11 +41,11 @@ namespace Chapeau.Repositories
 
         void UpdateOrder(Order order);
 
-        bool UpdateOrderStatus(int orderId, Status status);
-        void UpdateOrderItemStatus(int orderItemId, Status status);
+        bool UpdateOrderStatus(int orderId, Status status, UserRole role);
+        bool UpdateOrderItemStatus(int orderItemId, Status status, UserRole role);
         void UpdateAllReadyItemsToServed(int orderId);
 
-        bool UpdateOrderCategoryStatus(int orderId, CourseCategory courseCategory, Status status);
+        bool UpdateOrderCategoryStatus(int orderId, CourseCategory courseCategory, Status status, UserRole role);
 
 
 

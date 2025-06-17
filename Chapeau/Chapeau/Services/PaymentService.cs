@@ -105,8 +105,8 @@ namespace Chapeau.Services
                 _paymentRepository.SavePayment(payment, model.OrderId);
 
                 order.IsPaid = true;
-                order.Status = Status.Completed;
-                _orderRepository.UpdateOrderStatus(order.OrderId, order.Status);
+                order.StoredStatus = Status.Completed;
+                _orderRepository.UpdateOrderStatus(order.OrderId, order.StoredStatus, UserRole.Waiter);
 
                 _tableRepository.UpdateTableAvailability(order.Table.TableNr, true);
 

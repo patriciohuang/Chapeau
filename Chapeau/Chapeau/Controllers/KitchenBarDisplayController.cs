@@ -79,7 +79,7 @@ namespace Chapeau.Controllers
         private List<Order> GetOrdersByStatus(string status)
         {
             List<Status> statusList = ParseStatuses(status);
-            List<Order> orders = _kitchenBarDisplaySevice.GetOrdersByStatus(statusList);
+            List<Order> orders = _kitchenBarDisplaySevice.GetOrdersByStatus(statusList, UserRole());
             FilterOrdersByRole(orders);
 
             ViewBag.Role = CurrentEmployee.Role;
@@ -116,7 +116,7 @@ namespace Chapeau.Controllers
         [HttpPatch]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, Status currentStatus)
         {
-            bool result = _kitchenBarDisplaySevice.UpdateOrderStatus(orderId, currentStatus);
+            bool result = _kitchenBarDisplaySevice.UpdateOrderStatus(orderId, currentStatus, UserRole());
             if (result)
             {
                 await _hubContext.Clients.All.SendAsync("ReceiveOrders");
@@ -130,7 +130,7 @@ namespace Chapeau.Controllers
         [HttpPatch]
         public async Task<IActionResult> UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status currentStatus)
         {
-            bool result = _kitchenBarDisplaySevice.UpdateOrderCategoryStatus(orderId, category, currentStatus);
+            bool result = _kitchenBarDisplaySevice.UpdateOrderCategoryStatus(orderId, category, currentStatus, UserRole());
             if (result)
             {
                 await _hubContext.Clients.All.SendAsync("ReceiveOrders");
@@ -145,7 +145,7 @@ namespace Chapeau.Controllers
         [HttpPatch]
         public async Task<IActionResult> UpdateOrderItemStatus(int orderItemId, Status currentStatus)
         {
-            bool result = _kitchenBarDisplaySevice.UpdateOrderItemStatus(orderItemId, currentStatus);
+            bool result = _kitchenBarDisplaySevice.UpdateOrderItemStatus(orderItemId, currentStatus, UserRole());
 
             if (result)
             {
@@ -162,5 +162,11 @@ namespace Chapeau.Controllers
             List<Order> orders = GetOrdersByStatus(status);
             return PartialView("_OrdersPartial", orders); // Make sure this partial view exists
         }
+
+        private UserRole UserRole()
+        {
+            return Enum.Parse<UserRole>(CurrentEmployee.Role, true);
+        }
+
     }
 }

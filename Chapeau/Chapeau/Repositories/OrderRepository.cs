@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Chapeau.Models;
 using Chapeau.Models.Enums;
+using System.Data;
 
 namespace Chapeau.Repositories
 {
@@ -98,7 +99,7 @@ namespace Chapeau.Repositories
         }
 
 
-        public List<Order> GetOrders(Status? status)
+        public List<Order> GetOrders(Status? status, UserRole? role)
         {
             // Create a dictionary to store orders with their order_id as the key
             Dictionary<int, Order> orders = new();
@@ -116,13 +117,12 @@ namespace Chapeau.Repositories
                             JOIN menu_item m ON i.menu_item_id = m.menu_item_id
                             JOIN employee e ON o.employee_id = e.employee_id
                             JOIN [table] t ON t.table_id = o.table_id
-                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND o.status LIKE @status AND o.status != 'Unordered'
+                            WHERE CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE)
                             ORDER BY o.time_ordered";
 
                 //CAST(o.date_ordered AS DATE) = CAST(GETDATE() AS DATE) AND            IN THE WHERE
 
                 SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@status", $"%{status.ToString()}%");
 
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
@@ -133,40 +133,22 @@ namespace Chapeau.Repositories
                     // check if the order already exists in the dictionary
                     if (!orders.ContainsKey(orderId))
                     {
-                        var order = ReadOrder(reader);
+                        Order order = ReadOrder(reader);
                         // add the order to the dictionary
                         orders.Add(orderId, order);
                     }
-
                     AddOrderItemToOrder(orders[orderId], ReadOrderItem(reader));
                 }
 
                 reader.Close();
             }
-            // return the list of orders
-            return orders.Values.ToList();
-        }
-
-        public bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status status)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            if (status.HasValue && role.HasValue)
             {
-                string sql = @"UPDATE oi
-                    SET status = @Status
-                    FROM [Order_item] AS oi
-                        INNER JOIN menu_item AS mi ON
-                            mi.menu_item_id = oi.menu_item_id
-		                    WHERE mi.course_category = @Category AND oi.order_id = @OrderId;";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@OrderId", orderId);
-                command.Parameters.AddWithValue("@Status", status.ToString());
-                command.Parameters.AddWithValue("@Category", category.ToString());
-
-                connection.Open();
-                int rowsAffected = command.ExecuteNonQuery();
-
-                return rowsAffected > 0;
+                return orders.Values.Where(order => order.GetStatusForRole(role.Value) == status.Value).ToList();
+            }
+            else
+            {
+                return orders.Values.ToList(); // If status is null, return all orders
             }
         }
 
@@ -466,31 +448,53 @@ namespace Chapeau.Repositories
             }
         }
 
-        public bool UpdateOrderStatus(int orderId, Status status)
+        public bool UpdateOrderStatus(int orderId, Status status, UserRole role)
         {
             using var connection = new SqlConnection(_connectionString);
-            var sql = GetUpdateOrderStatusQuery();
+            var sql = GetUpdateOrderStatusQuery(role);
             var command = CreateCommand(connection, sql);
             command.Parameters.AddWithValue("@status", status.ToString());
             command.Parameters.AddWithValue("@orderId", orderId);
+            command.Parameters.AddWithValue("@role", role.ToString());
+            AddMenuCardParameters(command, role);
 
             connection.Open();
             return command.ExecuteNonQuery() > 0;
         }
 
-        public void UpdateOrderItemStatus(int orderItemId, Status status)
+        public bool UpdateOrderItemStatus(int orderItemId, Status status, UserRole role)
         {
             using var connection = new SqlConnection(_connectionString);
-            var sql = GetUpdateOrderItemStatusQuery();
+            var sql = GetUpdateOrderItemStatusQuery(role);
             var command = CreateCommand(connection, sql);
             command.Parameters.AddWithValue("@orderItemId", orderItemId);
             command.Parameters.AddWithValue("@status", status.ToString());
+            command.Parameters.AddWithValue("@role", role.ToString());
+            AddMenuCardParameters(command, role);
 
             connection.Open();
             var rowsAffected = command.ExecuteNonQuery();
             ValidateOrderItemUpdateResult(rowsAffected, orderItemId);
+            return rowsAffected > 0;
         }
+        public bool UpdateOrderCategoryStatus(int orderId, CourseCategory category, Status status, UserRole role)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var sql = GetUpdateOrderCategoryStatusQuery(role);
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@OrderId", orderId);
+                command.Parameters.AddWithValue("@Status", status.ToString());
+                command.Parameters.AddWithValue("@Category", category.ToString());
+                command.Parameters.AddWithValue("@role", role.ToString());
+                AddMenuCardParameters(command, role);
 
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                return rowsAffected > 0;
+            }
+        }
         public void UpdateAllReadyItemsToServed(int orderId)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -647,9 +651,65 @@ namespace Chapeau.Repositories
             return "AND t.table_nr = @tableNr ";
         }
 
+        private void AddMenuCardParameters(SqlCommand command, UserRole role)
+        {
+            switch (role)
+            {
+                case UserRole.Bar:
+                    command.Parameters.AddWithValue("@menuCard", "Drinks");
+                    break;
+
+                case UserRole.Kitchen:
+                    command.Parameters.AddWithValue("@menuCard1", "Lunch");
+                    command.Parameters.AddWithValue("@menuCard2", "Dinner");
+                    command.Parameters.AddWithValue("@menuCard3", "LunchAndDinner");
+                    break;
+
+                default: // Admin or other roles
+                    command.Parameters.AddWithValue("@menuCard1", "Drinks");
+                    command.Parameters.AddWithValue("@menuCard2", "Lunch");
+                    command.Parameters.AddWithValue("@menuCard3", "Dinner");
+                    command.Parameters.AddWithValue("@menuCard4", "LunchAndDinner");
+                    break;
+            }
+        }
+
         // SQL Query Methods
-        private string GetUpdateOrderStatusQuery() => @"UPDATE [order_item] SET status = @status WHERE order_id = @orderId";
-        private string GetUpdateOrderItemStatusQuery() => @"UPDATE order_item SET status = @status WHERE order_item_id = @orderItemId";
+        private string GetUpdateOrderStatusQuery(UserRole role)
+        {
+            return @"UPDATE oi SET status = @status
+                     FROM [Order_item] AS oi
+                        INNER JOIN menu_item AS mi ON
+                            mi.menu_item_id = oi.menu_item_id
+                            WHERE oi.order_id = @orderId AND 
+                            ((@role = 'Bar' AND mi.menu_card = 'Drinks') OR
+                            (@role = 'Kitchen' AND mi.menu_card IN ('Lunch', 'Dinner', 'LunchAndDinner')) OR
+                            (@role NOT IN ('Bar', 'Kitchen')))";
+        }
+         private string GetUpdateOrderItemStatusQuery(UserRole role)
+        {
+            return @"UPDATE oi 
+                    SET status = @Status
+                    FROM [Order_item] AS oi
+                        INNER JOIN menu_item AS mi ON
+                            mi.menu_item_id = oi.menu_item_id
+                            WHERE oi.order_item_id = @orderItemId AND 
+                            ((@role = 'Bar' AND mi.menu_card = 'Drinks') OR
+                            (@role = 'Kitchen' AND mi.menu_card IN ('Lunch', 'Dinner', 'LunchAndDinner')) OR
+                            (@role NOT IN ('Bar', 'Kitchen')))";
+        }
+        private string GetUpdateOrderCategoryStatusQuery(UserRole role)
+        {
+            return @"UPDATE oi
+                    SET status = @Status
+                    FROM [Order_item] AS oi
+                        INNER JOIN menu_item AS mi ON
+                            mi.menu_item_id = oi.menu_item_id
+		                    WHERE mi.course_category = @Category AND oi.order_id = @OrderId AND 
+                            ((@role = 'Bar' AND mi.menu_card = 'Drinks') OR
+                            (@role = 'Kitchen' AND mi.menu_card IN ('Lunch', 'Dinner', 'LunchAndDinner')) OR
+                            (@role NOT IN ('Bar', 'Kitchen')))";
+        }
         private string GetUpdateAllReadyItemsQuery() => @"UPDATE order_item SET status = @toStatus WHERE order_id = @orderId AND status = @fromStatus";
     }
 }
