@@ -462,6 +462,31 @@ namespace Chapeau.Repositories
             return command.ExecuteNonQuery() > 0;
         }
 
+        public void UpdateOrderPaid(Order order)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string sql = @"UPDATE [order]
+             SET status = @Status,
+             is_paid = @IsPaid 
+             WHERE order_id = @OrderId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@OrderId", order.OrderId);
+                command.Parameters.AddWithValue("@IsPaid", order.IsPaid);
+                command.Parameters.AddWithValue("@Status", order.Status.ToString());
+
+                connection.Open();
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected == 0)
+                {
+                    throw new Exception($"Order with ID {order.OrderId} not found or could not be updated");
+                }
+            }
+        }
+
+
         public bool UpdateOrderItemStatus(int orderItemId, Status status, UserRole role)
         {
             using var connection = new SqlConnection(_connectionString);

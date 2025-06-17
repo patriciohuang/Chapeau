@@ -7,7 +7,6 @@ namespace Chapeau.Models
     {
         // Basic order info  
         public int OrderId { get; set; }
-        public Status StoredStatus { get; set; }
         public Status Status => StatusHelper.AggregateStatus(OrderItems);
         public DateOnly Date_ordered { get; set; }
         public TimeOnly Time_ordered { get; set; }
