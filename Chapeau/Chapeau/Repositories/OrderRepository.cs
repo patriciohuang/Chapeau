@@ -121,7 +121,7 @@ namespace Chapeau.Repositories
                             ";
                 if (role == UserRole.Bar || role == UserRole.Kitchen)
                 {
-                    sql += " AND oi.status != 'Served'";
+                    sql += " AND i.status != 'Served'";
                 }
 
                 sql += " ORDER BY o.time_ordered";
