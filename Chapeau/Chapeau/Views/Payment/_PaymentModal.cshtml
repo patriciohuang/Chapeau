@@ -9,7 +9,8 @@
             </div>
             <div class="modal-body text-center">
                 <div class="total-amount mb-4">
-                    <p class="h4">Total: @Model.FormattedTotal</p>
+                    <span class="h4">Total: </span>
+                    <span class="h4" id="toPayFinalDisplay">@Model.FormattedLeftToPay</span>
                 </div>
                 <div class="total-amount mb-4">
                     <span class="h4">Tip: </span>

@@ -4,7 +4,9 @@ let currentMode = 'amount'; // 'amount' or 'percent'
 let feedback = '';
 let selectedPaymentMethod = null;
 let selectedPaymentType = null;
-
+let amountPerPerson = 0
+let leftToPay = 0
+let toPay = 0
 // Initialize modal references
 const paymentMethodModal = new bootstrap.Modal(document.getElementById('paymentMethodModal'));
 const splitModal = new bootstrap.Modal(document.getElementById('splitModal'));
@@ -17,10 +19,10 @@ const giftCardSection = document.getElementById('giftCardSection');
 
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('initializing')
     // Set initial values
     initialTotal = parseFloat(document.getElementById('grandTotal').textContent.replace('€', '').replace(',', '.'));
-
+    leftToPay = parseFloat(document.getElementById('leftAmountDisplay').textContent.replace('€', '').replace(',', '.'));
+    toPay = leftToPay
     document.getElementById('cashAmount')?.addEventListener('input', handleCashAmountInput);
     document.getElementById('giftCardNumber')?.addEventListener('input', handleGiftCardInput);
 
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
         feedbackText.textContent = modelFeedback;
         feedbackDisplay.style.display = 'flex';
     }
-
+    document.getElementById('splitPeopleSelect')?.addEventListener('input', (event) => { processPeopleInput(event) })
     // Initialize finish button for the combined modal
     document.getElementById('finishPaymentButton')?.addEventListener('click', () => processPayment(selectedPaymentType));
 });
@@ -83,6 +85,7 @@ function updateFeedbackDisplay() {
 
 // Payment handling functions
 function openPaymentMethodModal() {
+    toPay = leftToPay
     paymentMethodModal.show();
 }
 
@@ -93,7 +96,10 @@ function selectPaymentMethod(e) {
     buttons.forEach(btn => btn.classList.remove('selected'));
     e.currentTarget.classList.add('selected');
 
-    // Hide all sections first
+    openPaymentModal()
+}
+
+function openPaymentModal() {
     cashSection.classList.add('d-none');
     cardSection.classList.add('d-none');
     giftCardSection.classList.add('d-none');
@@ -118,7 +124,7 @@ function selectPaymentMethod(e) {
 function handleCashAmountInput(e) {
     const input = e.target.value.replace(/[^0-9,]/g, '');
     const amount = parseFloat(input.replace(',', '.'));
-    const total = initialTotal;
+    const total = toPay;
     const change = amount - total;
     document.getElementById('changeAmount').textContent = `Change: €${change.toFixed(2).replace('.', ',')}`;
 }
@@ -130,7 +136,6 @@ function handleGiftCardInput(e) {
 }
 
 function processPayment(method) {
-    console.log(document.getElementById('tipDisplay'))
     const orderId = getOrderIdFromUrl();
     const tipAmount = parseFloat(document.getElementById('tipDisplay')?.textContent.replace('€', '').replace(',', '.') || '0');
     const feedback = document.getElementById('feedbackNotes')?.value || '';
@@ -153,16 +158,14 @@ function processPayment(method) {
         default:
             paymentMethodEnum = 'Cash';
     }
-
     let paymentData = {
         orderId: orderId,
         tipAmount: tipAmount,
         paymentMethod: paymentMethodEnum,
         feedback: feedback,
-        totalAmount: initialTotal + tipAmount,
+        totalAmount: (parseFloat(toPay) + parseFloat(tipAmount)).toFixed(2),
         vatValues: vat
     };
-    console.log(paymentData)
 
     // Add method-specific data
     if (method === 'cash') {
@@ -172,9 +175,6 @@ function processPayment(method) {
         const giftCardNumber = document.getElementById('giftCardNumber').value;
         paymentData.giftCardNumber = giftCardNumber;
     }
-
-    console.log('Payment data being sent:', paymentData);
-    console.log('JSON string being sent:', JSON.stringify(paymentData));
 
     fetch('/Payment/ProcessPayment', {
         method: 'POST',
@@ -197,8 +197,10 @@ function processPayment(method) {
             } else {
                 window.location.href = '/Waiter/Orders';
             }
-        } else {
+        } else if (data.error) {
             alert('Payment failed: ' + (data.error || 'Unknown error'));
+        } else {
+            window.location.reload()
         }
     })
     .catch(error => {
@@ -216,14 +218,48 @@ function openSplitModal() {
     splitModal.show();
 }
 
-function splitByDish() {
-    splitModal.hide();
-    const orderId = getOrderIdFromUrl();
-    window.location.href = `/Payment/SplitByDish?orderId=${orderId}`;
+function toggleDishSelection(btn) {
+    btn.querySelector('i').classList.toggle('text-success');
+    updateSplitDishToPay();
 }
 
-function splitByAmount() {
-    splitModal.hide();
-    const orderId = getOrderIdFromUrl();
-    window.location.href = `/Payment/SplitByAmount?orderId=${orderId}`;
+function updateSplitDishToPay() {
+    let total = 0;
+    document.querySelectorAll('.dish-select-btn').forEach(function (btn) {
+        if (btn.querySelector('i').classList.contains('text-success')) {
+            const price = parseFloat(btn.getAttribute('data-price').replace(',', '.'));
+            total += price;
+        }
+    });
+    toPay = total
+    document.getElementById('toPayFinalDisplay').textContent = '€' + total.toFixed(2).replace('.', ',');
+    document.getElementById('splitDishToPay').textContent = '€' + total.toFixed(2).replace('.', ',');
 }
+
+function openCardPaymentModalFromSplit(type) {
+    var splitDishModal = bootstrap.Modal.getInstance(document.getElementById('splitByDishModal'));
+    var splitAmountModal = bootstrap.Modal.getInstance(document.getElementById('splitByAmountModal'));
+    if (splitDishModal) splitDishModal.hide();
+    if (splitAmountModal) splitAmountModal.hide();
+    setTimeout(function () {
+        selectedPaymentType = type
+        openPaymentModal()
+    }, 400);
+}
+function processPeopleInput(event) {
+    const amount = parseInt(event.target.value)
+    amountPerPerson = parseFloat(leftToPay / amount).toFixed(2)
+    toPay = amountPerPerson
+    document.getElementById('toPayFinalDisplay').textContent = '€' + amountPerPerson.replace('.', ',');
+    document.getElementById('splitToPay').textContent = '€' + amountPerPerson.replace('.', ',');
+} 
+
+function openSplitByAmountModal() {
+    var modal = new bootstrap.Modal(document.getElementById('splitByAmountModal'));
+    modal.show();
+}
+function openSplitByDishModal() {
+    var modal = new bootstrap.Modal(document.getElementById('splitByDishModal'));
+    modal.show();
+}
+

@@ -27,14 +27,8 @@ namespace Chapeau.Services
                 var viewModel = GetOrderForPayment(orderId);
 
                 // Get the existing payment for this order if any
-                var payments = _paymentRepository.GetPaymentSummaryForTable(orderId);
-                var lastPayment = payments.LastOrDefault();
-
-                if (lastPayment != null)
-                {
-                    viewModel.TipAmount = lastPayment.Tip;
-                    viewModel.Feedback = lastPayment.FeedBack;
-                }
+                var payments = _paymentRepository.GetPaymentsForOrder(orderId);
+                viewModel.PaidAmount = payments.Sum(payment => payment.TotalAmount - payment.Tip);
 
                 return viewModel;
             }
@@ -94,23 +88,30 @@ namespace Chapeau.Services
 
                 // Create payment record
                 var payment = new Payment(
+                    model.OrderId,
                     totalAmount: model.TotalAmount,
                     tip: model.TipAmount,
                     vatValue: model.VatValues, // Calculate VAT percentage
                     paymentMethod: model.PaymentMethod,
                     feedBack: model.Feedback ?? string.Empty // Handle null feedback
                 );
-
                 // Save payment
-                _paymentRepository.SavePayment(payment, model.OrderId);
+                _paymentRepository.SavePayment(payment);
+                var payments = _paymentRepository.GetPaymentsForOrder(order.OrderId);
+                decimal totalPaid = payments.Sum(payment => payment.TotalAmount - payment.Tip);
+                bool isPaid = totalPaid >= order.TotalCost;
+                if (!isPaid)
+                {
+                    return isPaid;
+                }
+                
 
                 order.IsPaid = true;
-                order.Status = Status.Completed;
-                _orderRepository.UpdateOrderStatus(order.OrderId, order.Status);
+                _orderRepository.UpdateOrderPaid(order);
 
-                _tableRepository.UpdateTableAvailability(order.Table.TableNr, true);
+                _tableRepository.UpdateTableAvailability(order.Table.TableNr, isPaid);
 
-                return true;
+                return isPaid;
             }
             catch (Exception)
             {
