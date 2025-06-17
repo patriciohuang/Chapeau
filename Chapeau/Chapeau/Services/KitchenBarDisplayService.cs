@@ -14,17 +14,17 @@ namespace Chapeau.Services
             _orderRepository = orderRepository;
         }
 
-        public List<Order> GetOrders(Status status)
+        public List<Order> GetOrders(Status status, UserRole role)
         {
-            return _orderRepository.GetOrders(status);
+            return _orderRepository.GetOrders(status, role);
         }
-        public List<Order> GetOrdersByStatus(List<Status> statuses)
+        public List<Order> GetOrdersByStatus(List<Status> statuses, UserRole role)
         {
             List<Order> orders = new List<Order>();
 
             foreach (Status status in statuses)
             {
-                orders.AddRange(_orderRepository.GetOrders(status));
+                orders.AddRange(_orderRepository.GetOrders(status, role));
             }
 
             return orders;

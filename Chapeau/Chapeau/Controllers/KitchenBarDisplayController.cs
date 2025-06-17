@@ -79,7 +79,7 @@ namespace Chapeau.Controllers
         private List<Order> GetOrdersByStatus(string status)
         {
             List<Status> statusList = ParseStatuses(status);
-            List<Order> orders = _kitchenBarDisplaySevice.GetOrdersByStatus(statusList);
+            List<Order> orders = _kitchenBarDisplaySevice.GetOrdersByStatus(statusList, UserRole());
             FilterOrdersByRole(orders);
 
             ViewBag.Role = CurrentEmployee.Role;

@@ -5,7 +5,7 @@ namespace Chapeau.Repositories
     //pato
     public interface IOrderRepository
     {
-        List<Order> GetOrders(Status? status);
+        List<Order> GetOrders(Status? status, UserRole? role);
         List<Order> GetTodaysOrders();
         List<Order> GetActiveOrders();
         List<Order> GetReadyOrders();

@@ -48,5 +48,11 @@ namespace Chapeau.Models
             Employee = employee;
             OrderItems = new List<OrderItem>();
         }
+
+        public Status GetStatusForRole(UserRole role)
+        {
+            Console.WriteLine(role);
+            return StatusHelper.AggregateStatus(OrderItems, role);
+        }
     }
 }

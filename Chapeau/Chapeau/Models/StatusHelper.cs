@@ -23,17 +23,29 @@ namespace Chapeau.Models
             };
         }
 
-        public static Status AggregateStatus(IEnumerable<OrderItem> items)
+        public static Status AggregateStatus(IEnumerable<OrderItem> items, UserRole? role = null)
         {
-            if (items.Any(i => i.Status == Status.Unordered)) return Status.Unordered;
-            if (items.Any(i => i.Status == Status.Ordered)) return Status.Ordered;
-            if (items.Any(i => i.Status == Status.Preparing)) return Status.Preparing;
-            if (items.All(i => i.Status == Status.Ready)) return Status.Ready;
-            if (items.All(i => i.Status == Status.Served)) return Status.Served;
-            if (items.All(i => i.Status == Status.Completed)) return Status.Completed;
+            IEnumerable<OrderItem> filteredOrders = items;
+            // Optionally filter items based on role
+            if (role != null)
+            {
+                filteredOrders = items.Where(item =>
+                    (role == UserRole.Kitchen && item.MenuItem.MenuCard != MenuCard.Drinks) ||
+                    (role == UserRole.Bar && item.MenuItem.MenuCard == MenuCard.Drinks)
+                );
+            }
+
+            // Aggregation logic
+            if (filteredOrders.Any(i => i.Status == Status.Unordered)) return Status.Unordered;
+            if (filteredOrders.Any(i => i.Status == Status.Ordered)) return Status.Ordered;
+            if (filteredOrders.Any(i => i.Status == Status.Preparing)) return Status.Preparing;
+            if (filteredOrders.All(i => i.Status == Status.Ready)) return Status.Ready;
+            if (filteredOrders.All(i => i.Status == Status.Served)) return Status.Served;
+            if (filteredOrders.All(i => i.Status == Status.Completed)) return Status.Completed;
 
             return Status.Cancelled;
         }
+
     }
 
 }

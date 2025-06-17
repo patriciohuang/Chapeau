@@ -99,7 +99,7 @@ namespace Chapeau.Repositories
         }
 
 
-        public List<Order> GetOrders(Status? status)
+        public List<Order> GetOrders(Status? status, UserRole? role)
         {
             // Create a dictionary to store orders with their order_id as the key
             Dictionary<int, Order> orders = new();
@@ -142,9 +142,9 @@ namespace Chapeau.Repositories
 
                 reader.Close();
             }
-            if (status.HasValue)
+            if (status.HasValue && role.HasValue)
             {
-                return orders.Values.Where(order => order.Status == status.Value).ToList();
+                return orders.Values.Where(order => order.GetStatusForRole(role.Value) == status.Value).ToList();
             }
             else
             {
