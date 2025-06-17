@@ -146,6 +146,21 @@ namespace Chapeau.Repositories
 
                 reader.Close();
             }
+
+            foreach (var order in orders.Values)
+            {
+                if (order.IsPaid && order.OrderItems.All(item => item.Status == Status.Served))
+                {
+                    UpdateAllOrderItemsStatus(order.OrderId, Status.Completed);
+                    // Update the in-memory order items
+                    foreach (var item in order.OrderItems)
+                    {
+                        item.Status = Status.Completed;
+                    }
+                }
+            }
+
+
             if (status.HasValue && role.HasValue)
             {
                 return orders.Values.Where(order => order.GetStatusForRole(role.Value) == status.Value).ToList();
@@ -191,6 +206,13 @@ namespace Chapeau.Repositories
                     AddOrderItemToOrder(order, ReadOrderItem(reader));
                 }
                 reader.Close();
+
+                if (order != null && order.IsPaid && order.OrderItems.All(item => item.Status == Status.Served))
+                {
+                    UpdateAllOrderItemsStatus(orderId, Status.Completed);
+                    // Reload the order to get updated item statuses
+                    return GetOrderById(orderId);
+                }
             }
             return order;
         }
@@ -543,6 +565,18 @@ namespace Chapeau.Repositories
 
             connection.Open();
             return ProcessOrderResults(command.ExecuteReader());
+        }
+
+        public void UpdateAllOrderItemsStatus(int orderId, Status status)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            var sql = "UPDATE order_item SET status = @status WHERE order_id = @orderId";
+            var command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@orderId", orderId);
+            command.Parameters.AddWithValue("@status", status.ToString());
+
+            connection.Open();
+            command.ExecuteNonQuery();
         }
 
         private SqlCommand CreateCommand(SqlConnection connection, string sql)

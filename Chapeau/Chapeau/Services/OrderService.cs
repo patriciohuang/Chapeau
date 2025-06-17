@@ -141,6 +141,11 @@ namespace Chapeau.Services
 
         public void EditOrderItem(OrderItem newOrderItem)
         {
+            if (newOrderItem.Count < 1 || newOrderItem.Count > 100)
+            {
+                throw new InvalidOperationException("Cannot edit order item: Amount ordered must be at least 1.");
+            }
+
             OrderItem existingOrderItem = _orderRepository.GetOrderItem(newOrderItem.OrderItemId);
 
             int differenceInStock = existingOrderItem.Count - newOrderItem.Count;
@@ -236,6 +241,11 @@ namespace Chapeau.Services
             if (order.Status != calculatedStatus)
             {
                 _orderRepository.UpdateOrderStatus(orderId, calculatedStatus, UserRole.Waiter);
+
+                if (calculatedStatus == Status.Completed)
+                {
+                    _orderRepository.UpdateAllOrderItemsStatus(orderId, Status.Completed);
+                }
             }
         }
 
