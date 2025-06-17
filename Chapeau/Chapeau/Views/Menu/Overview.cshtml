@@ -32,88 +32,93 @@
             <div class="items-count">@Model.OrderItems.Sum(i => i.Count) items</div>
         </div>
 
-        @foreach (var OrderItem in Model.OrderItems)
-        {
-            /*
-            //TODO: display this list using flexbox and the flex property order
-            if(OrderItem.MenuItem.MenuCard == MenuCard.Drinks)
-            {
-
-
-            } else
-            {
-            switch (OrderItem.MenuItem.CourseCategory)
-            {
-            case CourseCategory.Starters:
-            break;
-
-            case CourseCategory.Entrements:
-            break;
-
-            case CourseCategory.Mains:
-            break;
-
-            case CourseCategory.Desserts:
-            break;
-            }
-            }
-            */
-        }
-        @foreach (var group in Model.OrderItems.GroupBy(i => i.MenuItem.CourseCategory))
-        {
-
-            <div class="course-group">
-                <div class="course-header">
-                    <h3>@group.Key</h3>
-                    <div class="course-status">
-                        @{
-                            var groupStatus = GetGroupStatus(group);
-                            var statusClass = GetStatusClass(groupStatus);
-                            var statusText = groupStatus.ToString();
-                        }
-                        <span class="status-indicator @statusClass"></span>
-                        <span class="status-text @statusClass">@statusText</span>
-                    </div>
-                </div>
-                <div class="course-items">
-                    @foreach (OrderItem item in group)
-                    {
-                        <div class="order-item">
-                            @if(@item.Status == Status.Unordered){
-                                    <form action="/Menu/DeleteOrderItem" method="post">
-                                        <input type="hidden" name="OrderItemId" value="@item.OrderItemId" />
-                                        <input type="hidden" name="TableNr" value="@Model.Table.TableNr" />
-
-                                        <button type="submit" class="btn btn-danger shadow-button">
-                                            Delete
-                                        </button>
-                                    </form>
-                            }
-                            <div>
-                                <div class="item-quantity">@item.Count</div>
-                            </div>
-                            <div class="item-details">
-                                <div class="item-name">@item.MenuItem.Name</div>
-                                @if (!string.IsNullOrEmpty(item.Comment))
-                                {
-                                    <div class="item-comment">@item.Comment</div>
-                                }
-                            </div>
-                            <div class="item-status">
-                                <span class="status-badge @GetStatusClass(item.Status)">@item.Status</span>
-                            </div>
-                            <div class="item-price">€@((item.MenuItem.Price * item.Count).ToString("F2"))</div>
-
-                            <a class="btn btn-primary shadow-button" asp-controller="Menu" asp-action="EditOrderItem" asp-route-orderItemId="@item.OrderItemId" asp-route-tableNr="@Model.Table.TableNr">
-                                Edit
-                            </a>
-                        </div>
-                    }
-                </div>
+        <div class="course-group">
+            <div class="course-header order-category-drink">
+                <h3>Drinks</h3>
+            </div>
+            <div class="course-header order-category-starter">
+                <h3>Starters</h3>
+            </div>
+            <div class="course-header order-category-entrement">
+                <h3>Entrements</h3>
+            </div>
+            <div class="course-header order-category-main">
+                <h3>Mains</h3>
+            </div>
+            <div class="course-header order-category-dessert">
+                <h3>Desserts</h3>
             </div>
 
-        }
 
+            @foreach (OrderItem orderItem in Model.OrderItems)
+            {
+                string rowStyle = "";
+
+                //Display the list using flexbox and the flex property order, used for ordering
+                if (orderItem.MenuItem.MenuCard == MenuCard.Drinks)
+                {
+                    rowStyle = "order-item-drink";
+                }
+                else
+                {
+                    switch (orderItem.MenuItem.CourseCategory)
+                    {
+                        case CourseCategory.Starters:
+                            rowStyle = "order-item-starter";
+                            break;
+
+                        case CourseCategory.Entrements:
+                            rowStyle = "order-item-entrement";
+                            break;
+
+                        case CourseCategory.Mains:
+                            rowStyle = "order-item-main";
+                            break;
+
+                        case CourseCategory.Desserts:
+                            rowStyle = "order-item-dessert";
+                            break;
+                    }
+                }
+
+                <div class="order-item @rowStyle">
+                    @if (@orderItem.Status == Status.Unordered)
+                    {
+                        <form action="/Menu/DeleteOrderItem" method="post">
+                            <input type="hidden" name="orderItemId" value="@orderItem.OrderItemId" />
+                            <input type="hidden" name="tableNr" value="@Model.Table.TableNr" />
+                            <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+                            <button type="submit" class="btn btn-danger delete-button">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    }
+
+                    <div>
+                        <div class="item-quantity">@orderItem.Count</div>
+                    </div>
+                    <div class="item-details">
+                        <div class="item-name">@orderItem.MenuItem.Name</div>
+                        @if (!string.IsNullOrEmpty(orderItem.Comment))
+                        {
+                            <div class="item-comment">@orderItem.Comment</div>
+                        }
+                    </div>
+                    <div class="item-status">
+                        <span class="status-badge">@orderItem.Status</span>
+                    </div>
+                    <div class="item-price">€@orderItem.TotalCost</div>
+
+                    @if (@orderItem.Status == Status.Unordered || @orderItem.Status == Status.Ordered)
+                    {
+                        <a class="btn btn-primary shadow-button" asp-controller="Menu" asp-action="EditOrderItem" asp-route-orderItemId="@orderItem.OrderItemId" asp-route-tableNr="@Model.Table.TableNr">
+                            Edit
+                        </a>
+                    }
+                </div>
+            }
+        </div>
 
         <!-- Action Buttons -->
         <div class="order-actions">
@@ -132,7 +137,7 @@
             <a class="action-btn secondary" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.Table.TableNr">
                 Add More Items
             </a>
-            <form action="/Menu/DeleteUnsentOrderItems" method="post">
+            <form action="/Menu/CancelUnsentOrder" method="post">
                 <input type="hidden" name="tableNr" value="@Model.Table.TableNr" />
                 <input type="hidden" name="orderId" value="@Model.OrderId" />
                 <button type="submit" class="action-btn danger">
@@ -141,77 +146,4 @@
             </form>
         </div>
     </div>
-
-    @functions {
-        string GetStatusClass(Status status)
-        {
-            return status switch
-            {
-                Status.Unordered => "unordered",
-                Status.Ordered => "ordered",
-                Status.Preparing => "preparing",
-                Status.Ready => "ready",
-                Status.Served => "served",
-                Status.Completed => "completed",
-                Status.Cancelled => "cancelled",
-                _ => "unknown"
-            };
-        }
-
-        Status GetGroupStatus(IEnumerable<OrderItem> items)
-        {
-            var statuses = items.Select(x => x.Status).Distinct().ToList();
-
-            // If all items have the same status, return that status
-            if (statuses.Count == 1)
-                return statuses.First();
-
-            // Otherwise, return the most advanced status
-            var statusOrder = new[] { Status.Unordered, Status.Ordered, Status.Preparing, Status.Ready, Status.Served, Status.Completed };
-            return statuses.Where(s => statusOrder.Contains(s)).OrderBy(s => Array.IndexOf(statusOrder, s)).LastOrDefault();
-        }
-    }
 </div>
-
-
-<div class="modal fade" id="editOrderItem" tabindex="-1" aria-labelledby="editOrderItemLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title w-100 text-center" id="editOrderItemLabel">Split by</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <div class="d-flex justify-content-center gap-4">
-                    <form action="/Menu/EditOrderItem" method="post">
-                        <input type="hidden" name="OrderItemId" />
-
-                        <div class="mb-3">
-                            <label for="Count" class="form-label">Count</label>
-                            <input type="number" min="0" id="Count" name="Count" class="form-control" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="Comment" class="form-label">Notes</label>
-                            <input type="text" id="Comment" name="Comment" class="form-control" required />
-                        </div>
-
-                        <input type="hidden" name="Status" class="form-control" />
-
-                        <div class="d-flex justify-content-center mt-4">
-                            <button type="submit" class="btn btn-primary shadow-button">
-                                <i class="fas fa-save me-2"></i> Save Changes
-                            </button>
-                        </div>
-
-                        <input type="hidden" value="@Model.Table.TableNr" />
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-    @section Scripts {
-    <script src="~/js/orderOverview.js"></script>
-    }

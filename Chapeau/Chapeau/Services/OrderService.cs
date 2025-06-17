@@ -84,13 +84,15 @@ namespace Chapeau.Services
 
         public int? CheckIfOrderExists(int tableNr)
         {
+
+
             return _orderRepository.CheckIfOrderExists(tableNr);
         }
 
         // Get the tableId and employeeId, use them to create a new order and return its ID
         public int CreateOrder(int tableNr, Employee loggedInEmployee)
         {
-            Table selectedTable= _tableRepository.GetTableByNumber(tableNr);
+            Table selectedTable = _tableRepository.GetTableByNumber(tableNr);
 
             int orderId = _orderRepository.CreateOrder(selectedTable.TableId, loggedInEmployee.EmployeeId);
 
@@ -99,19 +101,37 @@ namespace Chapeau.Services
             return orderId;
         }
 
-        public void AddItem(int orderId, MenuItem menuItem)
+        public void AddItem(int orderId, MenuItem menuItem, string? comment)
         {
-            if (menuItem.Stock < menuItem.Stock)
+            if (menuItem.Stock < 1)
             {
                 throw new InvalidOperationException($"Cannot add {menuItem.Name} to order: item is out of stock.");
             }
+
+            comment = null ?? ""; // Ensure comment is not null
+            Status status = Status.Unordered;
+
+            int? orderIdFromDatabase = _orderRepository.CheckIfOrderItemExists(orderId, menuItem.MenuItemId, comment, status);
+
+
+            if (orderIdFromDatabase == null)
+            {
+
+                _orderRepository.AddItem(orderId, menuItem.MenuItemId);
+            }
             else
             {
-                _orderRepository.AddItem(orderId, menuItem.MenuItemId);
+                // If the item already exists in the order, we can just update the count
+                OrderItem existingOrderItem = _orderRepository.GetOrderItem((int)orderIdFromDatabase);
 
-                // Update the stock
-                _menuRepository.UpdateStock(menuItem.MenuItemId, -1);
+                existingOrderItem.Count++;
+
+                _orderRepository.EditOrderItem(existingOrderItem);
             }
+
+            // Update the stock
+            _menuRepository.UpdateStock(menuItem.MenuItemId, -1);
+
         }
 
         public OrderItem GetOrderItem(int orderItemId)
@@ -119,16 +139,35 @@ namespace Chapeau.Services
             return _orderRepository.GetOrderItem(orderItemId);
         }
 
-        public void EditOrderItem(OrderItem item)
+        public void EditOrderItem(OrderItem newOrderItem)
         {
-            _orderRepository.EditOrderItem(item);
+            OrderItem existingOrderItem = _orderRepository.GetOrderItem(newOrderItem.OrderItemId);
+
+            int differenceInStock = existingOrderItem.Count - newOrderItem.Count;
+
+            if (-differenceInStock > existingOrderItem.MenuItem.Stock)
+            {
+                throw new InvalidOperationException($"Cannot add {-differenceInStock} {existingOrderItem.MenuItem.Name} to order: there are only {existingOrderItem.MenuItem.Stock} left.");
+            }
+
+            _orderRepository.EditOrderItem(newOrderItem);
+
+            _menuRepository.UpdateStock(existingOrderItem.MenuItem.MenuItemId, differenceInStock);
         }
 
-        public void DeleteOrderItem(int orderItemId)
+        public void DeleteOrderItem(int orderItemId, int tableNr, int orderId)
         {
-            OrderItem orderItem = GetOrderItem(orderItemId);
+            //Get a list of all order items to check if you'll end up with an empty order
+            List<OrderItem> orderItems = _orderRepository.GetOrderItems(orderId);
 
-            if(orderItem.Status == Status.Ready || orderItem.Status == Status.Served)
+            OrderItem? orderItem = orderItems.FirstOrDefault(item => item.OrderItemId == orderItemId);
+
+            if (orderItem == null)
+            {
+                throw new InvalidOperationException("Order item not found.");
+            }
+
+            if (orderItem.Status == Status.Ready || orderItem.Status == Status.Served || orderItem.Status == Status.Completed)
             {
                 throw new InvalidOperationException("Cannot delete an order item that is already ready or served.");
             }
@@ -136,11 +175,41 @@ namespace Chapeau.Services
             _orderRepository.DeleteOrderItem(orderItemId);
 
             _menuRepository.UpdateStock(orderItem.MenuItem.MenuItemId, orderItem.Count);
+
+            if (orderItems.Count <= 1)
+            {
+                // If that was the last item in the order, delete the order
+                _orderRepository.DeleteOrder(orderId);
+                _tableRepository.UpdateTableAvailability(tableNr, true);
+            }
         }
 
-        public void DeleteUnsentOrderItems(int orderId)
+        public void CancelUnsentOrder(int orderId, int tableNr)
         {
-            _orderRepository.DeleteUnsentOrderItems(orderId);
+            //Get a list of all order items to check if you'll end up with an empty order
+            List<OrderItem> orderItems = _orderRepository.GetOrderItems(orderId);
+
+            //Need a list of unsent order items and their stock
+            List<OrderItem> unorderedOrderItems = orderItems.Where(item => item.Status == Status.Unordered).ToList();
+
+            if (_orderRepository.DeleteUnsentOrderItems(orderId) == 0)
+            {
+                throw new InvalidOperationException("No unsent order items found to cancel for this order.");
+            }
+
+            //Update the stock for each unordered item
+            foreach (OrderItem item in unorderedOrderItems)
+            {
+                _menuRepository.UpdateStock(item.MenuItem.MenuItemId, item.Count);
+            }
+
+            //Prevent an empty order from existing (delete the order if removing unordered items would leave an empty order
+            if (orderItems.Count == unorderedOrderItems.Count)
+            {
+                _orderRepository.DeleteOrder(orderId);
+
+                _tableRepository.UpdateTableAvailability(tableNr, true);
+            }
         }
 
         public void SendOrder(int orderId)

@@ -20,12 +20,22 @@
     }
 }
 
+.OrderAndCourseLinks {
+    width: 80%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
 /* Navigation links in menu - clean without icons */
-.Menu > div:first-child a,
-.Menu > div:nth-child(2) a {
+.MenuNavLink a {
     display: inline-flex;
     align-items: center;
+    text-align: center;
     padding: 0.75rem 1rem;
+    margin-right: 1rem;
+    margin-left: 1rem;
     background: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 0.5rem;
@@ -37,14 +47,12 @@
 }
 
     /* Hide any icons in navigation links */
-    .Menu > div:first-child a i,
-    .Menu > div:nth-child(2) a i {
+    .MenuNavLink a i {
         display: none !important;
         visibility: hidden !important;
     }
 
-    .Menu > div:first-child a:hover,
-    .Menu > div:nth-child(2) a:hover {
+    .MenuNavLink a:hover {
         background: #e3f2fd;
         border-color: #3b82f6;
         transform: translateY(-1px);
@@ -226,13 +234,14 @@
         }
 
         /* Completely hide any icons in menu item buttons */
+/*
         .MenuCourseCategory button .fas,
         .MenuCourseCategory button .bi,
         .MenuCourseCategory button i {
             display: none !important;
             visibility: hidden !important;
         }
-
+*/
         .MenuCourseCategory button p {
             margin: 0;
             font-weight: 600;
@@ -330,6 +339,7 @@
         }
 
 /* Action buttons - clean modern style for overview */
+.Menu .delete-button,
 .Menu .table-link,
 .Menu .btn.btn-primary,
 .Menu .shadow-button {
@@ -337,7 +347,6 @@
     align-items: center;
     justify-content: center;
     padding: 0.75rem 1.25rem;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     text-decoration: none;
     border: none;
@@ -350,9 +359,16 @@
     margin: 0.5rem 0.25rem;
 }
 
+.Menu .table-link,
+.Menu .btn.btn-primary,
+.Menu .shadow-button {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
     .Menu .table-link:hover,
     .Menu .btn.btn-primary:hover,
-    .Menu .shadow-button:hover {
+    .Menu .shadow-button:hover 
+    .Menu .delete-button:hover{
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
         color: white;
@@ -360,6 +376,7 @@
     }
 
     /* Hide any icons in action buttons */
+
     .Menu .shadow-button .fas,
     .Menu .btn.btn-primary .bi,
     .Menu .table-link i {
@@ -502,8 +519,42 @@
     margin-top: 0.5rem;
 }
 
+/* Menu overview flexbox layout */
+.order-category-drink{
+    order:1;
+}
+.order-item-drink{
+    order:2;
+}
+.order-category-starter{
+    order:4;
+}
+.order-item-starter{
+    order:5;
+}
+.order-category-entrement{
+    order:7;
+}
+.order-item-entrement{
+    order:8;
+}
+.order-category-main{
+    order:10;
+}
+.order-item-main{
+    order:11;
+}
+.order-category-dessert{
+    order:13;
+}
+.order-item-dessert{
+    order:14;
+}
+
 /* Course Groups */
 .course-group {
+    display: flex;
+    flex-direction: column;
     border-bottom: 1px solid #f3f4f6;
 }
 
@@ -547,10 +598,6 @@
 }
 
 /* Course Items */
-.course-items {
-    padding: 0.5rem 0;
-}
-
 .order-item {
     display: flex;
     align-items: center;

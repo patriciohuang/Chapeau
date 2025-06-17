@@ -10,7 +10,7 @@
 <partial name="_ConfirmMessage" />
 
 <div class="Menu">
-    <div>
+    <div class="MenuNavLink">
         <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">
             <i class="bi bi-receipt"></i> Order overview
         </a>
@@ -40,7 +40,6 @@
     @{
         foreach (CourseCategory menuItem in Model.CourseCategory)
         {
-
             <div class="MenuCourseCategory">
                 <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Course" asp-route-tableNr="@Model.TableNr" asp-route-course="@menuItem" asp-route-card="@Model.MenuCard">
                     @menuItem.ToString().Replace("_", " ")

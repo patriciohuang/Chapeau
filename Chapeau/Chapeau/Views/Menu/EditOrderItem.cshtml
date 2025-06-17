@@ -11,6 +11,7 @@
                 <form action="/Menu/EditOrderItem" method="post">
                     <input type="hidden" name="OrderItemId" value="@Model?.OrderItem.OrderItemId" />
                     <input type="hidden" name="TableNr" value="@Model?.TableNr" />
+                    <input type="hidden" name="OriginalOrderItemCount" value="@Model?.OrderItem.Count" />
 
                     <div class="mb-3">
                         <label for="Count" class="form-label">Count</label>
@@ -19,7 +20,7 @@
 
                     <div class="mb-3">
                         <label for="Comment" class="form-label">Notes</label>
-                        <input type="text" id="Comment" name="Comment" class="form-control" required value="@Model?.OrderItem.Comment" />
+                        <input type="text" id="Comment" name="Comment" class="form-control" placeholder="Enter any comments for the kitchen here." value="@Model?.OrderItem.Comment" />
                     </div>
 
                     <div class="d-flex justify-content-center mt-4">

@@ -213,8 +213,6 @@ namespace Chapeau.Repositories
         // Checks if an order exists for a given table number
         public int? CheckIfOrderExists(int tableNr)
         {
-            int? orderId;
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // SQL query to check if an order exists for the given table number
@@ -229,8 +227,7 @@ namespace Chapeau.Repositories
 
                 connection.Open();
 
-                orderId = command.ExecuteScalar() as int?;
-                return orderId; // Returns the highest order ID for the table if the table is occupied.
+                return command.ExecuteScalar() as int?; // Returns the highest order ID for the table if the table is occupied.
             }
         }
 
@@ -253,6 +250,43 @@ namespace Chapeau.Repositories
 
                 connection.Open();
                 return Convert.ToInt32(command.ExecuteScalar());
+            }
+        }
+
+        public void DeleteOrder(int orderId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to delete an order and its items
+                string sql = @"DELETE FROM [order_item] WHERE order_id = @orderId;
+                               DELETE FROM [order] WHERE order_id = @orderId;";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@orderId", orderId);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public int? CheckIfOrderItemExists(int orderId, int menuItemId, string comment, Status status)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                const string sql = @"SELECT order_item_id
+                               FROM order_item
+                               WHERE order_id = @orderId AND menu_item_id = @menuItemId AND comment = @comment AND status = @status";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@orderId", orderId);
+                command.Parameters.AddWithValue("@menuItemId", menuItemId);
+                command.Parameters.AddWithValue("@comment", comment);
+                command.Parameters.AddWithValue("@status", status.ToString());
+
+                connection.Open();
+
+                return command.ExecuteScalar() as int?;
             }
         }
 
@@ -304,6 +338,34 @@ namespace Chapeau.Repositories
             return item;
         }
 
+        public List<OrderItem> GetOrderItems(int orderId)
+        {
+            List<OrderItem> item = new List<OrderItem>();
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // SQL query to insert a new order item
+                const string sql = @"SELECT i.order_item_id, i.count, i.comment, i.status AS item_status,
+                                            m.menu_item_id, m.name, m.price, m.menu_card, m.course_category, m.stock, m.isAlcoholic 
+                                    FROM order_item AS i
+                                    JOIN menu_item AS m ON i.menu_item_id = m.menu_item_id
+                                    WHERE order_id = @orderId";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+
+                command.Parameters.AddWithValue("@orderId", orderId);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    item.Add(ReadOrderItem(reader));
+                }
+                reader.Close();
+            }
+            return item;
+        }
+
         public void EditOrderItem(OrderItem item)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -318,7 +380,13 @@ namespace Chapeau.Repositories
 
                 command.Parameters.AddWithValue("@orderItemId", item.OrderItemId);
                 command.Parameters.AddWithValue("@count", item.Count);
-                command.Parameters.AddWithValue("@comment", item.Comment);
+                if (!string.IsNullOrEmpty(item.Comment)){
+                    command.Parameters.AddWithValue("@comment", item.Comment);
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@comment", "");
+                }
 
                 connection.Open();
                 command.ExecuteNonQuery();
@@ -369,7 +437,7 @@ namespace Chapeau.Repositories
                 SqlCommand command = new SqlCommand(sql, connection);
 
                 command.Parameters.AddWithValue("@orderId", orderId);
-                command.Parameters.AddWithValue("@status", Status.Ready.ToString());
+                command.Parameters.AddWithValue("@status", Status.Ordered.ToString());
 
                 connection.Open();
                 command.ExecuteNonQuery();

@@ -16,13 +16,13 @@ namespace Chapeau.Services
         List<Order> GetOrdersByFilter(string filter);
         List<Order> GetOrdersByTableAndFilter(int tableNr, string filter);
 
-        public OrderItem GetOrderItem(int orderItemId);
+        OrderItem GetOrderItem(int orderItemId);
 
-        public void EditOrderItem(OrderItem item);
+        void EditOrderItem(OrderItem newOrderItem);
 
-        public void DeleteOrderItem(int orderItemId);
+        void DeleteOrderItem(int orderItemId, int tableNr, int orderId);
 
-        public void DeleteUnsentOrderItems(int orderId);
+        void CancelUnsentOrder(int orderId, int tableNr);
 
 
         // Gets all active orders (orders that are not completed or cancelled)
@@ -43,7 +43,7 @@ namespace Chapeau.Services
 
         int CreateOrder(int tableNr, Employee loggedInEmployee);
 
-        void AddItem(int orderId, MenuItem menuItem);
+        void AddItem(int orderId, MenuItem menuItem, string? comment);
 
         void SendOrder(int orderId);
         void MarkOrderAsServed(int orderId);

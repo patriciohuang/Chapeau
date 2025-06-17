@@ -5,18 +5,20 @@
 }
 
 <div class="Menu">
-    <div>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">
-            Order overview
-        </a>
+    <div class="OrderAndCourseLinks">
+        <div class="MenuNavLink">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr">
+                Back to courses
+            </a>
+        </div>
+
+        <div class="MenuNavLink">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Overview" asp-route-tableNr="@Model.TableNr">
+                Order overview
+            </a>
+        </div>
     </div>
 
-
-    <div>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="Card" asp-route-tableNr="@Model.TableNr">
-
-        </a>
-    </div>
 
     <partial name="_ErrorMessage" />
     <partial name="_ConfirmMessage" />
@@ -30,12 +32,13 @@
             {
                 stockStyling = "bg-secondary";
             }
-            else if (menuItem.Stock > 0 && menuItem.Stock <= 10)
+            else if (menuItem.Stock <= 10)
             {
                 stockStyling = "bg-warning";
             }
 
             <div class="MenuCourseCategory @stockStyling">
+
                 <form action="/Menu/Course" method="post">
                     <input type="hidden" name="tableNr" value="@Model.TableNr" />
                     <input type="hidden" name="card" value="@Model.MenuCard" />
@@ -48,9 +51,12 @@
                     <input type="hidden" name="Stock" value="@menuItem.Stock" />
                     <input type="hidden" name="IsAlcoholic" value="@menuItem.IsAlcoholic" />
 
+                    <input type="hidden" name="comment" value="@string.Empty" />
+
                     <button type="submit" @(menuItem.Stock == 0 ? "disabled" : "")>
                         <div style="flex: 1;">
                             <span>@menuItem.Name</span>
+
                             @if (menuItem.Stock <= 10 && menuItem.Stock > 0)
                             {
                                 <small style="color: #856404; font-size: 0.85em; margin-left: 8px; font-weight: 600;">

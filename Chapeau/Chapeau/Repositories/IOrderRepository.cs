@@ -15,19 +15,27 @@ namespace Chapeau.Repositories
 
         Order GetOrderById(int orderId);
 
+
+
         int? CheckIfOrderExists(int tableNr);
 
         int CreateOrder(int tableNr, int employeeId);
 
+        void DeleteOrder(int orderId);
+
         void AddItem(int orderId, int menuItemId);
 
-        public OrderItem GetOrderItem(int orderItemId);
+        int? CheckIfOrderItemExists(int orderId, int menuItemId, string comment, Status status);
 
-        public void EditOrderItem(OrderItem item);
+        OrderItem GetOrderItem(int orderItemId);
 
-        public void DeleteOrderItem(int orderItemId);
+        List<OrderItem> GetOrderItems(int OrderId);
 
-        public int DeleteUnsentOrderItems(int orderId);
+        void EditOrderItem(OrderItem item);
+
+        void DeleteOrderItem(int orderItemId);
+
+        int DeleteUnsentOrderItems(int orderId);
 
         void SendOrder(int orderId);
 

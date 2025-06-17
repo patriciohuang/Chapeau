@@ -46,7 +46,7 @@ namespace Chapeau.Controllers
             {
                 int? orderId = _orderService.CheckIfOrderExists(tableNr);
 
-                //instead of an error message, should I just create a new order?
+                //instead of an error message, should I just create a new order? No, following the ERD
                 if (!orderId.HasValue)
                 {
                     throw new Exception("No order found for this table. Please add a menu item to it first.");
@@ -69,8 +69,6 @@ namespace Chapeau.Controllers
         {
             try
             {
-                OrderItem order = _orderService.GetOrderItem(orderItemId);
-
                 OrderItemEditViewModel orderItemEditViewModel = new OrderItemEditViewModel (_orderService.GetOrderItem(orderItemId), tableNr);
             
                 return View(orderItemEditViewModel);
@@ -86,13 +84,13 @@ namespace Chapeau.Controllers
 
 
         [HttpPost]
-        public IActionResult EditOrderItem(OrderItem orderItem, int tableNr)
+        public IActionResult EditOrderItem(OrderItem newOrderItem, int tableNr)
         {
             try
             {
-                _orderService.EditOrderItem(orderItem);
+                _orderService.EditOrderItem(newOrderItem);
 
-                TempData["Success"] = $"{orderItem.MenuItem.Name} edited successfully!";
+                TempData["Success"] = $"{newOrderItem.MenuItem.Name} edited successfully!";
             }
             catch (Exception ex)
             {
@@ -103,11 +101,11 @@ namespace Chapeau.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteOrderItem(int orderItemId, int tableNr)
+        public IActionResult DeleteOrderItem(int orderItemId, int tableNr, int orderId)
         {
             try
             {   
-                _orderService.DeleteOrderItem(orderItemId);
+                _orderService.DeleteOrderItem(orderItemId, tableNr, orderId);
 
                 TempData["Success"] = "Item deleted successfully!";
             }
@@ -120,20 +118,23 @@ namespace Chapeau.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteUnsentOrderItems(int orderId, int tableNr)
+        public IActionResult CancelUnsentOrder(int orderId, int tableNr)
         {
             try
             {
-                _orderService.DeleteUnsentOrderItems(orderId);
+                _orderService.CancelUnsentOrder(orderId, tableNr);
 
-                TempData["Success"] = "New order cancelled successfully!";
+                TempData["Success"] = "New order items cancelled successfully!";
+
+                return RedirectToAction("Tables", "Waiter");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = $"Error: {ex.Message}";
+                
+                return RedirectToAction("Overview", "Menu", new { tableNr });
             }
 
-            return RedirectToAction("Overview", "Menu", new { tableNr });
         }
 
         //Should I do this with just the tableNr, it's an extra database query to get the orderId, but it makes it impossible to enter your own orderId in the form
@@ -144,7 +145,7 @@ namespace Chapeau.Controllers
             {
                 _orderService.SendOrder(orderId);
 
-                TempData["Success"] = "Order sent successfully!";
+                TempData["Success"] = "Order sent successfully to the kitchen/bar!";
 
             }
             catch (Exception ex)
@@ -205,7 +206,7 @@ namespace Chapeau.Controllers
         }
 
         [HttpPost]
-        public IActionResult Course(int tableNr, string card, MenuItem menuItem)
+        public IActionResult Course(int tableNr, string card, MenuItem menuItem, string? comment)
         {
             try
             {
@@ -221,7 +222,7 @@ namespace Chapeau.Controllers
                     orderId = _orderService.CreateOrder(tableNr, loggedInEmployee);
                 }
 
-                _orderService.AddItem((int)orderId, menuItem);
+                _orderService.AddItem((int)orderId, menuItem, comment);
 
                 TempData["Success"] = $"{menuItem.Name} added to order successfully!";
                 
