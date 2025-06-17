@@ -1,17 +1,31 @@
 body { text-align: center; padding-top: 40px; font-family: Arial, sans-serif; }
+
+.payment-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
 .checkmark {
     width: 150px;
     height: 150px;
     display: inline-block;
     margin-top: 60px;
 }
+
 .checkmark-circle {
     stroke: #4BB543;
     stroke-width: 6;
     fill: #4BB543;
 }
+
 .checkmark-check {
     stroke: #fff;
     stroke-width: 6;
     fill: none;
+}
+
+.payment-message {
+    margin-top: 30px;
+    color: #555;
 } 

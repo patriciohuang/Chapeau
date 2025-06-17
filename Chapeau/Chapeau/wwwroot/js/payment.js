@@ -126,6 +126,8 @@ function handleCashAmountInput(e) {
     const amount = parseFloat(input.replace(',', '.'));
     const total = toPay;
     const change = amount - total;
+    const finishButton = document.getElementById('finishPaymentButton')
+    finishButton.disabled = amount < total
     document.getElementById('changeAmount').textContent = `Change: €${change.toFixed(2).replace('.', ',')}`;
 }
 
