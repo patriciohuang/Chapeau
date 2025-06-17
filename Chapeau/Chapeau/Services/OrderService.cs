@@ -267,6 +267,7 @@ namespace Chapeau.Services
             };
         }
 
+        // This is the helper to calculate the overall orders status, based on the "earliest" statused orderitem in said order
         private Status GetEarliestStatus(IEnumerable<Status> statuses, List<Status> priorityOrder)
         {
             foreach (var status in priorityOrder)

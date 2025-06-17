@@ -525,6 +525,7 @@ namespace Chapeau.Repositories
             return ProcessOrderResults(command.ExecuteReader());
         }
 
+        // Why is this here
         private List<Order> ExecuteOrderQueryWithId(string sql, int orderId)
         {
             using var connection = new SqlConnection(_connectionString);
