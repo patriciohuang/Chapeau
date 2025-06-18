@@ -94,36 +94,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script>
-        // Add success/error animations to buttons
-        document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('form[asp-action="UpdateTableAvailability"]');
-
-            forms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    const button = this.querySelector('.action-btn');
-                    if (button) {
-                        button.style.transform = 'scale(0.95)';
-                        setTimeout(() => {
-                            button.style.transform = '';
-                        }, 150);
-                    }
-                });
-            });
-
-            // Add touch feedback for mobile
-            const actionBtns = document.querySelectorAll('.action-btn');
-            actionBtns.forEach(btn => {
-                btn.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.98)';
-                });
-
-                btn.addEventListener('touchend', function() {
-                    this.style.transform = '';
-                });
-            });
-        });
-    </script>
-}
