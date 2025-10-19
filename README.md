@@ -27,40 +27,6 @@ The core of the application utilizes a C# backend to handle business logic and d
 
 ---
 
-## 🚀 Getting Started
-
-This guide will get a copy of the project running on your local development machine.
-
-### Prerequisites
-
-You'll need the following installed:
-
-* **[.NET SDK](https://dotnet.microsoft.com/download)**: The C# code requires the **[.NET VERSION, e.g., 6.0, 8.0]** SDK.
-* **[DATABASE DRIVER/TOOL, if applicable]**
-
-### Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/patriciohuang/Chapeau.git](https://github.com/patriciohuang/Chapeau.git)
-    cd Chapeau
-    ```
-2.  **Restore dependencies:**
-    ```bash
-    dotnet restore
-    ```
-3.  **Database Setup:**
-    * [STEPS TO CONFIGURE DATABASE CONNECTION STRING in a file like `appsettings.json`]
-    * [COMMAND TO RUN MIGRATIONS, e.g., `dotnet ef database update`]
-
-4.  **Run the Application:**
-    ```bash
-    dotnet run --project [PROJECT_NAME_OR_PATH, e.g., Chapeau.Web]
-    ```
-    The application will typically launch at `https://locall.host/5000/`.
-
----
-
 ## 👥 Group Project & Acknowledgments
 
 This project was a collaborative effort to develop a comprehensive restaurant management system. This repository is a fork created by Patricio Huang for individual contribution tracking and project preservation.
