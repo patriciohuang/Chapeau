@@ -21,7 +21,7 @@ This system is built to provide staff with a clear and effective way to manage t
 
 The core of the application utilizes a C# backend to handle business logic and data persistence, paired with a web frontend for accessibility.
 
-* **Backend:** **C#** (Likely **ASP.NET Core** or similar)
+* **Backend:** **C#**
 * **Frontend:** **HTML**, **CSS**, and **JavaScript**
 * **Database:** **MySQL**
 
